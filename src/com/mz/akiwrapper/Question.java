@@ -68,4 +68,13 @@ public class Question {
 	public boolean isEmpty() {
 		return this.isEmpty;
 	}
+
+	@Override
+	/**
+	 * Returns this question formatted as<br>
+	 * <code>#step: question text</code>
+	 */
+	public String toString() {
+		return "#" + this.step + ": " + this.question;
+	}
 }
