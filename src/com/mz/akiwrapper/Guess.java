@@ -53,4 +53,23 @@ public class Guess {
 		return this.params.getString("picture_path").equals("none.jpg") ? null
 				: this.params.getString("absolute_picture_path");
 	}
+
+	/**
+	 * Returns this guess's ID. That ID is unique for that guess and can be used to
+	 * prevent duplicate guesses
+	 * 
+	 * @return this guess's ID
+	 */
+	public String getId() {
+		return this.params.getString("id");
+	}
+
+	/**
+	 * Returns this guess's ID as long
+	 * 
+	 * @return this guess's ID as long
+	 */
+	public long getIdLong() {
+		return Long.parseLong(this.getId());
+	}
 }
