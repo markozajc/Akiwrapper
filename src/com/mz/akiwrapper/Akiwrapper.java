@@ -116,9 +116,8 @@ public class Akiwrapper {
 			if (compl.getReason().equalsIgnoreCase("elem list is empty")) {
 				return new Guess[] {};
 
-			} else {
-				throw new IOException("Something went wrong: " + compl);
 			}
+			throw new IOException("Something went wrong: " + compl);
 
 		}
 
