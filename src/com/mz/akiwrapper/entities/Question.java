@@ -20,7 +20,7 @@ public class Question {
 	 *            current step
 	 */
 	public Question(JSONObject parameters, Completion compl) {
-		if (compl.getErrLevel().equals(Level.WARN) && compl.getReason().equalsIgnoreCase("no question")) {
+		if (compl.getErrLevel().equals(Level.WARN) && compl.getReason().toLowerCase().equals("no question")) {
 			this.isEmpty = true;
 
 		} else {

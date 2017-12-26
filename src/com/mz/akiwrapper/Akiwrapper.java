@@ -11,10 +11,10 @@ import org.json.JSONObject;
 
 import com.jakob.utils.HttpUtils;
 import com.mz.akiwrapper.entities.Completion;
+import com.mz.akiwrapper.entities.Completion.Level;
 import com.mz.akiwrapper.entities.Guess;
 import com.mz.akiwrapper.entities.Question;
 import com.mz.akiwrapper.entities.Token;
-import com.mz.akiwrapper.entities.Completion.Level;
 
 public class Akiwrapper {
 
@@ -96,13 +96,7 @@ public class Akiwrapper {
 		this.currentApiUrl = getAvailableServer();
 
 		// Creates a new session if this is a new one
-		JSONObject question = new JSONObject(HttpUtils
-				.sendGet(this.currentApiUrl + "new_session?partner=1&player=" + NAME, "Akiwrapper").getResponseBody());
-
-		Completion compl = new Completion(question);
-		if (!compl.getErrLevel().equals(Level.OK)) {
-			throw new IOException("Something went wrong: " + compl.getReason());
-		}
+		JSONObject question = Api.newSession(this.currentApiUrl, NAME);
 
 		JSONObject identification = question.getJSONObject("parameters").getJSONObject("identification");
 
@@ -110,7 +104,12 @@ public class Akiwrapper {
 				Integer.parseInt(identification.getString("session")));
 
 		this.currentQuestion = new Question(question.getJSONObject("parameters").getJSONObject("step_information"),
-				compl);
+				new Completion("OK")
+		/*
+		 * We can assume that the completion is OK because if it wouldn't be,
+		 * Api.newSession() would throw UnavailableException
+		 */
+		);
 
 		this.currentStep = 0;
 
@@ -131,10 +130,8 @@ public class Akiwrapper {
 	 *             if something goes wrong
 	 */
 	public Question answerCurrentQuestion(Answer answer) throws IOException {
-		JSONObject question = new JSONObject(HttpUtils.sendGet(
-				this.currentApiUrl + "answer?session=" + token.getSession() + "&signature=" + token.getSignature()
-						+ "&step=" + this.currentQuestion.getStep() + "&answer=" + this.answerId.get(answer),
-				"Akiwrapper").getResponseBody());
+		JSONObject question = Api.answer(this.currentApiUrl, this.token, this.currentQuestion.getStep(),
+				this.answerId.get(answer));
 
 		this.currentQuestion = new Question(question.getJSONObject("parameters"),
 				new Completion(question.getString("completion")));
@@ -164,12 +161,10 @@ public class Akiwrapper {
 	public Guess[] getGuesses() throws IOException {
 		ArrayList<Guess> guesses = new ArrayList<>();
 
-		String json = HttpUtils
+		JSONObject list = new JSONObject(HttpUtils
 				.sendGet(this.currentApiUrl + "list?session=" + token.getSession() + "&signature="
 						+ token.getSignature() + "&mode_question=0&step=" + this.currentStep, "Akiwrapper")
-				.getResponseBody();
-
-		JSONObject list = new JSONObject(json);
+				.getResponseBody());
 
 		Completion compl = new Completion(list.getString("completion"));
 
