@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import com.mz.akiwrapper.Akiwrapper;
 import com.mz.akiwrapper.Akiwrapper.Answer;
-import com.mz.akiwrapper.Guess;
+import com.mz.akiwrapper.entities.Guess;
 
 public class AkinatorExample {
 

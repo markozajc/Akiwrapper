@@ -1,8 +1,8 @@
-package com.mz.akiwrapper;
+package com.mz.akiwrapper.entities;
 
 import org.json.JSONObject;
 
-import com.mz.akiwrapper.Completion.Level;
+import com.mz.akiwrapper.entities.Completion.Level;
 
 public class Question {
 
@@ -20,7 +20,7 @@ public class Question {
 	 *            current step
 	 */
 	public Question(JSONObject parameters, Completion compl) {
-		if (compl.getErrLevel().equals(Level.WARN) && compl.getReason().equalsIgnoreCase("no question")) {
+		if (compl.getErrLevel().equals(Level.WARN) && compl.getReason().toLowerCase().equals("no question")) {
 			this.isEmpty = true;
 
 		} else {
