@@ -15,6 +15,7 @@ import com.mz.akiwrapper.entities.Completion.Level;
 import com.mz.akiwrapper.entities.Guess;
 import com.mz.akiwrapper.entities.Question;
 import com.mz.akiwrapper.entities.Token;
+import com.mz.akiwrapper.entities.exceptions.UnavailableException;
 
 public class Akiwrapper {
 
@@ -91,9 +92,15 @@ public class Akiwrapper {
 	 * can be retrieved with <code>getCurrentQuestion()</code>
 	 * 
 	 * @throws IOException
+	 * @throws UnavailableException
+	 *             if no API server is available
 	 */
-	public Akiwrapper() throws IOException {
+	public Akiwrapper() throws IOException, UnavailableException {
 		this.currentApiUrl = getAvailableServer();
+
+		if (this.currentApiUrl == null) {
+			throw new UnavailableException(null);
+		}
 
 		// Creates a new session if this is a new one
 		JSONObject question = Api.newSession(this.currentApiUrl, NAME);
