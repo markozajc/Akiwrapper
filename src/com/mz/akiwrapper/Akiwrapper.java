@@ -20,6 +20,28 @@ public class Akiwrapper {
 
 	private Token token;
 
+	public enum ServerStatus {
+		ONLINE, OFFLINE;
+	}
+
+	/**
+	 * Returns current server status for the API server. If current server status is
+	 * OFFLINE, you are not able to use Akiwrapper for some time. This is completely
+	 * dependent on the Akinator team so if the servers are offline, you are not
+	 * able to do anything to retrieve them back
+	 * 
+	 * @return current API server status
+	 */
+	public static ServerStatus getServerStatus() {
+		try {
+			new Akiwrapper();
+		} catch (IOException e) {
+			return ServerStatus.OFFLINE;
+		}
+
+		return ServerStatus.ONLINE;
+	}
+
 	/**
 	 * An enum used to represent an answer to Akinator's question
 	 */
