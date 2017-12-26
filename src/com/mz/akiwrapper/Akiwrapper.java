@@ -2,7 +2,9 @@ package com.mz.akiwrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,34 +14,65 @@ import com.mz.akiwrapper.Completion.Level;
 
 public class Akiwrapper {
 
-	public static final String API_URL = "http://api-en1.akinator.com/ws/";
 	public static final String NAME = "Akiwrapper";
+	public static final String USERAGENT = NAME;
+
+	public static final List<String> API_URLS = Arrays.asList("http://api-en1.akinator.com/ws/",
+			"http://api-en3.akinator.com/ws/", "http://api-en4.akinator.com/ws/");
+
+	public final String currentApiUrl;
+	private final Token token;
+
 	private int currentStep;
 	private Question currentQuestion;
 	private HashMap<Answer, Integer> answerId = new HashMap<>();
 
-	private Token token;
-
-	public enum ServerStatus {
-		ONLINE, OFFLINE;
+	/**
+	 * Check if the API server used by an Akiwrapper instance is still up
+	 * 
+	 * @param aw
+	 *            Akiwrapper instance to check
+	 * @return true if that API server is OK, false if otherwise
+	 */
+	public static boolean isUp(Akiwrapper aw) {
+		return isUp(aw.currentApiUrl);
 	}
 
 	/**
-	 * Returns current server status for the API server. If current server status is
-	 * OFFLINE, you are not able to use Akiwrapper for some time. This is completely
-	 * dependent on the Akinator team so if the servers are offline, you are not
-	 * able to do anything to retrieve them back
+	 * Checks if an API server is online
 	 * 
-	 * @return current API server status
+	 * @param serverUrl
+	 *            API server to check
+	 * @return true if a new session can be created on <code>serverUrl</code>, false
+	 *         if otherwise
 	 */
-	public static ServerStatus getServerStatus() {
+	public static boolean isUp(String serverUrl) {
 		try {
-			new Akiwrapper();
-		} catch (IOException e) {
-			return ServerStatus.OFFLINE;
+			JSONObject question = new JSONObject(
+					HttpUtils.sendGet(serverUrl + "new_session?partner=1&player=" + NAME, USERAGENT).getResponseBody());
+
+			if (new Completion(question).getErrLevel().equals(Level.OK)) {
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns URL of the first available API server
+	 * 
+	 * @return API server's URL or null if no servers are available
+	 */
+	public static String getAvailableServer() {
+		for (String serverUrl : API_URLS) {
+			if (isUp(serverUrl)) {
+				return serverUrl;
+			}
 		}
 
-		return ServerStatus.ONLINE;
+		return null;
 	}
 
 	/**
@@ -56,11 +89,13 @@ public class Akiwrapper {
 	 * @throws IOException
 	 */
 	public Akiwrapper() throws IOException {
+		this.currentApiUrl = getAvailableServer();
+
 		// Creates a new session if this is a new one
 		JSONObject question = new JSONObject(HttpUtils
-				.sendGet(Akiwrapper.API_URL + "new_session?partner=1&player=" + NAME, "Akiwrapper").getResponseBody());
+				.sendGet(this.currentApiUrl + "new_session?partner=1&player=" + NAME, "Akiwrapper").getResponseBody());
 
-		Completion compl = new Completion(question.getString("completion"));
+		Completion compl = new Completion(question);
 		if (!compl.getErrLevel().equals(Level.OK)) {
 			throw new IOException("Something went wrong: " + compl.getReason());
 		}
@@ -93,7 +128,7 @@ public class Akiwrapper {
 	 */
 	public Question answerCurrentQuestion(Answer answer) throws IOException {
 		JSONObject question = new JSONObject(HttpUtils.sendGet(
-				Akiwrapper.API_URL + "answer?session=" + token.getSession() + "&signature=" + token.getSignature()
+				this.currentApiUrl + "answer?session=" + token.getSession() + "&signature=" + token.getSignature()
 						+ "&step=" + this.currentQuestion.getStep() + "&answer=" + this.answerId.get(answer),
 				"Akiwrapper").getResponseBody());
 
@@ -126,7 +161,7 @@ public class Akiwrapper {
 		ArrayList<Guess> guesses = new ArrayList<>();
 
 		String json = HttpUtils
-				.sendGet(Akiwrapper.API_URL + "list?session=" + token.getSession() + "&signature="
+				.sendGet(this.currentApiUrl + "list?session=" + token.getSession() + "&signature="
 						+ token.getSignature() + "&mode_question=0&step=" + this.currentStep, "Akiwrapper")
 				.getResponseBody();
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -49,8 +50,8 @@ public class HttpUtils {
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpGet get = new HttpGet(site);
 
-		for (String header : headers.keySet()) {
-			get.addHeader(header, headers.get(header));
+		for (Entry<String, String> entry : headers.entrySet()) {
+			get.addHeader(entry.getKey(), entry.getValue());
 		}
 
 		HttpResponse response = client.execute(get);
@@ -71,14 +72,13 @@ public class HttpUtils {
 	 * @throws IOException
 	 *             if website couldn't be accessed
 	 */
-	public static HttpEasyResponse sendGet(String site, String userAgent)
-			throws ClientProtocolException, IOException {
+	public static HttpEasyResponse sendGet(String site, String userAgent) throws ClientProtocolException, IOException {
 		HashMap<String, String> headers = new HashMap<>();
 		headers.put("User-Agent", userAgent);
-		
+
 		return sendGet(site, headers);
 	}
-	
+
 	/**
 	 * Sends a new HTTP POST request
 	 * 
@@ -98,14 +98,14 @@ public class HttpUtils {
 
 		HttpPost post = new HttpPost(site);
 
-		for (String header : headers.keySet()) {
-			post.addHeader(header, headers.get(header));
+		for (Entry<String, String> entry : headers.entrySet()) {
+			post.addHeader(entry.getKey(), entry.getValue());
 		}
 
 		post.setEntity(new StringEntity(jsonParameters));
 
 		HttpResponse response = client.execute(post);
-		
+
 		return new HttpEasyResponse(response.getEntity(), response);
 	}
 }

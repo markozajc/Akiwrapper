@@ -1,5 +1,7 @@
 package com.mz.akiwrapper;
 
+import org.json.JSONObject;
+
 public class Completion {
 
 	private String reason;
@@ -38,6 +40,10 @@ public class Completion {
 		}
 	}
 
+	public Completion(JSONObject json) {
+		this(json.getString("completion"));
+	}
+	
 	/**
 	 * Returns error reason
 	 * 
