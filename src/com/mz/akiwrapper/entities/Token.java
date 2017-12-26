@@ -1,4 +1,4 @@
-package com.mz.akiwrapper;
+package com.mz.akiwrapper.entities;
 
 public class Token {
 	

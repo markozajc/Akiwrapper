@@ -1,8 +1,8 @@
-package com.mz.akiwrapper;
+package com.mz.akiwrapper.entities;
 
 import org.json.JSONObject;
 
-import com.mz.akiwrapper.Completion.Level;
+import com.mz.akiwrapper.entities.Completion.Level;
 
 public class Question {
 

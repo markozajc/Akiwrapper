@@ -10,7 +10,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.jakob.utils.HttpUtils;
-import com.mz.akiwrapper.Completion.Level;
+import com.mz.akiwrapper.entities.Completion;
+import com.mz.akiwrapper.entities.Guess;
+import com.mz.akiwrapper.entities.Question;
+import com.mz.akiwrapper.entities.Token;
+import com.mz.akiwrapper.entities.Completion.Level;
 
 public class Akiwrapper {
 
