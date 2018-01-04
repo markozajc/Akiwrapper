@@ -9,7 +9,6 @@ import org.apache.http.util.EntityUtils;
 
 public class HttpEasyResponse {
 	
-	private String responseString;
 	private HttpResponse response;
 	private int responseCode;
 	private String responseBody;
@@ -19,11 +18,6 @@ public class HttpEasyResponse {
 		
 		this.response = response;
 		this.responseCode = response.getStatusLine().getStatusCode();
-	}
-
-	@Deprecated
-	public String getResponseString() {
-		return responseString;
 	}
 
 	public HttpResponse getResponse() {
