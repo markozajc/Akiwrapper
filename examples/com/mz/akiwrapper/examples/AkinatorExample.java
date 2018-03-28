@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 import com.mz.akiwrapper.Akiwrapper;
 import com.mz.akiwrapper.Akiwrapper.Answer;
-import com.mz.akiwrapper.entities.Guess;
+import com.mz.akiwrapper.core.entities.impl.GuessImpl;
 
 public class AkinatorExample {
 
@@ -48,7 +48,7 @@ public class AkinatorExample {
 		sc.close();
 
 		System.out.println("Guesses:");
-		for (Guess guess : aw.getGuesses()) {
+		for (GuessImpl guess : aw.getGuesses()) {
 			// Retrieves the guesses. Note that Akiwrapper#getGuesses() will probably return
 			// an empty array if Akiwrapper#getCurrentQuestion().isEmpty() returns false
 

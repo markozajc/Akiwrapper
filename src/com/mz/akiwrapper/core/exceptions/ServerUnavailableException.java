@@ -1,13 +1,13 @@
-package com.mz.akiwrapper.entities.exceptions;
+package com.mz.akiwrapper.core.exceptions;
 
 /**
  * An exception representing that the current API server went down
  */
-public class UnavailableException extends RuntimeException {
+public class ServerUnavailableException extends RuntimeException {
 
 	private String serverUrl;
 
-	public UnavailableException(String serverUrl) {
+	public ServerUnavailableException(String serverUrl) {
 		super();
 		this.serverUrl = serverUrl;
 	}
