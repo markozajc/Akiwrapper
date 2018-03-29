@@ -84,10 +84,11 @@ public class Route {
 			throw new IllegalArgumentException(
 					"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
 
-		try (CloseableHttpClient client = this.clientBuilder.build()) {
-			return new Request(baseUrl + URLEncoder.encode(String.format(this.path, (Object[]) parameters), "UTF-8"),
-					client);
-		}
+		String[] encodedParams = new String[parameters.length];
+		for (int i = 0; i < parameters.length; i++)
+			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
+
+		return new Request(baseUrl + String.format(this.path, (Object[]) encodedParams), this.clientBuilder);
 	}
 
 	/**
@@ -133,11 +134,10 @@ public class Route {
 	public class Request {
 
 		private HttpGet request;
-		private CloseableHttpClient client;
+		private HttpClientBuilder clientBuilder;
 
-		private Request(String url, CloseableHttpClient client) {
-			this.client = client;
-
+		private Request(String url, HttpClientBuilder client) {
+			this.clientBuilder = client;
 			this.request = new HttpGet(url);
 		}
 
@@ -149,7 +149,9 @@ public class Route {
 		 * @throws IOException
 		 */
 		public byte[] read() throws ClientProtocolException, IOException {
-			return EntityUtils.toByteArray(this.client.execute(this.request).getEntity());
+			try (CloseableHttpClient client = this.clientBuilder.build()) {
+				return EntityUtils.toByteArray(client.execute(this.request).getEntity());
+			}
 		}
 
 		/**

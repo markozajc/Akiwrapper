@@ -6,6 +6,7 @@ import com.mz.akiwrapper.core.entities.CompletionStatus;
 import com.mz.akiwrapper.core.entities.CompletionStatus.Level;
 import com.mz.akiwrapper.core.entities.Question;
 import com.mz.akiwrapper.core.exceptions.MissingQuestionException;
+import com.mz.akiwrapper.core.utils.JSONUtils;
 
 public class QuestionImpl implements Question {
 
@@ -16,6 +17,18 @@ public class QuestionImpl implements Question {
 
 	private final double gain;
 	private final double progression;
+
+	public QuestionImpl(String id, String question, int step, double gain, double progression, CompletionStatus status)
+			throws MissingQuestionException {
+		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equals("no question"))
+			throw new MissingQuestionException();
+
+		this.id = id;
+		this.question = question;
+		this.step = step;
+		this.gain = gain;
+		this.progression = progression;
+	}
 
 	/**
 	 * Creates a new Question object, used to represent Akinator's question
@@ -30,14 +43,10 @@ public class QuestionImpl implements Question {
 	 * 
 	 */
 	public QuestionImpl(JSONObject parameters, CompletionStatus status) throws MissingQuestionException {
-		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equals("no question"))
-			throw new MissingQuestionException();
-
-		this.step = Integer.parseInt(parameters.getString("step"));
-		this.question = parameters.getString("question");
-		this.progression = Double.parseDouble(parameters.getString("progression"));
-		this.id = parameters.getString("questionid");
-		this.gain = Double.parseDouble(parameters.getString("infogain"));
+		this(parameters.getString("questionid"), parameters.getString("question"),
+				JSONUtils.getInteger(parameters, "step").intValue(),
+				JSONUtils.getDouble(parameters, "infogain").doubleValue(),
+				JSONUtils.getDouble(parameters, "progression").doubleValue(), status);
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package com.mz.akiwrapper.core.entities;
 
 import java.net.URL;
 
+import javax.annotation.Nullable;
+
 public interface Guess extends Identifiable {
 
 	/**
@@ -18,11 +20,13 @@ public interface Guess extends Identifiable {
 	/**
 	 * @return description of this character
 	 */
+	@Nullable
 	public String getDescription();
 
 	/**
 	 * @return URL to picture or null if no picture is attached
 	 */
+	@Nullable
 	public URL getImage();
 
 }

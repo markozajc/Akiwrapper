@@ -6,6 +6,7 @@ import java.net.URL;
 import org.json.JSONObject;
 
 import com.mz.akiwrapper.core.entities.Guess;
+import com.mz.akiwrapper.core.utils.JSONUtils;
 
 public class GuessImpl implements Guess {
 
@@ -17,28 +18,37 @@ public class GuessImpl implements Guess {
 
 	private final double probability;
 
+	private static URL getImage(JSONObject json) {
+		try {
+			return json.getString("picture_path").equals("none.jpg") ? null
+					: new URL(json.getString("absolute_picture_path"));
+		} catch (MalformedURLException e) {
+			return null;
+		}
+	}
+
+	private static String getDescription(JSONObject json) {
+		String desc = json.getString("description");
+		return desc.equals("-") ? null : desc;
+	}
+
+	public GuessImpl(String id, String name, String description, URL image, double probability) {
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.image = image;
+		this.probability = probability;
+	}
+
 	/**
 	 * Object used to represent Akinator's guess
 	 * 
-	 * @param params
+	 * @param json
 	 *            an element from <code>elements</code> array
 	 */
-	public GuessImpl(JSONObject params) {
-		this.id = params.getString("id");
-		this.name = params.getString("name");
-		String desc = params.getString("description");
-		this.description = desc.equals("-") ? null : desc;
-
-		URL image;
-		try {
-			image = params.getString("picture_path").equals("none.jpg") ? null
-					: new URL(params.getString("absolute_picture_path"));
-		} catch (MalformedURLException e) {
-			image = null;
-		}
-		this.image = image;
-
-		this.probability = Double.parseDouble(params.getString("proba"));
+	public GuessImpl(JSONObject json) {
+		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
+				JSONUtils.getDouble(json, "proba").doubleValue());
 	}
 
 	@Override

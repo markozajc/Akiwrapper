@@ -2,9 +2,10 @@ package com.mz.akiwrapper.core.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.mz.akiwrapper.Akiwrapper;
@@ -18,6 +19,7 @@ import com.mz.akiwrapper.core.entities.Server;
 import com.mz.akiwrapper.core.entities.impl.CompletionStatusImpl;
 import com.mz.akiwrapper.core.entities.impl.GuessImpl;
 import com.mz.akiwrapper.core.entities.impl.QuestionImpl;
+import com.mz.akiwrapper.core.exceptions.MissingQuestionException;
 import com.mz.akiwrapper.core.exceptions.ServerUnavailableException;
 
 public class AkiwrapperImpl implements Akiwrapper {
@@ -107,13 +109,20 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@Override
 	public Question answerCurrentQuestion(Answer answer) throws IOException {
+		if (this.currentQuestion == null)
+			return null;
+
 		JSONObject question = Route.ANSWER
 				.getRequest(this.server.getBaseUrl(), "" + this.token.session, "" + this.token.signature,
 						"" + this.currentQuestion.getStep(), "" + answer.getId())
 				.getJSON();
 
-		this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters"),
-				new CompletionStatusImpl(question));
+		try {
+			this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters"),
+					new CompletionStatusImpl(question));
+		} catch (MissingQuestionException e) {
+			this.currentQuestion = null;
+		}
 
 		this.currentStep += 1;
 		return this.currentQuestion;
@@ -136,15 +145,23 @@ public class AkiwrapperImpl implements Akiwrapper {
 			if (compl.getReason().equalsIgnoreCase("elem list is empty"))
 				return new ArrayList<>();
 
-			throw new IOException("Something went wrong: " + compl);
-
+			throw new IOException("Server returned a non-OK error code: " + compl);
 		}
 
-		return list.getJSONObject("parameters").getJSONArray("elements").toList().stream().map(e -> {
-			JSONObject json = (JSONObject) e;
+		JSONArray elements = list.getJSONObject("parameters").getJSONArray("elements");
+		List<Guess> guesses = new ArrayList<>();
+		for (int i = 0; i < elements.length(); i++)
+			guesses.add(new GuessImpl(elements.getJSONObject(i).getJSONObject("element")));
+		// Currently the only way to (cleanly) extract JSONObjects from a JSONArray
+		// without having to box and unbox it a million times is to use this old (and
+		// ugly) but gold, condition-based for loop :P
 
-			return new GuessImpl(json.getJSONObject("element"));
-		}).collect(Collectors.toList());
+		return Collections.unmodifiableList(guesses);
+	}
+
+	@Override
+	public Server getServer() {
+		return server;
 	}
 
 	/**
@@ -152,13 +169,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 */
 	public String getUserAgent() {
 		return userAgent;
-	}
-
-	/**
-	 * @return the currently used API server
-	 */
-	public Server getServer() {
-		return server;
 	}
 
 }

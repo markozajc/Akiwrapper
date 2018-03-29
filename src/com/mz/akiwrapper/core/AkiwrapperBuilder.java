@@ -8,9 +8,9 @@ public class AkiwrapperBuilder {
 
 	public static final String DEFAULT_NAME = "Akiwrapper";
 
-	public String name;
-	public String userAgent;
-	public Server server;
+	private String name;
+	private String userAgent;
+	private Server server;
 
 	public AkiwrapperBuilder() {
 		this.name = null;
@@ -44,7 +44,7 @@ public class AkiwrapperBuilder {
 		this.server = server;
 		return this;
 	}
-	
+
 	public Akiwrapper build() {
 		return new AkiwrapperImpl(server, name, userAgent);
 	}
