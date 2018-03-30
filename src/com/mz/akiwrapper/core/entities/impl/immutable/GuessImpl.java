@@ -1,13 +1,20 @@
-package com.mz.akiwrapper.core.entities.impl;
+package com.mz.akiwrapper.core.entities.impl.immutable;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.mz.akiwrapper.core.Route;
 import com.mz.akiwrapper.core.entities.Guess;
 import com.mz.akiwrapper.core.utils.JSONUtils;
 
+/**
+ * An implementation of {@link Guess}.
+ * 
+ * @author Marko Zajc
+ */
 public class GuessImpl implements Guess {
 
 	private final String id;
@@ -32,6 +39,15 @@ public class GuessImpl implements Guess {
 		return desc.equals("-") ? null : desc;
 	}
 
+	/**
+	 * Creates a new {@link GuessImpl} instance from raw parameters.
+	 * 
+	 * @param id
+	 * @param name
+	 * @param description
+	 * @param image
+	 * @param probability
+	 */
 	public GuessImpl(String id, String name, String description, URL image, double probability) {
 		this.id = id;
 		this.name = name;
@@ -41,10 +57,12 @@ public class GuessImpl implements Guess {
 	}
 
 	/**
-	 * Object used to represent Akinator's guess
+	 * Creates a new {@link GuessImpl} instance.
 	 * 
 	 * @param json
-	 *            an element from <code>elements</code> array
+	 *            JSON parameters to use (acquired with {@link Route#LIST} > {@link JSONArray}
+	 *            elements > {@link JSONObject} (an index) > {@link JSONObject}
+	 *            element)
 	 */
 	public GuessImpl(JSONObject json) {
 		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),

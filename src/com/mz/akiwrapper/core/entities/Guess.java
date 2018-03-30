@@ -4,6 +4,12 @@ import java.net.URL;
 
 import javax.annotation.Nullable;
 
+/**
+ * A class used to represent Akinator's guess from the data acquired from your
+ * answers.
+ * 
+ * @author Marko Zajc
+ */
 public interface Guess extends Identifiable {
 
 	/**

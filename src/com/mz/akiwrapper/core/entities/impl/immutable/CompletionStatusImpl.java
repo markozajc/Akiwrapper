@@ -1,14 +1,25 @@
-package com.mz.akiwrapper.core.entities.impl;
+package com.mz.akiwrapper.core.entities.impl.immutable;
 
 import org.json.JSONObject;
 
+import com.mz.akiwrapper.core.Route;
 import com.mz.akiwrapper.core.entities.CompletionStatus;
 
+/**
+ * An implementation of {@link CompletionStatus}.
+ * 
+ * @author Marko Zajc
+ */
 public class CompletionStatusImpl implements CompletionStatus {
 
 	private final String reason;
 	private final Level level;
 
+	/**
+	 * Creates a new {@link CompletionStatusImpl} instance from raw parameters.
+	 * 
+	 * @param completion
+	 */
 	public CompletionStatusImpl(String completion) {
 		if (completion.toLowerCase().startsWith("ok")) {
 			this.level = Level.OK;
@@ -29,6 +40,13 @@ public class CompletionStatusImpl implements CompletionStatus {
 		}
 	}
 
+	/**
+	 * Creates a new {@link CompletionStatusImpl} instance.
+	 * 
+	 * @param json
+	 *            completion level (acquired with (Any {@link Route}) >
+	 *            {@link JSONObject} completion)
+	 */
 	public CompletionStatusImpl(JSONObject json) {
 		this(json.getString("completion"));
 	}

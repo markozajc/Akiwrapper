@@ -1,13 +1,19 @@
-package com.mz.akiwrapper.core.entities.impl;
+package com.mz.akiwrapper.core.entities.impl.immutable;
 
 import org.json.JSONObject;
 
+import com.mz.akiwrapper.core.Route;
 import com.mz.akiwrapper.core.entities.CompletionStatus;
 import com.mz.akiwrapper.core.entities.CompletionStatus.Level;
 import com.mz.akiwrapper.core.entities.Question;
 import com.mz.akiwrapper.core.exceptions.MissingQuestionException;
 import com.mz.akiwrapper.core.utils.JSONUtils;
 
+/**
+ * An implementation of {@link Question}.
+ * 
+ * @author Marko Zajc
+ */
 public class QuestionImpl implements Question {
 
 	private final String id;
@@ -18,6 +24,19 @@ public class QuestionImpl implements Question {
 	private final double gain;
 	private final double progression;
 
+	/**
+	 * Creates a new {@link QuestionImpl} instance from raw parameters.
+	 * 
+	 * @param id
+	 * @param question
+	 * @param step
+	 * @param gain
+	 * @param progression
+	 * @param status
+	 * @throws MissingQuestionException
+	 *             if the message is missing (no more messages left to answer, get
+	 *             the final guesses)
+	 */
 	public QuestionImpl(String id, String question, int step, double gain, double progression, CompletionStatus status)
 			throws MissingQuestionException {
 		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equals("no question"))
@@ -31,22 +50,22 @@ public class QuestionImpl implements Question {
 	}
 
 	/**
-	 * Creates a new Question object, used to represent Akinator's question
+	 * Creates a new {@link QuestionImpl} instance.
 	 * 
-	 * @param parameters
-	 *            JSON parameters
+	 * @param json
+	 *            JSON parameters to use (acquired with {@link Route#ANSWER} or
+	 *            {@link Route#NEW_SESSION} > {@link JSONObject} parameters)
 	 * @param status
 	 *            call completion status
 	 * @throws MissingQuestionException
 	 *             if the message is missing (no more messages left to answer, get
 	 *             the final guesses)
-	 * 
 	 */
-	public QuestionImpl(JSONObject parameters, CompletionStatus status) throws MissingQuestionException {
-		this(parameters.getString("questionid"), parameters.getString("question"),
-				JSONUtils.getInteger(parameters, "step").intValue(),
-				JSONUtils.getDouble(parameters, "infogain").doubleValue(),
-				JSONUtils.getDouble(parameters, "progression").doubleValue(), status);
+	public QuestionImpl(JSONObject json, CompletionStatus status) throws MissingQuestionException {
+		this(json.getString("questionid"), json.getString("question"),
+				JSONUtils.getInteger(json, "step").intValue(),
+				JSONUtils.getDouble(json, "infogain").doubleValue(),
+				JSONUtils.getDouble(json, "progression").doubleValue(), status);
 	}
 
 	@Override

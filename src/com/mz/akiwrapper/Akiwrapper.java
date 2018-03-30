@@ -10,16 +10,41 @@ import com.mz.akiwrapper.core.entities.Guess;
 import com.mz.akiwrapper.core.entities.Question;
 import com.mz.akiwrapper.core.entities.Server;
 
+/**
+ * The "core" of interaction with the Akinator's API. Contains all methods
+ * required to fully utilize all (known) Akinator's API's endpoints.
+ * 
+ * @author Marko Zajc
+ */
 public interface Akiwrapper {
 
 	/**
 	 * An enum used to represent an answer to Akinator's question
 	 */
 	public enum Answer {
+	/**
+	 * Answers with "yes" (positive)
+	 */
 	YES(0),
+
+	/**
+	 * Answers with "no" (negative)
+	 */
 	NO(1),
+
+	/**
+	 * Skips this question (neutral answer)
+	 */
 	DONT_KNOW(2),
+
+	/**
+	 * Answers with "probably" (almost positive)
+	 */
 	PROBABLY(3),
+
+	/**
+	 * Answers with "probably not" (almost negative)
+	 */
 	PROBABLY_NOT(4);
 
 		private final int id;
@@ -28,6 +53,9 @@ public interface Akiwrapper {
 			this.id = id;
 		}
 
+		/**
+		 * @return this answer's ID which is passed to the API
+		 */
 		public int getId() {
 			return id;
 		}

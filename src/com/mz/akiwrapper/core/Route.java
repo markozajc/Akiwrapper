@@ -10,14 +10,19 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import com.mz.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.mz.akiwrapper.core.entities.CompletionStatus;
 import com.mz.akiwrapper.core.entities.CompletionStatus.Level;
-import com.mz.akiwrapper.core.entities.impl.CompletionStatusImpl;
+import com.mz.akiwrapper.core.entities.Server;
+import com.mz.akiwrapper.core.entities.impl.immutable.CompletionStatusImpl;
 import com.mz.akiwrapper.core.exceptions.ServerUnavailableException;
 
+/**
+ * A class defining various API endpoints (routes).
+ * 
+ * @author Marko Zajc
+ */
 public class Route {
-
-	public static final String DEFAULT_USER_AGENT = AkiwrapperBuilder.DEFAULT_NAME;
 
 	/**
 	 * Creates a new session for further gameplay. Parameters:
@@ -48,10 +53,10 @@ public class Route {
 	 */
 	public static final Route LIST = new Route("list?session=%s&signature=%s&mode_question=0&step=%s", 3);
 
-	private static void testResponse(JSONObject response, String url) {
+	private static void testResponse(JSONObject response, Server server) {
 		CompletionStatus compl = new CompletionStatusImpl(response);
 		if (compl.getLevel().equals(Level.ERROR) && compl.getReason().toLowerCase().equals("shutdown"))
-			throw new ServerUnavailableException(url);
+			throw new ServerUnavailableException(server);
 	}
 
 	private final String path;
@@ -60,9 +65,13 @@ public class Route {
 	private final HttpClientBuilder clientBuilder;
 
 	private Route(String path, int parameters) {
+		this(path, parameters, AkiwrapperMetadata.DEFAULT_USER_AGENT);
+	}
+
+	private Route(String path, int parameters, String useragent) {
 		this.path = path;
 		this.parametersQuantity = parameters;
-		this.clientBuilder = HttpClientBuilder.create().setUserAgent(DEFAULT_USER_AGENT);
+		this.clientBuilder = HttpClientBuilder.create().setUserAgent(useragent);
 	}
 
 	/**
@@ -93,7 +102,8 @@ public class Route {
 
 	/**
 	 * Sets the user-agent that will be used in requests for this route. If no
-	 * user-agent is specified, {@link #DEFAULT_USER_AGENT} will be used.
+	 * user-agent is specified, {@link AkiwrapperMetadata#DEFAULT_USER_AGENT} will
+	 * be used.
 	 * 
 	 * @param userAgent
 	 * @return self, useful for chaining
@@ -165,7 +175,8 @@ public class Route {
 		public JSONObject getJSON() throws ClientProtocolException, IOException, ServerUnavailableException {
 			JSONObject result = new JSONObject(new String(read(), "UTF-8"));
 
-			testResponse(result, this.request.getURI().getHost());
+			testResponse(result, () -> this.request.getURI()
+					.getHost() /* a pretty dirty way to get a Server instance it but still the cleanest one */);
 
 			return result;
 		}

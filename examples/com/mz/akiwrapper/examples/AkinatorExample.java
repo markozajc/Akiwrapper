@@ -10,6 +10,7 @@ import com.mz.akiwrapper.core.AkiwrapperBuilder;
 import com.mz.akiwrapper.core.entities.Guess;
 import com.mz.akiwrapper.core.entities.Question;
 
+@SuppressWarnings("javadoc")
 public class AkinatorExample {
 
 	public static double PROBABILITY_THRESHOLD = 0.85;

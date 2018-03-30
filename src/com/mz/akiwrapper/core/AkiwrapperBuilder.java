@@ -1,52 +1,84 @@
 package com.mz.akiwrapper.core;
 
 import com.mz.akiwrapper.Akiwrapper;
+import com.mz.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.mz.akiwrapper.core.entities.Server;
+import com.mz.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
 import com.mz.akiwrapper.core.impl.AkiwrapperImpl;
+import com.mz.akiwrapper.core.utils.Servers;
 
-public class AkiwrapperBuilder {
+/**
+ * A class used for building a new Akinator object.
+ * 
+ * @author Marko Zajc
+ */
+public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 
-	public static final String DEFAULT_NAME = "Akiwrapper";
-
-	private String name;
-	private String userAgent;
-	private Server server;
-
+	/**
+	 * Creates a new AkiwrapperBuilder object. The default server used is the first
+	 * available server.
+	 */
 	public AkiwrapperBuilder() {
-		this.name = null;
-		this.userAgent = null;
-		this.server = Server.getFirstAvailableServer();
+		super(null, null, null);
 	}
 
+	/**
+	 * @return user's name, should not have any bigger impact on gameplay (default:
+	 *         {@link AkiwrapperMetadata#DEFAULT_NAME})
+	 * @see #setName(String)
+	 */
+	@Override
 	public String getName() {
-		return name;
+		return super.getName();
 	}
 
-	public AkiwrapperBuilder setName(String name) {
-		this.name = name;
-		return this;
-	}
-
+	/**
+	 * @return user-agent used in HTTP requests (default:
+	 *         {@link AkiwrapperMetadata#DEFAULT_USER_AGENT})
+	 * @see #setUserAgent(String)
+	 */
+	@Override
 	public String getUserAgent() {
-		return userAgent;
+		return super.getUserAgent();
 	}
 
-	public AkiwrapperBuilder setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
-		return this;
-	}
-
+	/**
+	 * @return the API server used for all requests. All API servers have equal data
+	 *         and endpoints but some might be down so you should never hard-code
+	 *         usage of a specific API server (default: return value from
+	 *         {@link Servers#getFirstAvailableServer()}
+	 */
+	@Override
 	public Server getServer() {
-		return server;
+		return super.getServer();
 	}
 
-	public AkiwrapperBuilder setServer(Server server) {
-		this.server = server;
+	@Override
+	public AkiwrapperBuilder setName(String name) {
+		super.setName(name);
+
 		return this;
 	}
 
+	@Override
+	public AkiwrapperBuilder setUserAgent(String userAgent) {
+		super.setUserAgent(userAgent);
+
+		return this;
+	}
+
+	@Override
+	public AkiwrapperBuilder setServer(Server server) {
+		super.setServer(server);
+
+		return this;
+	}
+
+	/**
+	 * @return a new {@link Akiwrapper} instance that will use all set preferences
+	 */
 	public Akiwrapper build() {
-		return new AkiwrapperImpl(server, name, userAgent);
+		return new AkiwrapperImpl(this);
 	}
 
 }

@@ -5,30 +5,51 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.mz.akiwrapper.Akiwrapper;
 import com.mz.akiwrapper.core.AkiwrapperBuilder;
 import com.mz.akiwrapper.core.Route;
+import com.mz.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.mz.akiwrapper.core.entities.CompletionStatus;
 import com.mz.akiwrapper.core.entities.CompletionStatus.Level;
 import com.mz.akiwrapper.core.entities.Guess;
 import com.mz.akiwrapper.core.entities.Question;
 import com.mz.akiwrapper.core.entities.Server;
-import com.mz.akiwrapper.core.entities.impl.CompletionStatusImpl;
-import com.mz.akiwrapper.core.entities.impl.GuessImpl;
-import com.mz.akiwrapper.core.entities.impl.QuestionImpl;
+import com.mz.akiwrapper.core.entities.impl.immutable.CompletionStatusImpl;
+import com.mz.akiwrapper.core.entities.impl.immutable.GuessImpl;
+import com.mz.akiwrapper.core.entities.impl.immutable.QuestionImpl;
+import com.mz.akiwrapper.core.exceptions.AllServersUnavailableException;
 import com.mz.akiwrapper.core.exceptions.MissingQuestionException;
 import com.mz.akiwrapper.core.exceptions.ServerUnavailableException;
+import com.mz.akiwrapper.core.utils.Servers;
 
+/**
+ * An implementation of {@link Akiwrapper}.
+ * 
+ * @author Marko Zajc
+ */
 public class AkiwrapperImpl implements Akiwrapper {
 
+	/**
+	 * A class used to define the temporary API token.
+	 * 
+	 * @author Marko Zajc
+	 */
 	public class Token {
 
-		public final long signature;
-		public final int session;
+		private final long signature;
+		private final int session;
 
+		/**
+		 * Creates a new {@link Token}.
+		 * 
+		 * @param signature
+		 * @param session
+		 */
 		public Token(long signature, int session) {
 			this.signature = signature;
 			this.session = session;
@@ -47,48 +68,63 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 * Creates a new Akiwrapper and registers a new API session. The first question
 	 * can be retrieved with {@link #getCurrentQuestion()}.
 	 * 
-	 * @param server
-	 *            the API server to use (will be checked with {@link Server#isUp()}
-	 *            first).
-	 * 
-	 * @param name
-	 *            player's name (won't have any huge impact but is still passed to
-	 *            the Akinator API for convenience.
-	 * @param userAgent
-	 *            the user-agent to use
+	 * @param metadata
+	 *            metadata to use. All {@code null} values will be replaced with the
+	 *            default values (you can see defaults at
+	 *            {@link AkiwrapperBuilder}'s getters)
 	 * 
 	 * @throws ServerUnavailableException
 	 *             if no API server is available
 	 * @throws IllegalArgumentException
-	 *             is server is null
+	 *             is {@code metadata} is null
 	 */
-	public AkiwrapperImpl(Server server, String name, String userAgent)
+	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata)
 			throws ServerUnavailableException, IllegalArgumentException {
-		if (server == null)
-			throw new IllegalArgumentException("Server can't be null");
 
-		if (!server.isUp())
-			throw new ServerUnavailableException(server.getBaseUrl());
+		if (metadata == null)
+			throw new IllegalArgumentException("metadata can't be null");
 
-		this.server = server;
+		{
+			Server server = metadata.getServer();
+			if (server == null) {
+				server = Servers.getFirstAvailableServer();
+
+				if (server == null)
+					throw new AllServersUnavailableException();
+			}
+			if (!server.isUp())
+				throw new ServerUnavailableException(server);
+
+			this.server = server;
+		}
 		// Checks & sets the server
 
-		if (name == null || name.equals(""))
-			name = AkiwrapperBuilder.DEFAULT_NAME;
+		{
+			String userAgent = metadata.getUserAgent();
+			if (userAgent == null || userAgent.equals(""))
+				userAgent = AkiwrapperMetadata.DEFAULT_USER_AGENT;
 
-		if (userAgent == null || userAgent.equals(""))
-			userAgent = Route.DEFAULT_USER_AGENT;
+			this.userAgent = userAgent;
+		}
+		// Checks & sets the user-agent
 
 		JSONObject question;
-		try {
-			question = Route.NEW_SESSION.getRequest(this.server.getBaseUrl(), name).getJSON();
-		} catch (IOException e) {
-			/*
-			 * Shouldn't happen, the server was requested before
-			 */
+		{
+			String name = metadata.getName();
+			if (name == null || name.equals(""))
+				name = AkiwrapperBuilder.DEFAULT_NAME;
 
-			throw new RuntimeException(e);
+			try {
+				question = Route.NEW_SESSION.getRequest(this.server.getBaseUrl(), name).getJSON();
+			} catch (IOException e) {
+				/*
+				 * Shouldn't happen, the server was requested before
+				 */
+
+				throw new RuntimeException(e);
+			}
 		}
+		// Checks & uses the name
 
 		JSONObject identification = question.getJSONObject("parameters").getJSONObject("identification");
 
@@ -104,7 +140,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 		);
 
 		this.currentStep = 0;
-		this.userAgent = userAgent;
 	}
 
 	@Override
