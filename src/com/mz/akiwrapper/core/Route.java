@@ -1,13 +1,12 @@
 package com.mz.akiwrapper.core;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import com.mz.akiwrapper.core.entities.AkiwrapperMetadata;
@@ -60,18 +59,18 @@ public class Route {
 	}
 
 	private final String path;
-	private final int parametersQuantity;
+	private String userAgent;
 
-	private final HttpClientBuilder clientBuilder;
+	private final int parametersQuantity;
 
 	private Route(String path, int parameters) {
 		this(path, parameters, AkiwrapperMetadata.DEFAULT_USER_AGENT);
 	}
 
-	private Route(String path, int parameters, String useragent) {
+	private Route(String path, int parameters, String userAgent) {
 		this.path = path;
 		this.parametersQuantity = parameters;
-		this.clientBuilder = HttpClientBuilder.create().setUserAgent(useragent);
+		this.userAgent = userAgent;
 	}
 
 	/**
@@ -97,7 +96,7 @@ public class Route {
 		for (int i = 0; i < parameters.length; i++)
 			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
 
-		return new Request(baseUrl + String.format(this.path, (Object[]) encodedParams), this.clientBuilder);
+		return new Request(new URL(baseUrl + String.format(this.path, (Object[]) encodedParams)), this.userAgent);
 	}
 
 	/**
@@ -109,7 +108,7 @@ public class Route {
 	 * @return self, useful for chaining
 	 */
 	public Route setUserAgent(String userAgent) {
-		this.clientBuilder.setUserAgent(userAgent);
+		this.userAgent = userAgent;
 
 		return this;
 	}
@@ -130,10 +129,11 @@ public class Route {
 	}
 
 	/**
-	 * @return {@link HttpClientBuilder} for this route, can be adjusted.
+	 * @return user-agent for this route
+	 * @see #setUserAgent(String)
 	 */
-	public HttpClientBuilder getClientBuilder() {
-		return clientBuilder;
+	public String getClientBuilder() {
+		return this.userAgent;
 	}
 
 	/**
@@ -143,44 +143,54 @@ public class Route {
 	 */
 	public class Request {
 
-		private HttpGet request;
-		private HttpClientBuilder clientBuilder;
+		private URLConnection connection;
+		private byte[] bytes = null;
 
-		private Request(String url, HttpClientBuilder client) {
-			this.clientBuilder = client;
-			this.request = new HttpGet(url);
+		private Request(URL url, String userAgent) throws IOException {
+			this.connection = url.openConnection();
+			this.connection.setRequestProperty("User-Agent", userAgent);
 		}
 
 		/**
-		 * Reads the contents of the request's URL.
+		 * Reads content of the request's URL into an array of bytes.
 		 * 
 		 * @return content as a byte array
-		 * @throws ClientProtocolException
 		 * @throws IOException
+		 * @see String#String(byte[], String)
 		 */
-		public byte[] read() throws ClientProtocolException, IOException {
-			try (CloseableHttpClient client = this.clientBuilder.build()) {
-				return EntityUtils.toByteArray(client.execute(this.request).getEntity());
+		public byte[] read() throws IOException {
+			if (this.bytes == null) {
+				try (BufferedInputStream is = new BufferedInputStream(this.connection.getInputStream())) {
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+					byte[] chunk = new byte[4096];
+					int bytesRead;
+
+					while ((bytesRead = is.read(chunk)) > -1)
+						outputStream.write(chunk, 0, bytesRead);
+
+					this.bytes = outputStream.toByteArray();
+				}
 			}
+
+			return this.bytes;
 		}
 
 		/**
 		 * @return content of the request's URL as a {@link JSONObject}. This will also
 		 *         if the server has went down.
-		 * @throws ClientProtocolException
 		 * @throws IOException
 		 * @throws ServerUnavailableException
 		 *             in case the server has went down (very unlikely to ever happen)
 		 */
-		public JSONObject getJSON() throws ClientProtocolException, IOException, ServerUnavailableException {
+		public JSONObject getJSON() throws IOException, ServerUnavailableException {
 			JSONObject result = new JSONObject(new String(read(), "UTF-8"));
 
-			testResponse(result, () -> this.request.getURI()
+			testResponse(result, () -> this.connection.getURL()
 					.getHost() /* a pretty dirty way to get a Server instance it but still the cleanest one */);
 
 			return result;
 		}
 
 	}
-
 }
