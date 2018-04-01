@@ -22,13 +22,15 @@
 		<url>https://github.com/markozajc/Akiwrapper/issues</url>
 	</issueManagement>
 
-	<!-- Thanks, kristian -->
 	<distributionManagement>
+
 		<repository>
-			<id>deploy.repo</id>
-			<name>Staging Repository</name>
-			<url>file://${project.build.directory}/repository</url>
+			<id>bintray</id>
+			<name>Bintray Repo</name>
+			<url>https://api.bintray.com/maven/iareas/Libraries/Akiwrapper/;publish=1</url>
+
 		</repository>
+
 	</distributionManagement>
 
 	<properties>
@@ -47,6 +49,32 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>
