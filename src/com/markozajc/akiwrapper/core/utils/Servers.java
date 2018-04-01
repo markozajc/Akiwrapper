@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 import org.json.JSONObject;
 
-import com.markozajc.akiwrapper.core.AkiwrapperBuilder;
+import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Status.Level;

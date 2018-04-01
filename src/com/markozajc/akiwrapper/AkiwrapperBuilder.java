@@ -1,6 +1,5 @@
-package com.markozajc.akiwrapper.core;
+package com.markozajc.akiwrapper;
 
-import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
