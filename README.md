@@ -6,8 +6,9 @@ Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
 Put this: into your pom.xml:
 ```xml
 <repository>
-	<id>akiwrapper-repo</id>
-	<url>https://raw.github.com/markozajc/Akiwrapper/repository/</url>
+	<id>jcenter</id>
+	<name>jcenter-bintray</name>
+	<url>http://jcenter.bintray.com</url>
 </repository>
 ```
 and this:

@@ -3,24 +3,24 @@ package com.markozajc.akiwrapper.core.entities.impl.immutable;
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus;
+import com.markozajc.akiwrapper.core.entities.Status;
 
 /**
- * An implementation of {@link CompletionStatus}.
+ * An implementation of {@link Status}.
  * 
  * @author Marko Zajc
  */
-public class CompletionStatusImpl implements CompletionStatus {
+public class StatusImpl implements Status {
 
 	private final String reason;
 	private final Level level;
 
 	/**
-	 * Creates a new {@link CompletionStatusImpl} instance from raw parameters.
+	 * Creates a new {@link StatusImpl} instance from raw parameters.
 	 * 
 	 * @param completion
 	 */
-	public CompletionStatusImpl(String completion) {
+	public StatusImpl(String completion) {
 		if (completion.toLowerCase().startsWith("ok")) {
 			this.level = Level.OK;
 			this.reason = null;
@@ -41,13 +41,13 @@ public class CompletionStatusImpl implements CompletionStatus {
 	}
 
 	/**
-	 * Creates a new {@link CompletionStatusImpl} instance.
+	 * Creates a new {@link StatusImpl} instance.
 	 * 
 	 * @param json
 	 *            completion level (acquired with (Any {@link Route}) >
 	 *            {@link JSONObject} completion)
 	 */
-	public CompletionStatusImpl(JSONObject json) {
+	public StatusImpl(JSONObject json) {
 		this(json.getString("completion"));
 	}
 

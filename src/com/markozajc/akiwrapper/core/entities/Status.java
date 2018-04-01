@@ -5,7 +5,7 @@ package com.markozajc.akiwrapper.core.entities;
  * 
  * @author Marko Zajc
  */
-public interface CompletionStatus {
+public interface Status {
 
 	/**
 	 * Indicates API call status level

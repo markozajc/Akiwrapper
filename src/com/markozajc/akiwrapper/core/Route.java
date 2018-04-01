@@ -10,11 +10,12 @@ import java.net.URLEncoder;
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus.Level;
 import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.CompletionStatusImpl;
+import com.markozajc.akiwrapper.core.entities.Status;
+import com.markozajc.akiwrapper.core.entities.Status.Level;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
+import com.markozajc.akiwrapper.core.exceptions.StatusException;
 
 /**
  * A class defining various API endpoints (routes).
@@ -22,6 +23,12 @@ import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
  * @author Marko Zajc
  */
 public class Route {
+
+	/**
+	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting
+	 * this to false may result in unpredicted exceptions!
+	 */
+	public static boolean DEFAULT_RUN_CHECKS = true;
 
 	/**
 	 * Creates a new session for further gameplay. Parameters:
@@ -53,9 +60,14 @@ public class Route {
 	public static final Route LIST = new Route("list?session=%s&signature=%s&mode_question=0&step=%s", 3);
 
 	private static void testResponse(JSONObject response, Server server) {
-		CompletionStatus compl = new CompletionStatusImpl(response);
-		if (compl.getLevel().equals(Level.ERROR) && compl.getReason().toLowerCase().equals("shutdown"))
-			throw new ServerUnavailableException(server);
+		Status compl = new StatusImpl(response);
+		if (compl.getLevel().equals(Level.ERROR)) {
+			if (compl.getReason().toLowerCase().equals("server down")) {
+				throw new ServerUnavailableException(server);
+			}
+
+			throw new StatusException(compl);
+		}
 	}
 
 	private final String path;
@@ -179,17 +191,33 @@ public class Route {
 		}
 
 		/**
-		 * @return content of the request's URL as a {@link JSONObject}. This will also
-		 *         if the server has went down.
+		 * Requests the server and returns the route's content as a {@link JSONObject}.
+		 * 
+		 * @return route's content
 		 * @throws IOException
 		 * @throws ServerUnavailableException
 		 *             in case the server has went down (very unlikely to ever happen)
 		 */
 		public JSONObject getJSON() throws IOException, ServerUnavailableException {
+			return getJSON(DEFAULT_RUN_CHECKS);
+		}
+
+		/**
+		 * Requests the server and returns the route's content as a {@link JSONObject}.
+		 * 
+		 * @param runChecks
+		 *            whether to run checks for error status codes.
+		 * @return route's content
+		 * @throws IOException
+		 * @throws ServerUnavailableException
+		 *             in case the server has went down (very unlikely to ever happen)
+		 */
+		public JSONObject getJSON(boolean runChecks) throws IOException, ServerUnavailableException {
 			JSONObject result = new JSONObject(new String(read(), "UTF-8"));
 
-			testResponse(result, () -> this.connection.getURL()
-					.getHost() /* a pretty dirty way to get a Server instance it but still the cleanest one */);
+			if (runChecks)
+				testResponse(result, () -> this.connection.getURL()
+						.getHost() /* a pretty dirty way to get a Server instance it but still the cleanest one */);
 
 			return result;
 		}

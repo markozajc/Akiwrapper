@@ -14,12 +14,12 @@ import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.core.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus.Level;
+import com.markozajc.akiwrapper.core.entities.Status;
+import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.CompletionStatusImpl;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
 import com.markozajc.akiwrapper.core.exceptions.AllServersUnavailableException;
@@ -132,7 +132,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 				Integer.parseInt(identification.getString("session")));
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters").getJSONObject("step_information"),
-				new CompletionStatusImpl("OK")
+				new StatusImpl("OK")
 		/*
 		 * We can assume that the completion is OK because if it wouldn't be, calling
 		 * the Route.NEW_SESSION would have thrown ServerUnavailableException
@@ -154,9 +154,10 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 		try {
 			this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters"),
-					new CompletionStatusImpl(question));
+					new StatusImpl(question));
 		} catch (MissingQuestionException e) {
 			this.currentQuestion = null;
+			return null;
 		}
 
 		this.currentStep += 1;
@@ -174,7 +175,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 				.getRequest(this.server.getBaseUrl(), "" + token.session, "" + token.signature, "" + this.currentStep)
 				.getJSON();
 
-		CompletionStatus compl = new CompletionStatusImpl(list);
+		Status compl = new StatusImpl(list);
 
 		if (compl.getLevel().equals(Level.ERROR) || compl.getLevel().equals(Level.WARNING)) {
 			if (compl.getReason().equalsIgnoreCase("elem list is empty"))

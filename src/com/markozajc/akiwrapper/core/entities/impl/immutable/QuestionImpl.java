@@ -3,9 +3,9 @@ package com.markozajc.akiwrapper.core.entities.impl.immutable;
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus;
+import com.markozajc.akiwrapper.core.entities.Status;
+import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.Question;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus.Level;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
 import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
@@ -37,7 +37,7 @@ public class QuestionImpl implements Question {
 	 *             if the message is missing (no more messages left to answer, get
 	 *             the final guesses)
 	 */
-	public QuestionImpl(String id, String question, int step, double gain, double progression, CompletionStatus status)
+	public QuestionImpl(String id, String question, int step, double gain, double progression, Status status)
 			throws MissingQuestionException {
 		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equals("no question"))
 			throw new MissingQuestionException();
@@ -61,11 +61,15 @@ public class QuestionImpl implements Question {
 	 *             if the message is missing (no more messages left to answer, get
 	 *             the final guesses)
 	 */
-	public QuestionImpl(JSONObject json, CompletionStatus status) throws MissingQuestionException {
-		this(json.getString("questionid"), json.getString("question"),
-				JSONUtils.getInteger(json, "step").intValue(),
-				JSONUtils.getDouble(json, "infogain").doubleValue(),
-				JSONUtils.getDouble(json, "progression").doubleValue(), status);
+	public QuestionImpl(JSONObject json, Status status) throws MissingQuestionException {
+		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equals("no question"))
+			throw new MissingQuestionException();
+
+		this.id = json.getString("questionid");
+		this.question = json.getString("question");
+		this.step = JSONUtils.getInteger(json, "step").intValue();
+		this.gain = JSONUtils.getDouble(json, "infogain").doubleValue();
+		this.progression = JSONUtils.getDouble(json, "progression").doubleValue();
 	}
 
 	@Override

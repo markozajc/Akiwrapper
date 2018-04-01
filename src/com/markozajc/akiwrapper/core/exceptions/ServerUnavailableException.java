@@ -4,12 +4,13 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 
 /**
  * An exception representing that the currently used {@link Server} has gone
  * offline.
  */
-public class ServerUnavailableException extends RuntimeException {
+public class ServerUnavailableException extends StatusException {
 
 	private String serverUrl;
 
@@ -20,7 +21,7 @@ public class ServerUnavailableException extends RuntimeException {
 	 * @param server
 	 */
 	public ServerUnavailableException(Server server) {
-		super();
+		super(new StatusImpl("KO - SERVER DOWN"));
 		this.serverUrl = server.getBaseUrl();
 	}
 
@@ -31,7 +32,7 @@ public class ServerUnavailableException extends RuntimeException {
 	 * @param servers
 	 */
 	public ServerUnavailableException(Collection<Server> servers) {
-		super();
+		super(new StatusImpl("KO - SERVER DOWN"));
 		this.serverUrl = servers.stream().map(Server::getBaseUrl).collect(Collectors.joining(", "));
 	}
 

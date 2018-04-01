@@ -11,8 +11,8 @@ import org.json.JSONObject;
 import com.markozajc.akiwrapper.core.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.CompletionStatus.Level;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.CompletionStatusImpl;
+import com.markozajc.akiwrapper.core.entities.Status.Level;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
 
 /**
@@ -44,7 +44,7 @@ public class Servers {
 			JSONObject question = Route.NEW_SESSION.getRequest(server.getBaseUrl(), AkiwrapperBuilder.DEFAULT_NAME)
 					.getJSON();
 
-			if (new CompletionStatusImpl(question).getLevel().equals(Level.OK)) {
+			if (new StatusImpl(question).getLevel().equals(Level.OK)) {
 				return true;
 			}
 		} catch (Exception e) {
