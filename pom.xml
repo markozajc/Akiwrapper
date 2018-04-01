@@ -1,14 +1,47 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.mz</groupId>
-	<artifactId>Akiwrapper</artifactId>
-	<version>1.6</version>
+
+	<groupId>com.markozajc</groupId>
+	<artifactId>akiwrapper</artifactId>
+	<version>1.0.1</version>
+
 	<name>Akiwrapper</name>
 	<description>A Java API wrapper for Akinator</description>
+	<url>https://github.com/markozajc/Akiwrapper</url>
+
+	<inceptionYear>2017</inceptionYear>
+
+	<scm>
+		<url>https://github.com/markozajc/Akiwrapper</url>
+		<connection>https://github.com/markozajc/Akiwrapper.git</connection>
+	</scm>
+
+	<issueManagement>
+		<url>https://github.com/markozajc/Akiwrapper/issues</url>
+	</issueManagement>
+
+	<distributionManagement>
+
+		<repository>
+			<id>bintray</id>
+			<name>Bintray Repo</name>
+			<url>https://api.bintray.com/maven/iareas/Libraries/Akiwrapper/;publish=1</url>
+
+		</repository>
+
+	</distributionManagement>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
@@ -17,18 +50,54 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<additionalOptions>-Xdoclint:none</additionalOptions>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
+
 	<dependencies>
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20170516</version>
+			<version>20180130</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.3</version>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.2</version>
 		</dependency>
+
 	</dependencies>
+
 </project>
