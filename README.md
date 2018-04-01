@@ -3,7 +3,7 @@ Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
 
 ## Installation
 #### Maven
-Put this: into your pom.xml:
+~~Put this: into your pom.xml:~~
 ```xml
 <repository>
 	<id>jcenter</id>
@@ -11,7 +11,7 @@ Put this: into your pom.xml:
 	<url>http://jcenter.bintray.com</url>
 </repository>
 ```
-and this:
+~~and this:~~
 ```xml
 <dependency>
 	<groupId>com.mz</groupId>
@@ -19,7 +19,7 @@ and this:
 	<version>1.0.0</version>
 </dependency>
 ```
-You can find an example POM [here](https://github.com/markozajc/Akiwrapper/example/pom.xml).
+~~You can find an example POM [here](https://github.com/markozajc/Akiwrapper/example/pom.xml)~~ We're still waiting for JCenter to approve this library. Please be patient!
 
 ## Usage
 It's really easy to get started with Akiwrapper. First off, we'll need to create a new Akinator API session:
