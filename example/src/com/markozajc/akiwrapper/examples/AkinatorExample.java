@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.markozajc.akiwrapper.Akiwrapper;
+import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
-import com.markozajc.akiwrapper.core.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 
