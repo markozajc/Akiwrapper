@@ -12,15 +12,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
-	<repositories>
-
-		<repository>
-			<id>akiwrapper-repo</id>
-			<url>https://raw.github.com/markozajc/Akiwrapper/repository/</url>
-		</repository>
-
-	</repositories>
-
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -40,7 +31,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>com.markozajc</groupId>
+			<groupId>com.github.markozajc</groupId>
 			<artifactId>akiwrapper</artifactId>
 			<version>REPLACE THIS WITH THE LATEST VERSION THAT CAN BE FOUND IN README.md</version>
 		</dependency>

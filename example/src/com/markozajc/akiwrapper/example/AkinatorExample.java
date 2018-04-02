@@ -1,4 +1,4 @@
-package com.markozajc.akiwrapper.examples;
+package com.markozajc.akiwrapper.example;
 
 import java.util.ArrayList;
 import java.util.List;
