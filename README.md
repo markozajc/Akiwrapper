@@ -3,12 +3,12 @@ Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
 
 ## Installation
 #### Maven
-Put this: into your pom.xml:
+Put this: into your pom.xml (replace LATEST_VERSION with [ ![Download](https://api.bintray.com/packages/iareas/Libraries/Akiwrapper/images/download.svg) ](https://bintray.com/iareas/Libraries/Akiwrapper/_latestVersion):
 ```xml
 <dependency>
 	<groupId>com.mz</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.0.1</version>
+	<version>LATEST_VERSION</version>
 </dependency>
 ```
 You can find an example POM [here](https://github.com/markozajc/Akiwrapper/example/pom.xml).
