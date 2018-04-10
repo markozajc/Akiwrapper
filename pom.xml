@@ -5,7 +5,7 @@
 
 	<groupId>com.github.markozajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 
 	<name>Akiwrapper</name>
 	<description>A Java API wrapper for Akinator</description>
@@ -15,8 +15,24 @@
 
 	<scm>
 		<url>https://github.com/markozajc/Akiwrapper</url>
-		<connection>https://github.com/markozajc/Akiwrapper.git</connection>
+		<connection>scm:git:git://github.com/markozajc/Akiwrapper.git</connection>
+		<developerConnection>scm:git:ssh://github.com:markozajc/Akiwrapper.git</developerConnection>
 	</scm>
+
+	<licenses>
+		<license>
+			<name>The GNU General Public License, Version 3.0</name>
+			<url>https://www.gnu.org/licenses/gpl.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Marko Zajc</name>
+			<email>sigmund.brotbeck@gmail.com</email>
+			<url>https://github.com/markozajc</url>
+		</developer>
+	</developers>
 
 	<issueManagement>
 		<url>https://github.com/markozajc/Akiwrapper/issues</url>
@@ -28,7 +44,6 @@
 			<id>bintray</id>
 			<name>Bintray Repo</name>
 			<url>https://api.bintray.com/maven/iareas/Libraries/Akiwrapper/;publish=1</url>
-
 		</repository>
 
 	</distributionManagement>

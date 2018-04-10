@@ -14,23 +14,38 @@ public interface Status {
 	/**
 	 * Everything is OK, you may continue normally.
 	 */
-	OK,
+	OK("OK"),
 
 	/**
 	 * The majority call has completed but something minor might have failed/not
 	 * completed.
 	 */
-	WARNING,
+	WARNING("WARN"),
 
 	/**
 	 * The call has not completed due to an error
 	 */
-	ERROR,
+	ERROR("KO"),
 
 	/**
 	 * Unknown status (should not ever occur under normal circumstances)
 	 */
-	UNKNOWN;
+	UNKNOWN("");
+
+		private String name;
+
+		private Level(String name) {
+			this.name = name;
+		}
+
+		@Override
+		/**
+		 * Returns this level's name as provided by the official API.
+		 */
+		public String toString() {
+			return name;
+		}
+
 	}
 
 	/**
