@@ -14,17 +14,17 @@ import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.entities.Status;
-import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
+import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.AllServersUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
+import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
@@ -153,8 +153,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 				.getJSON();
 
 		try {
-			this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters"),
-					new StatusImpl(question));
+			this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters"), new StatusImpl(question));
 		} catch (MissingQuestionException e) {
 			this.currentQuestion = null;
 			return null;
@@ -171,17 +170,19 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@Override
 	public List<Guess> getGuesses() throws IOException {
-		JSONObject list = Route.LIST.setUserAgent(userAgent)
-				.getRequest(this.server.getBaseUrl(), "" + token.session, "" + token.signature, "" + this.currentStep)
-				.getJSON();
+		JSONObject list = null;
+		try {
+			list = Route.LIST.setUserAgent(userAgent)
+					.getRequest(this.server.getBaseUrl(), "" + token.session, "" + token.signature,
+							"" + this.currentStep)
+					.getJSON();
+		} catch (StatusException e) {
+			if (e.getStatus().getLevel().equals(Level.ERROR)) {
+				if (e.getStatus().getReason().toLowerCase().equals("elem list is empty"))
+					return Collections.unmodifiableList(new ArrayList<>());
+			}
 
-		Status compl = new StatusImpl(list);
-
-		if (compl.getLevel().equals(Level.ERROR) || compl.getLevel().equals(Level.WARNING)) {
-			if (compl.getReason().equalsIgnoreCase("elem list is empty"))
-				return new ArrayList<>();
-
-			throw new IOException("Server returned a non-OK error code: " + compl);
+			throw e;
 		}
 
 		JSONArray elements = list.getJSONObject("parameters").getJSONArray("elements");
