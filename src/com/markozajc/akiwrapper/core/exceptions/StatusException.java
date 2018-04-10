@@ -18,6 +18,7 @@ public class StatusException extends RuntimeException {
 	 *            status to append
 	 */
 	public StatusException(Status status) {
+		super(status.getLevel().toString().toUpperCase() + " - " + status.getReason());
 		this.status = status;
 	}
 
