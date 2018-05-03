@@ -3,23 +3,15 @@ Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
 
 ## Installation
 #### Maven
-~~Put this: into your pom.xml:~~
-```xml
-<repository>
-	<id>jcenter</id>
-	<name>jcenter-bintray</name>
-	<url>http://jcenter.bintray.com</url>
-</repository>
-```
-~~and this:~~
+Put this: into your pom.xml (replace LATEST_VERSION with [ ![Download](https://api.bintray.com/packages/iareas/Libraries/Akiwrapper/images/download.svg) ](https://bintray.com/iareas/Libraries/Akiwrapper/_latestVersion):
 ```xml
 <dependency>
 	<groupId>com.mz</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.0.0</version>
+	<version>LATEST_VERSION</version>
 </dependency>
 ```
-~~You can find an example POM [here](https://github.com/markozajc/Akiwrapper/example/pom.xml)~~ We're still waiting for JCenter to approve this library. Please be patient!
+You can find an example POM [here](https://github.com/markozajc/Akiwrapper/example/pom.xml).
 
 ## Usage
 It's really easy to get started with Akiwrapper. First off, we'll need to create a new Akinator API session:
