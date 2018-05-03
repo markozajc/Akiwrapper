@@ -13,23 +13,26 @@ public abstract class ImmutableAkiwrapperMetadata implements AkiwrapperMetadata 
 	protected final String name;
 	protected final String userAgent;
 	protected final Server server;
+	protected final boolean filterProfanity;
 
 	/**
 	 * Creates a new {@link ImmutableAkiwrapperMetadata} instance.
 	 * 
 	 * @param server
-	 *            the API server to use (will be checked with {@link Server#isUp()}
-	 *            first).
+	 *            the API server to use
 	 * @param name
-	 *            player's name (won't have any huge impact but is still passed to
-	 *            the Akinator API for convenience.
+	 *            player's name (won't have any huge impact but is still passed to the
+	 *            Akinator API for convenience)
 	 * @param userAgent
 	 *            the user-agent to use
+	 * @param filterProfanity
+	 *            whether to filter out all profanity elements
 	 */
-	public ImmutableAkiwrapperMetadata(String name, String userAgent, Server server) {
+	public ImmutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
+		this.filterProfanity = filterProfanity;
 	}
 
 	@Override

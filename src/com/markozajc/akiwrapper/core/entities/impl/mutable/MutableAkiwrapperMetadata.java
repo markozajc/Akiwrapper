@@ -16,23 +16,26 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	protected String name;
 	protected String userAgent;
 	protected Server server;
+	protected boolean filterProfanity;
 
 	/**
 	 * Creates a new {@link MutableAkiwrapperMetadata} instance.
 	 * 
 	 * @param server
-	 *            the API server to use (will be checked with {@link Server#isUp()}
-	 *            first).
+	 *            the API server to use
 	 * @param name
-	 *            player's name (won't have any huge impact but is still passed to
-	 *            the Akinator API for convenience.
+	 *            player's name (won't have any huge impact but is still passed to the
+	 *            Akinator API for convenience)
 	 * @param userAgent
 	 *            the user-agent to use
+	 * @param filterProfanity
+	 *            whether to filter out all profanity elements
 	 */
-	public MutableAkiwrapperMetadata(String name, String userAgent, Server server) {
+	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
+		this.filterProfanity = filterProfanity;
 	}
 
 	@Override
@@ -45,6 +48,7 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 * 
 	 * @param name
 	 * @return current instance, used for chaining
+	 * @see #getName()
 	 */
 	public MutableAkiwrapperMetadata setName(String name) {
 		this.name = name;
@@ -70,11 +74,6 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 		return this;
 	}
 
-	/**
-	 * @return the API server used for all requests. All API servers have equal data
-	 *         and endpoints but some might be down so you should never hard-code
-	 *         usage of a specific API server
-	 */
 	@Override
 	public Server getServer() {
 		return server;
@@ -85,11 +84,30 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 * 
 	 * @param server
 	 * @return current instance, used for chaining
+	 * @see #getServer()
 	 * @see Servers#SERVERS
 	 * @see Servers#getFirstAvailableServer()
 	 */
 	public MutableAkiwrapperMetadata setServer(Server server) {
 		this.server = server;
+
+		return this;
+	}
+
+	@Override
+	public boolean doesFilterProfanity() {
+		return this.filterProfanity;
+	}
+
+	/**
+	 * Sets the "filter profanity" mode.
+	 * 
+	 * @param filterProfanity
+	 * @return current instance, used for chaining
+	 * @see #doesFilterProfanity()
+	 */
+	public MutableAkiwrapperMetadata setFilterProfanity(boolean filterProfanity) {
+		this.filterProfanity = filterProfanity;
 
 		return this;
 	}

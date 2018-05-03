@@ -25,8 +25,8 @@ import com.markozajc.akiwrapper.core.exceptions.StatusException;
 public class Route {
 
 	/**
-	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting
-	 * this to false may result in unpredicted exceptions!
+	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting this
+	 * to false may result in unpredicted exceptions!
 	 */
 	public static boolean DEFAULT_RUN_CHECKS = true;
 
@@ -36,7 +36,9 @@ public class Route {
 	 * <li>Player's name</li>
 	 * </ol>
 	 */
-	public static final Route NEW_SESSION = new Route("new_session?partner=1&player=%s", 1);
+	public static final Route NEW_SESSION = new Route(
+			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27",
+			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
 
 	/**
 	 * Answers a question. Parameters:
@@ -47,7 +49,8 @@ public class Route {
 	 * <li>Answer's ID</li>
 	 * </ol>
 	 */
-	public static final Route ANSWER = new Route("answer?session=%s&signature=%s&step=%s&answer=%s", 4);
+	public static final Route ANSWER = new Route("answer?session=%s&signature=%s&step=%s&answer=%s",
+			"&question_filter=cat=1", 4);
 
 	/**
 	 * Lists all available guesses. Parameters:
@@ -71,26 +74,35 @@ public class Route {
 	}
 
 	private final String path;
+	private final String filteredAppendix;
 	private String userAgent;
 
 	private final int parametersQuantity;
 
 	private Route(String path, int parameters) {
-		this(path, parameters, AkiwrapperMetadata.DEFAULT_USER_AGENT);
+		this(path, "", parameters);
 	}
 
-	private Route(String path, int parameters, String userAgent) {
+	private Route(String path, String filteredAppendix, int parameters) {
+		this(path, filteredAppendix, parameters, AkiwrapperMetadata.DEFAULT_USER_AGENT);
+	}
+
+	private Route(String path, String filteredAppendix, int parameters, String userAgent) {
 		this.path = path;
+		this.filteredAppendix = filteredAppendix;
 		this.parametersQuantity = parameters;
 		this.userAgent = userAgent;
 	}
 
 	/**
-	 * Creates a request for this route that can later be called and converted into
-	 * a {@link JSONObject}.
+	 * Creates a request for this route that can later be called and converted into a
+	 * {@link JSONObject}.
 	 * 
 	 * @param baseUrl
 	 *            base (API's) URL
+	 * @param filterProfanity
+	 *            whether to filter profanity. Akinator's website will automatically
+	 *            enable that if you choose an age below 16
 	 * @param parameters
 	 *            parameters to pass to the route (parameters are specified in that
 	 *            Route's JavaDoc)
@@ -99,7 +111,8 @@ public class Route {
 	 * @throws IllegalArgumentException
 	 *             if you have passed too little parameters
 	 */
-	public Request getRequest(String baseUrl, String... parameters) throws IOException, IllegalArgumentException {
+	public Request getRequest(String baseUrl, boolean filterProfanity, String... parameters)
+			throws IOException, IllegalArgumentException {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(
 					"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
@@ -108,13 +121,13 @@ public class Route {
 		for (int i = 0; i < parameters.length; i++)
 			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
 
-		return new Request(new URL(baseUrl + String.format(this.path, (Object[]) encodedParams)), this.userAgent);
+		return new Request(new URL(baseUrl + String.format(this.path, (Object[]) encodedParams)
+				+ (filterProfanity ? this.filteredAppendix : "")), this.userAgent);
 	}
 
 	/**
-	 * Sets the user-agent that will be used in requests for this route. If no
-	 * user-agent is specified, {@link AkiwrapperMetadata#DEFAULT_USER_AGENT} will
-	 * be used.
+	 * Sets the user-agent that will be used in requests for this route. If no user-agent
+	 * is specified, {@link AkiwrapperMetadata#DEFAULT_USER_AGENT} will be used.
 	 * 
 	 * @param userAgent
 	 * @return self, useful for chaining
@@ -134,7 +147,7 @@ public class Route {
 
 	/**
 	 * @return minimal quantity of parameters you would have to pass to
-	 *         {@link #getRequest(String, String...)}
+	 *         {@link #getRequest(String, boolean, String...)}
 	 */
 	public int getParametersQuantity() {
 		return parametersQuantity;

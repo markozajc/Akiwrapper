@@ -12,8 +12,8 @@ import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 
 /**
  * A class containing various API server utilities.
@@ -36,12 +36,13 @@ public class Servers {
 	 * 
 	 * @param server
 	 *            a server to check
-	 * @return true if a new session can be created on the provided server, false if
-	 *         not
+	 * @return true if a new session can be created on the provided server, false if not
 	 */
 	public static boolean isUp(Server server) {
 		try {
-			JSONObject question = Route.NEW_SESSION.getRequest(server.getBaseUrl(), AkiwrapperBuilder.DEFAULT_NAME)
+			JSONObject question = Route.NEW_SESSION
+					.getRequest(server.getBaseUrl(), AkiwrapperBuilder.DEFAULT_FILTER_PROFANITY,
+							AkiwrapperBuilder.DEFAULT_NAME)
 					.getJSON();
 
 			if (new StatusImpl(question).getLevel().equals(Level.OK)) {
@@ -54,11 +55,10 @@ public class Servers {
 	}
 
 	/**
-	 * Returns the first available API server of the ones in
-	 * {@link Servers#SERVERS}.
+	 * Returns the first available API server of the ones in {@link Servers#SERVERS}.
 	 * 
-	 * @return the first available server or null if no servers are currently
-	 *         available (very, very unlikely, almost impossible)
+	 * @return the first available server or null if no servers are currently available
+	 *         (very, very unlikely, almost impossible)
 	 */
 	@Nullable
 	public static Server getFirstAvailableServer() {
