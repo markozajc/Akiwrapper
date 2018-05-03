@@ -16,6 +16,7 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	protected String name;
 	protected String userAgent;
 	protected Server server;
+	protected boolean filterProfanity;
 
 	/**
 	 * Creates a new {@link MutableAkiwrapperMetadata} instance.
@@ -24,15 +25,16 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 *            the API server to use (will be checked with {@link Server#isUp()}
 	 *            first).
 	 * @param name
-	 *            player's name (won't have any huge impact but is still passed to
-	 *            the Akinator API for convenience.
+	 *            player's name (won't have any huge impact but is still passed to the
+	 *            Akinator API for convenience.
 	 * @param userAgent
 	 *            the user-agent to use
 	 */
-	public MutableAkiwrapperMetadata(String name, String userAgent, Server server) {
+	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
+		this.filterProfanity = filterProfanity;
 	}
 
 	@Override
@@ -71,9 +73,9 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	}
 
 	/**
-	 * @return the API server used for all requests. All API servers have equal data
-	 *         and endpoints but some might be down so you should never hard-code
-	 *         usage of a specific API server
+	 * @return the API server used for all requests. All API servers have equal data and
+	 *         endpoints but some might be down so you should never hard-code usage of a
+	 *         specific API server
 	 */
 	@Override
 	public Server getServer() {
@@ -90,6 +92,17 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 */
 	public MutableAkiwrapperMetadata setServer(Server server) {
 		this.server = server;
+
+		return this;
+	}
+
+	@Override
+	public boolean doesFilterProfanity() {
+		return this.filterProfanity;
+	}
+
+	public MutableAkiwrapperMetadata setFilterProfanity(boolean filterProfanity) {
+		this.filterProfanity = filterProfanity;
 
 		return this;
 	}

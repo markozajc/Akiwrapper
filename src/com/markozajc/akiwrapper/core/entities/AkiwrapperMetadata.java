@@ -17,6 +17,8 @@ public interface AkiwrapperMetadata {
 	 */
 	public static final String DEFAULT_USER_AGENT = "AkiwrapperClient";
 
+	public static final boolean DEFAULT_FILTER_PROFANITY = false;
+
 	/**
 	 * @return user's name, does not have any bigger impact on gameplay
 	 */
@@ -28,10 +30,12 @@ public interface AkiwrapperMetadata {
 	String getUserAgent();
 
 	/**
-	 * @return the API server used for all requests. All API servers have equal data
-	 *         and endpoints but some might be down so you should never hard-code
-	 *         usage of a specific API server
+	 * @return the API server used for all requests. All API servers have equal data and
+	 *         endpoints but some might be down so you should never hard-code usage of a
+	 *         specific API server
 	 */
 	Server getServer();
+
+	boolean doesFilterProfanity();
 
 }

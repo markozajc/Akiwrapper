@@ -59,19 +59,20 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	private final String userAgent;
 	private final Server server;
+	private final boolean filterProfanity;
 	private final Token token;
 
 	private int currentStep;
 	private Question currentQuestion;
 
 	/**
-	 * Creates a new Akiwrapper and registers a new API session. The first question
-	 * can be retrieved with {@link #getCurrentQuestion()}.
+	 * Creates a new Akiwrapper and registers a new API session. The first question can
+	 * be retrieved with {@link #getCurrentQuestion()}.
 	 * 
 	 * @param metadata
 	 *            metadata to use. All {@code null} values will be replaced with the
-	 *            default values (you can see defaults at
-	 *            {@link AkiwrapperBuilder}'s getters)
+	 *            default values (you can see defaults at {@link AkiwrapperBuilder}'s
+	 *            getters)
 	 * 
 	 * @throws ServerUnavailableException
 	 *             if no API server is available
@@ -108,6 +109,9 @@ public class AkiwrapperImpl implements Akiwrapper {
 		}
 		// Checks & sets the user-agent
 
+		this.filterProfanity = metadata.doesFilterProfanity();
+		// Sets the profanity filter
+
 		JSONObject question;
 		{
 			String name = metadata.getName();
@@ -115,7 +119,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 				name = AkiwrapperBuilder.DEFAULT_NAME;
 
 			try {
-				question = Route.NEW_SESSION.getRequest(this.server.getBaseUrl(), name).getJSON();
+				question = Route.NEW_SESSION.getRequest(this.server.getBaseUrl(), this.filterProfanity, name).getJSON();
 			} catch (IOException e) {
 				/*
 				 * Shouldn't happen, the server was requested before
@@ -134,8 +138,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 		this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters").getJSONObject("step_information"),
 				new StatusImpl("OK")
 		/*
-		 * We can assume that the completion is OK because if it wouldn't be, calling
-		 * the Route.NEW_SESSION would have thrown ServerUnavailableException
+		 * We can assume that the completion is OK because if it wouldn't be, calling the
+		 * Route.NEW_SESSION would have thrown ServerUnavailableException
 		 */
 		);
 
@@ -148,8 +152,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.ANSWER
-				.getRequest(this.server.getBaseUrl(), "" + this.token.session, "" + this.token.signature,
-						"" + this.currentQuestion.getStep(), "" + answer.getId())
+				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.session,
+						"" + this.token.signature, "" + this.currentQuestion.getStep(), "" + answer.getId())
 				.getJSON();
 
 		try {
@@ -173,8 +177,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(userAgent)
-					.getRequest(this.server.getBaseUrl(), "" + token.session, "" + token.signature,
-							"" + this.currentStep)
+					.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + token.session,
+							"" + token.signature, "" + this.currentStep)
 					.getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel().equals(Level.ERROR)) {

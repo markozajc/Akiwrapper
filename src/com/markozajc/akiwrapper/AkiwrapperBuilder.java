@@ -18,7 +18,8 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * available server.
 	 */
 	public AkiwrapperBuilder() {
-		super(null, null, null);
+		super(AkiwrapperMetadata.DEFAULT_NAME, AkiwrapperMetadata.DEFAULT_USER_AGENT, null,
+				AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY);
 	}
 
 	/**
@@ -42,14 +43,24 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	}
 
 	/**
-	 * @return the API server used for all requests. All API servers have equal data
-	 *         and endpoints but some might be down so you should never hard-code
-	 *         usage of a specific API server (default: return value from
-	 *         {@link Servers#getFirstAvailableServer()}
+	 * @return the API server used for all requests. All API servers have equal data and
+	 *         endpoints but some might be down so you should never hard-code usage of a
+	 *         specific API server (default: {@code null} (if {@code null} is passed to
+	 *         {@link AkiwrapperImpl#AkiwrapperImpl(AkiwrapperMetadata)},
+	 *         {@link Servers#getFirstAvailableServer()} will be used))
 	 */
 	@Override
 	public Server getServer() {
 		return super.getServer();
+	}
+
+	/**
+	 * @return whether to tell Akinator's API to filter out NSFW information (default:
+	 *         {@link AkiwrapperMetadata#DEFAULT_FILTER_PROFANITY})
+	 */
+	@Override
+	public boolean doesFilterProfanity() {
+		return super.doesFilterProfanity();
 	}
 
 	@Override
@@ -69,6 +80,13 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	@Override
 	public AkiwrapperBuilder setServer(Server server) {
 		super.setServer(server);
+
+		return this;
+	}
+
+	@Override
+	public AkiwrapperBuilder setFilterProfanity(boolean filterProfanity) {
+		super.setFilterProfanity(filterProfanity);
 
 		return this;
 	}
