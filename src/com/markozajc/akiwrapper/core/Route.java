@@ -147,7 +147,7 @@ public class Route {
 
 	/**
 	 * @return minimal quantity of parameters you would have to pass to
-	 *         {@link #getRequest(String, String...)}
+	 *         {@link #getRequest(String, boolean, String...)}
 	 */
 	public int getParametersQuantity() {
 		return parametersQuantity;

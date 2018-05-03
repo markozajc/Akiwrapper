@@ -17,6 +17,9 @@ public interface AkiwrapperMetadata {
 	 */
 	public static final String DEFAULT_USER_AGENT = "AkiwrapperClient";
 
+	/**
+	 * The default profanity filter for new Akiwrapper instances.
+	 */
 	public static final boolean DEFAULT_FILTER_PROFANITY = false;
 
 	/**
@@ -36,6 +39,9 @@ public interface AkiwrapperMetadata {
 	 */
 	Server getServer();
 
+	/**
+	 * @return whether to tell Akinator's API to filter out NSFW information
+	 */
 	boolean doesFilterProfanity();
 
 }
