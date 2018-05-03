@@ -74,7 +74,7 @@ public class AkinatorExample {
 			while (filterProfanity == null) {
 				String age = sc.nextLine();
 				try {
-					filterProfanity = Integer.valueOf(age) < 16;
+					filterProfanity = Integer.parseInt(age) < 16;
 					// Tries to format the given number
 
 				} catch (NumberFormatException e) {
