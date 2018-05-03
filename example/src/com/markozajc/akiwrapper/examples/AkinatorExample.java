@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.markozajc.akiwrapper.Akiwrapper;
-import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
+import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 
@@ -69,7 +69,23 @@ public class AkinatorExample {
 			// Gets user's name (this won't be important in the future but is still done,
 			// for some reason)
 
-			Akiwrapper aw = new AkiwrapperBuilder().setName(name).build();
+			Boolean filterProfanity = null;
+			System.out.println("What's your age?");
+			while (filterProfanity == null) {
+				String age = sc.nextLine();
+				try {
+					filterProfanity = Integer.valueOf(age) < 16;
+					// Tries to format the given number
+
+				} catch (NumberFormatException e) {
+					System.out.println("That's not a real age!");
+					// In case the given number is not formattable (too big or not a number)
+				}
+			}
+			// Gets user's age. Like the Akinator's website, this will turn on the profanity
+			// filter if the age entered is below 16
+
+			Akiwrapper aw = new AkiwrapperBuilder().setName(name).setFilterProfanity(filterProfanity).build();
 			// Builds the Akiwrapper instance, this is what we'll be using to perform
 			// operations such as answering questions, fetching guesses, etc.
 

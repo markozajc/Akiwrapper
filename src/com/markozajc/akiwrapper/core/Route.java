@@ -36,7 +36,8 @@ public class Route {
 	 * <li>Player's name</li>
 	 * </ol>
 	 */
-	public static final Route NEW_SESSION = new Route("new_session?partner=1&player=%s&constraint=ETAT%3C%3E%27AV%27",
+	public static final Route NEW_SESSION = new Route(
+			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27",
 			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
 
 	/**
