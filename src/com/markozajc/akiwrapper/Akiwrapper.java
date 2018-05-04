@@ -11,8 +11,8 @@ import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
 
 /**
- * The "core" of interaction with the Akinator's API. Contains all methods
- * required to fully utilize all (known) Akinator's API's endpoints.
+ * The "core" of interaction with the Akinator's API. Contains all methods required
+ * to fully utilize all (known) Akinator's API's endpoints.
  * 
  * @author Marko Zajc
  */
@@ -63,10 +63,9 @@ public interface Akiwrapper {
 	}
 
 	/**
-	 * Answers current question and retrieves the next one. The next question is
-	 * passed as return value and can be retrieved later on with
-	 * {@link #getCurrentQuestion()}. If there are no more questions left, this will
-	 * return null.
+	 * Answers current question and retrieves the next one. The next question is passed
+	 * as return value and can be retrieved later on with {@link #getCurrentQuestion()}.
+	 * If there are no more questions left, this will return {@code null}.
 	 * 
 	 * @param answer
 	 *            the answer
@@ -79,9 +78,27 @@ public interface Akiwrapper {
 	Question answerCurrentQuestion(Answer answer) throws IOException;
 
 	/**
+	 * Goes one step backwards (just like {@link #answerCurrentQuestion(Answer)}, except
+	 * it goes back instead of forward).<br>
+	 * For example, if {@link #getCurrentQuestion()} returns a question on step
+	 * {@code 5}, calling this command will make {@link #getCurrentQuestion()} return the
+	 * question from step {@code 4}. You can call this as many times as you want.<br>
+	 * <strong> Beware that calling this when {@link #getCurrentQuestion()} returns a
+	 * question on step {@code 0}, calling this will return {@code null} and nothing will
+	 * actually be changed!<br>
+	 * This will also return {@code null} if {@link #getCurrentQuestion()} returns
+	 * {@code null},</strong>
+	 * 
+	 * @return the past message
+	 * @throws IOException
+	 */
+	@Nullable
+	Question undoAnswer() throws IOException;
+
+	/**
 	 * Returns current question. You can answer it with
-	 * <code>answerCurrentQuestion()</code>. If there are no more questions left,
-	 * this will return null.
+	 * {@link #answerCurrentQuestion(Answer)}. If there are no more questions left, this
+	 * will return {@code null}.
 	 * 
 	 * @return current question
 	 */
@@ -89,10 +106,7 @@ public interface Akiwrapper {
 	Question getCurrentQuestion();
 
 	/**
-	 * Returns an array of Akinator's guesses. This is safe to call when
-	 * <code>getCurrentQuestion().isEmpty()</code> returns true
-	 * 
-	 * @return an array of Akinator's guesses, empty if there are no guesses
+	 * @return an unmodifiable list of Akinator's guesses, empty if there are no guesses
 	 * @throws IOException
 	 *             if API call isn't successful
 	 * @see Akiwrapper#getGuessesAboveProbability(double)
@@ -107,8 +121,8 @@ public interface Akiwrapper {
 	/**
 	 * @param probability
 	 *            probability threshold
-	 * @return a list of guesses with probability above the specified probability
-	 *         threshold.
+	 * @return a list of Akinator's guesses with probability above the specified
+	 *         probability threshold.
 	 * @throws IOException
 	 * @see Akiwrapper#getGuesses()
 	 */

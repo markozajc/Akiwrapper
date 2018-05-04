@@ -11,13 +11,14 @@ import com.markozajc.akiwrapper.Akiwrapper.Answer;
 public interface Question extends Identifiable {
 
 	/**
-	 * @return current completion percentage (as a double). Higher means closer to
-	 *         the answer
+	 * @return current completion percentage (as a double). Higher means closer to the
+	 *         answer
 	 */
 	double getProgression();
 
 	/**
-	 * @return current step (question number)
+	 * @return current step (question number). This uses zero-based index, meaning the
+	 *         first question will be on step {@code 0}
 	 */
 	int getStep();
 

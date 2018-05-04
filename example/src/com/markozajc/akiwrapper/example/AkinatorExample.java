@@ -105,14 +105,15 @@ public class AkinatorExample {
 				// Displays the question
 
 				if (question.getStep() == 0)
-					System.out.println("\nAnswer with YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT");
+					System.out.println(
+							"\nAnswer with YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
 				// Displays the tip (only for the first time)
 
 				boolean answered = false;
 				while (!answered) {
 					// Iterates while the questions remains unanswered
 
-					String answer = sc.nextLine();
+					String answer = sc.nextLine().toLowerCase();
 
 					if (answer.equals("yes")) {
 						aw.answerCurrentQuestion(Answer.YES);
@@ -129,6 +130,9 @@ public class AkinatorExample {
 					} else if (answer.equals("probably not")) {
 						aw.answerCurrentQuestion(Answer.PROBABLY_NOT);
 
+					} else if (answer.equals("back")) {
+						aw.undoAnswer();
+
 					} else if (answer.equals("debug")) {
 						System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getBaseUrl()
 								+ "\n\tCurrent guess count: " + aw.getGuesses().size()
@@ -137,7 +141,8 @@ public class AkinatorExample {
 						continue;
 
 					} else {
-						System.out.println("Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT");
+						System.out.println(
+								"Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
 						continue;
 					}
 

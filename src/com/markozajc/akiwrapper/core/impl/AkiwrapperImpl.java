@@ -168,6 +168,26 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@Override
+	public Question undoAnswer() throws IOException {
+		Question current = getCurrentQuestion();
+		if (current == null)
+			return null;
+
+		if (current.getStep() < 1)
+			return null;
+
+		JSONObject question = Route.CANCEL_ANSWER
+				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.session,
+						"" + this.token.signature, "" + current.getStep())
+				.getJSON();
+
+		this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters"), new StatusImpl(question));
+
+		this.currentStep -= 1;
+		return this.currentQuestion;
+	}
+
+	@Override
 	public Question getCurrentQuestion() {
 		return this.currentQuestion;
 	}
