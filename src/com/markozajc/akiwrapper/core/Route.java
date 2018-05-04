@@ -53,6 +53,17 @@ public class Route {
 			"&question_filter=cat=1", 4);
 
 	/**
+	 * Cancels (undoes) an answer. Parameters:
+	 * <ol>
+	 * <li>Session's ID</li>
+	 * <li>Session's signature</li>
+	 * <li>Current step</li>
+	 * </ol>
+	 */
+	public static final Route CANCEL_ANSWER = new Route("cancel_answer?session=%s&signature=%s&step=%s&answer=-1",
+			"&question_filter=cat=1", 3);
+
+	/**
 	 * Lists all available guesses. Parameters:
 	 * <ol>
 	 * <li>Session's ID</li>
