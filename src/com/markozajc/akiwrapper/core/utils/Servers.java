@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
@@ -15,6 +17,7 @@ import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerGroupImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
+import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
 
 /**
  * A class containing various API server utilities.
@@ -26,7 +29,7 @@ public class Servers {
 	/**
 	 * A list of known Akinator's API servers
 	 */
-	public static final Map<Language, ServerGroup> SERVERS;
+	public static final Map<Language, ServerGroup> SERVER_GROUPS;
 
 	static {
 
@@ -140,7 +143,7 @@ public class Servers {
 				new ServerImpl("api-tr3.akinator.com", Language.TURKISH),
 		}));
 
-		SERVERS = Collections.unmodifiableMap(servers);
+		SERVER_GROUPS = Collections.unmodifiableMap(servers);
 	}
 
 	/**
@@ -167,11 +170,10 @@ public class Servers {
 	}
 
 	/**
-	 * Returns the first available API server of the ones in {@link Servers#SERVERS}.
+	 * Returns the first available API server of the ones in
+	 * {@link Servers#SERVER_GROUPS}.
 	 * 
-	 * @deprecated Rather get the {@link ServerGroup} of your preferred language from
-	 *             {@link Servers} and call {@link ServerGroup#getFirstAvailableServer()}
-	 *             there.<br>
+	 * @deprecated Rather use {@link #getFirstAvailableServer(Language)}.<br>
 	 *             <strong>This method will now always return {@code null}.</strong>
 	 * 
 	 * @return the first available server or null if no servers are currently available
@@ -180,6 +182,21 @@ public class Servers {
 	@Deprecated
 	public static Server getFirstAvailableServer() {
 		return null;
+	}
+
+	@Nonnull
+	public static Server getFirstAvailableServer(@Nonnull Language localization)
+			throws IllegalArgumentException, UnsupportedOperationException, ServerGroupUnavailableException {
+		ServerGroup sg = SERVER_GROUPS.get(localization);
+		if (sg == null)
+			throw new UnsupportedOperationException(
+					"Language " + localization.toString() + " is not supported by the Akinator's API.");
+
+		Server result = sg.getFirstAvailableServer();
+		if (result == null)
+			throw new ServerGroupUnavailableException(sg);
+
+		return result;
 	}
 
 }

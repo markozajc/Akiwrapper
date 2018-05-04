@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
@@ -15,6 +17,8 @@ public abstract class ImmutableAkiwrapperMetadata implements AkiwrapperMetadata 
 	protected final String userAgent;
 	protected final Server server;
 	protected final boolean filterProfanity;
+
+	@Nonnull
 	protected final Language localization;
 
 	/**
@@ -31,7 +35,7 @@ public abstract class ImmutableAkiwrapperMetadata implements AkiwrapperMetadata 
 	 *            whether to filter out all profanity elements
 	 */
 	public ImmutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
-			Language localization) {
+			@Nonnull Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;

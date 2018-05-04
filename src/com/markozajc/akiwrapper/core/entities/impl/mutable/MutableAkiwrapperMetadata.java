@@ -1,10 +1,12 @@
 package com.markozajc.akiwrapper.core.entities.impl.mutable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.ServerGroup;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
@@ -18,6 +20,8 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	protected String userAgent;
 	protected Server server;
 	protected boolean filterProfanity;
+
+	@Nonnull
 	protected Language localization;
 
 	/**
@@ -34,7 +38,7 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 *            whether to filter out all profanity elements
 	 */
 	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
-			Language localization) {
+			@Nonnull Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
@@ -89,8 +93,8 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 * @param server
 	 * @return current instance, used for chaining
 	 * @see #getServer()
-	 * @see Servers#SERVERS
-	 * @see Servers#getFirstAvailableServer()
+	 * @see Servers#SERVER_GROUPS
+	 * @see ServerGroup#getFirstAvailableServer()
 	 */
 	public MutableAkiwrapperMetadata setServer(Server server) {
 		this.server = server;
@@ -116,16 +120,15 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 		return this;
 	}
 
-	@Override
-	public Language getLocalization() {
-		// TODO Auto-generated method body
-		return null;
-	}
-
-	public MutableAkiwrapperMetadata setLocalization(Language localization) {
+	public MutableAkiwrapperMetadata setLocalization(@Nonnull Language localization) {
 		this.localization = localization;
 
 		return this;
+	}
+
+	@Override
+	public Language getLocalization() {
+		return localization;
 	}
 
 }

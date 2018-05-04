@@ -21,8 +21,8 @@ import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
-import com.markozajc.akiwrapper.core.exceptions.AllServersUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
+import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.utils.Servers;
@@ -74,24 +74,17 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 *            default values (you can see defaults at {@link AkiwrapperBuilder}'s
 	 *            getters)
 	 * 
-	 * @throws ServerUnavailableException
+	 * @throws ServerGroupUnavailableException
 	 *             if no API server is available
 	 * @throws IllegalArgumentException
 	 *             is {@code metadata} is null
 	 */
 	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata)
-			throws ServerUnavailableException, IllegalArgumentException {
-
-		if (metadata == null)
-			throw new IllegalArgumentException("metadata can't be null");
-
+			throws ServerGroupUnavailableException, IllegalArgumentException {
 		{
 			Server server = metadata.getServer();
 			if (server == null) {
-				server = metadata.getServer();
-
-				if (server == null)
-					throw new AllServersUnavailableException(Servers.SERVERS.get(metadata.getLocalization()));
+				server = Servers.getFirstAvailableServer(metadata.getLocalization());
 			}
 			if (!server.isUp())
 				throw new ServerUnavailableException(server);

@@ -6,12 +6,12 @@ import com.markozajc.akiwrapper.core.entities.ServerGroup;
  * An exception that signals that all servers from a {@link ServerGroup} are
  * unavailable.
  */
-public class AllServersUnavailableException extends ServerUnavailableException {
+public class ServerGroupUnavailableException extends ServerUnavailableException {
 
 	/**
-	 * Creates a new {@link AllServersUnavailableException}.
+	 * Creates a new {@link ServerGroupUnavailableException}.
 	 */
-	public AllServersUnavailableException(ServerGroup sg) {
+	public ServerGroupUnavailableException(ServerGroup sg) {
 		super(sg.getServers());
 	}
 

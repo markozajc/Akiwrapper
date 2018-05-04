@@ -3,9 +3,9 @@ package com.markozajc.akiwrapper;
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.ServerGroup;
 import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
-import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
  * A class used for building a new Akinator object.
@@ -48,7 +48,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 *         endpoints but some might be down so you should never hard-code usage of a
 	 *         specific API server (default: {@code null} (if {@code null} is passed to
 	 *         {@link AkiwrapperImpl#AkiwrapperImpl(AkiwrapperMetadata)},
-	 *         {@link Servers#getFirstAvailableServer()} will be used))
+	 *         {@link ServerGroup#getFirstAvailableServer()} will be used))
 	 */
 	@Override
 	public Server getServer() {
@@ -98,7 +98,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	}
 
 	@Override
-	public MutableAkiwrapperMetadata setLocalization(Language localization) {
+	public AkiwrapperBuilder setLocalization(Language localization) {
 		super.setLocalization(localization);
 
 		return this;

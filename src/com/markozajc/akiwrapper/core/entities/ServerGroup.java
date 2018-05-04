@@ -14,7 +14,7 @@ public interface ServerGroup {
 	List<Server> getServers();
 
 	/**
-	 * Returns the first available API server of the ones in {@link Servers#SERVERS}.
+	 * Returns the first available API server of the ones in {@link Servers#SERVER_GROUPS}.
 	 * 
 	 * @return the first available server or null if no servers are currently available
 	 *         (very, very unlikely, almost impossible)

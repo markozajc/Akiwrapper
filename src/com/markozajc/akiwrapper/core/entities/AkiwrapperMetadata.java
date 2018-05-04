@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 
 /**
@@ -24,6 +26,7 @@ public interface AkiwrapperMetadata {
 	 */
 	public static final boolean DEFAULT_FILTER_PROFANITY = false;
 
+	@Nonnull
 	public static final Language DEFAULT_LOCALIZATION = Language.ENGLISH;
 
 	/**
@@ -48,5 +51,6 @@ public interface AkiwrapperMetadata {
 	 */
 	boolean doesFilterProfanity();
 
+	@Nonnull
 	Language getLocalization();
 }
