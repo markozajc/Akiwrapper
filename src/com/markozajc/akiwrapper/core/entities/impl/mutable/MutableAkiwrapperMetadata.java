@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.Server.Language;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
@@ -17,6 +18,7 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	protected String userAgent;
 	protected Server server;
 	protected boolean filterProfanity;
+	protected Language localization;
 
 	/**
 	 * Creates a new {@link MutableAkiwrapperMetadata} instance.
@@ -31,11 +33,13 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 * @param filterProfanity
 	 *            whether to filter out all profanity elements
 	 */
-	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity) {
+	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
+			Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
 		this.filterProfanity = filterProfanity;
+		this.localization = localization;
 	}
 
 	@Override
@@ -108,6 +112,18 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 */
 	public MutableAkiwrapperMetadata setFilterProfanity(boolean filterProfanity) {
 		this.filterProfanity = filterProfanity;
+
+		return this;
+	}
+
+	@Override
+	public Language getLocalization() {
+		// TODO Auto-generated method body
+		return null;
+	}
+
+	public MutableAkiwrapperMetadata setLocalization(Language localization) {
+		this.localization = localization;
 
 		return this;
 	}

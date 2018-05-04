@@ -88,10 +88,10 @@ public class AkiwrapperImpl implements Akiwrapper {
 		{
 			Server server = metadata.getServer();
 			if (server == null) {
-				server = Servers.getFirstAvailableServer();
+				server = metadata.getServer();
 
 				if (server == null)
-					throw new AllServersUnavailableException();
+					throw new AllServersUnavailableException(Servers.SERVERS.get(metadata.getLocalization()));
 			}
 			if (!server.isUp())
 				throw new ServerUnavailableException(server);

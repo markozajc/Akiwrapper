@@ -2,6 +2,7 @@ package com.markozajc.akiwrapper;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.Server.Language;
 import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
 import com.markozajc.akiwrapper.core.utils.Servers;
@@ -19,7 +20,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 */
 	public AkiwrapperBuilder() {
 		super(AkiwrapperMetadata.DEFAULT_NAME, AkiwrapperMetadata.DEFAULT_USER_AGENT, null,
-				AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY);
+				AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION);
 	}
 
 	/**
@@ -64,6 +65,11 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	}
 
 	@Override
+	public Language getLocalization() {
+		return super.getLocalization();
+	}
+
+	@Override
 	public AkiwrapperBuilder setName(String name) {
 		super.setName(name);
 
@@ -87,6 +93,13 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	@Override
 	public AkiwrapperBuilder setFilterProfanity(boolean filterProfanity) {
 		super.setFilterProfanity(filterProfanity);
+
+		return this;
+	}
+
+	@Override
+	public MutableAkiwrapperMetadata setLocalization(Language localization) {
+		super.setLocalization(localization);
 
 		return this;
 	}

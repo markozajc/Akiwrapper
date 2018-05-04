@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities;
 
+import com.markozajc.akiwrapper.core.entities.Server.Language;
+
 /**
  * A set of vital data used in API calls and such.
  * 
@@ -21,6 +23,8 @@ public interface AkiwrapperMetadata {
 	 * The default profanity filter for new Akiwrapper instances.
 	 */
 	public static final boolean DEFAULT_FILTER_PROFANITY = false;
+
+	public static final Language DEFAULT_LOCALIZATION = Language.ENGLISH;
 
 	/**
 	 * @return user's name, does not have any bigger impact on gameplay
@@ -44,4 +48,5 @@ public interface AkiwrapperMetadata {
 	 */
 	boolean doesFilterProfanity();
 
+	Language getLocalization();
 }
