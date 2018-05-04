@@ -2,9 +2,10 @@ package com.markozajc.akiwrapper;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.ServerGroup;
 import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
-import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
  * A class used for building a new Akinator object.
@@ -19,7 +20,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 */
 	public AkiwrapperBuilder() {
 		super(AkiwrapperMetadata.DEFAULT_NAME, AkiwrapperMetadata.DEFAULT_USER_AGENT, null,
-				AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY);
+				AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION);
 	}
 
 	/**
@@ -47,7 +48,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 *         endpoints but some might be down so you should never hard-code usage of a
 	 *         specific API server (default: {@code null} (if {@code null} is passed to
 	 *         {@link AkiwrapperImpl#AkiwrapperImpl(AkiwrapperMetadata)},
-	 *         {@link Servers#getFirstAvailableServer()} will be used))
+	 *         {@link ServerGroup#getFirstAvailableServer()} will be used))
 	 */
 	@Override
 	public Server getServer() {
@@ -61,6 +62,15 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	@Override
 	public boolean doesFilterProfanity() {
 		return super.doesFilterProfanity();
+	}
+
+	/**
+	 * @return the language all elements will be in (eg. questions) (default:
+	 *         {@link AkiwrapperMetadata#DEFAULT_LOCALIZATION})
+	 */
+	@Override
+	public Language getLocalization() {
+		return super.getLocalization();
 	}
 
 	@Override
@@ -87,6 +97,13 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	@Override
 	public AkiwrapperBuilder setFilterProfanity(boolean filterProfanity) {
 		super.setFilterProfanity(filterProfanity);
+
+		return this;
+	}
+
+	@Override
+	public AkiwrapperBuilder setLocalization(Language localization) {
+		super.setLocalization(localization);
 
 		return this;
 	}

@@ -239,9 +239,21 @@ public class Route {
 		public JSONObject getJSON(boolean runChecks) throws IOException, ServerUnavailableException {
 			JSONObject result = new JSONObject(new String(read(), "UTF-8"));
 
+			URLConnection connection = this.connection;
 			if (runChecks)
-				testResponse(result, () -> this.connection.getURL()
-						.getHost() /* a pretty dirty way to get a Server instance it but still the cleanest one */);
+				testResponse(result, new Server() {
+
+					@Override
+					public String getBaseUrl() {
+						return connection.getURL().getHost();
+					}
+
+					@Override
+					public Language getLocalization() {
+						return null; // testResponse() does not need to know the language
+					}
+
+				});
 
 			return result;
 		}

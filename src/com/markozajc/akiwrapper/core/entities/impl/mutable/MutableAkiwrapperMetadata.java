@@ -1,9 +1,13 @@
 package com.markozajc.akiwrapper.core.entities.impl.mutable;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
+import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.ServerGroup;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
@@ -18,6 +22,9 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	protected Server server;
 	protected boolean filterProfanity;
 
+	@Nonnull
+	protected Language localization;
+
 	/**
 	 * Creates a new {@link MutableAkiwrapperMetadata} instance.
 	 * 
@@ -30,12 +37,17 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 *            the user-agent to use
 	 * @param filterProfanity
 	 *            whether to filter out all profanity elements
+	 * @param localization
+	 *            the localization language that will be passed to the API server. This
+	 *            affects textual elements such as {@link Question}-s
 	 */
-	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity) {
+	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
+			@Nonnull Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
 		this.filterProfanity = filterProfanity;
+		this.localization = localization;
 	}
 
 	@Override
@@ -85,8 +97,8 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 * @param server
 	 * @return current instance, used for chaining
 	 * @see #getServer()
-	 * @see Servers#SERVERS
-	 * @see Servers#getFirstAvailableServer()
+	 * @see Servers#SERVER_GROUPS
+	 * @see ServerGroup#getFirstAvailableServer()
 	 */
 	public MutableAkiwrapperMetadata setServer(Server server) {
 		this.server = server;
@@ -108,6 +120,24 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 */
 	public MutableAkiwrapperMetadata setFilterProfanity(boolean filterProfanity) {
 		this.filterProfanity = filterProfanity;
+
+		return this;
+	}
+
+	@Override
+	public Language getLocalization() {
+		return localization;
+	}
+
+	/**
+	 * Sets the localization language.
+	 * 
+	 * @param localization
+	 * @return current instance, used for chaining
+	 * @see #getLocalization()
+	 */
+	public MutableAkiwrapperMetadata setLocalization(@Nonnull Language localization) {
+		this.localization = localization;
 
 		return this;
 	}
