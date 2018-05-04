@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
+import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 import com.markozajc.akiwrapper.core.entities.ServerGroup;
@@ -36,6 +37,9 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 	 *            the user-agent to use
 	 * @param filterProfanity
 	 *            whether to filter out all profanity elements
+	 * @param localization
+	 *            the localization language that will be passed to the API server. This
+	 *            affects textual elements such as {@link Question}-s
 	 */
 	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
 			@Nonnull Language localization) {
@@ -120,15 +124,22 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 		return this;
 	}
 
+	@Override
+	public Language getLocalization() {
+		return localization;
+	}
+
+	/**
+	 * Sets the localization language.
+	 * 
+	 * @param localization
+	 * @return current instance, used for chaining
+	 * @see #getLocalization()
+	 */
 	public MutableAkiwrapperMetadata setLocalization(@Nonnull Language localization) {
 		this.localization = localization;
 
 		return this;
-	}
-
-	@Override
-	public Language getLocalization() {
-		return localization;
 	}
 
 }

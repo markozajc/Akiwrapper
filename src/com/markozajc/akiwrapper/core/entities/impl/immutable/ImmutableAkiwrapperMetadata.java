@@ -3,6 +3,7 @@ package com.markozajc.akiwrapper.core.entities.impl.immutable;
 import javax.annotation.Nonnull;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
+import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 
@@ -33,6 +34,9 @@ public abstract class ImmutableAkiwrapperMetadata implements AkiwrapperMetadata 
 	 *            the user-agent to use
 	 * @param filterProfanity
 	 *            whether to filter out all profanity elements
+	 * @param localization
+	 *            the localization language that will be passed to the API server. This
+	 *            affects textual elements such as {@link Question}-s
 	 */
 	public ImmutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
 			@Nonnull Language localization) {

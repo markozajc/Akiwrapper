@@ -184,9 +184,22 @@ public class Servers {
 		return null;
 	}
 
+	/**
+	 * Searches for an available server for the given localization language. If there is
+	 * no available server, this will throw a {@link ServerGroupUnavailableException}.
+	 * 
+	 * @param localization
+	 *            language of the server to search for
+	 * @return the first server available for that language
+	 * @throws UnsupportedOperationException
+	 *             if language {@code localization} is not supported by the Akinator's
+	 *             API
+	 * @throws ServerGroupUnavailableException
+	 *             if there are no available servers for language {@code localization}
+	 */
 	@Nonnull
 	public static Server getFirstAvailableServer(@Nonnull Language localization)
-			throws IllegalArgumentException, UnsupportedOperationException, ServerGroupUnavailableException {
+			throws UnsupportedOperationException, ServerGroupUnavailableException {
 		ServerGroup sg = SERVER_GROUPS.get(localization);
 		if (sg == null)
 			throw new UnsupportedOperationException(

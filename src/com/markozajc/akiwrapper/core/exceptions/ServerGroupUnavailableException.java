@@ -10,6 +10,9 @@ public class ServerGroupUnavailableException extends ServerUnavailableException 
 
 	/**
 	 * Creates a new {@link ServerGroupUnavailableException}.
+	 * 
+	 * @param sg
+	 *            the unavailable {@link ServerGroup}.
 	 */
 	public ServerGroupUnavailableException(ServerGroup sg) {
 		super(sg.getServers());

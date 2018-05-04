@@ -2,6 +2,7 @@ package com.markozajc.akiwrapper.core.entities;
 
 import javax.annotation.Nonnull;
 
+import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 
 /**
@@ -12,20 +13,23 @@ import com.markozajc.akiwrapper.core.entities.Server.Language;
 public interface AkiwrapperMetadata {
 
 	/**
-	 * The default name for new Akiwrapper instances.
+	 * The default name for new {@link Akiwrapper} instances.
 	 */
 	public static final String DEFAULT_NAME = "AkiwrapperUser";
 
 	/**
-	 * The default user-agent for new Akiwrapper instances.
+	 * The default user-agent for new {@link Akiwrapper} instances.
 	 */
 	public static final String DEFAULT_USER_AGENT = "AkiwrapperClient";
 
 	/**
-	 * The default profanity filter for new Akiwrapper instances.
+	 * The default profanity filter for new {@link Akiwrapper} instances.
 	 */
 	public static final boolean DEFAULT_FILTER_PROFANITY = false;
 
+	/**
+	 * The default localization language for new {@link Akiwrapper} instances.
+	 */
 	@Nonnull
 	public static final Language DEFAULT_LOCALIZATION = Language.ENGLISH;
 
@@ -51,6 +55,9 @@ public interface AkiwrapperMetadata {
 	 */
 	boolean doesFilterProfanity();
 
+	/**
+	 * @return the language all elements will be in (eg. questions)
+	 */
 	@Nonnull
 	Language getLocalization();
 }

@@ -64,6 +64,10 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 		return super.doesFilterProfanity();
 	}
 
+	/**
+	 * @return the language all elements will be in (eg. questions) (default:
+	 *         {@link AkiwrapperMetadata#DEFAULT_LOCALIZATION})
+	 */
 	@Override
 	public Language getLocalization() {
 		return super.getLocalization();
