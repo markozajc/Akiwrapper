@@ -170,21 +170,6 @@ public class Servers {
 	}
 
 	/**
-	 * Returns the first available API server of the ones in
-	 * {@link Servers#SERVER_GROUPS}.
-	 * 
-	 * @deprecated Rather use {@link #getFirstAvailableServer(Language)}.<br>
-	 *             <strong>This method will now always return {@code null}.</strong>
-	 * 
-	 * @return the first available server or null if no servers are currently available
-	 *         (very, very unlikely, almost impossible)
-	 */
-	@Deprecated
-	public static Server getFirstAvailableServer() {
-		return null;
-	}
-
-	/**
 	 * Searches for an available server for the given localization language. If there is
 	 * no available server, this will throw a {@link ServerGroupUnavailableException}.
 	 * 
