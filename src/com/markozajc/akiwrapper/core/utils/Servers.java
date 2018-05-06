@@ -24,6 +24,7 @@ import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
  * 
  * @author Marko Zajc
  */
+@SuppressWarnings("deprecation")
 public class Servers {
 
 	/**
@@ -87,10 +88,17 @@ public class Servers {
 				new ServerImpl("api-in2.akinator.com", Language.HINDI),
 		}));
 
+		// Hebrew
+		servers.put(Language.HEBREW, new ServerGroupImpl(Language.HEBREW, new Server[] {
+				new ServerImpl("ns623133.ovh.net:8006", Language.HEBREW),
+		}));
+
+		// DEPRECATED =======================================================
 		// Israeli
 		servers.put(Language.ISRAELI, new ServerGroupImpl(Language.ISRAELI, new Server[] {
 				new ServerImpl("ns623133.ovh.net:8006", Language.ISRAELI),
 		}));
+		// ==================================================================
 
 		// Italian
 		servers.put(Language.ITALIAN, new ServerGroupImpl(Language.ITALIAN, new Server[] {
@@ -167,21 +175,6 @@ public class Servers {
 			return false;
 		}
 		return false;
-	}
-
-	/**
-	 * Returns the first available API server of the ones in
-	 * {@link Servers#SERVER_GROUPS}.
-	 * 
-	 * @deprecated Rather use {@link #getFirstAvailableServer(Language)}.<br>
-	 *             <strong>This method will now always return {@code null}.</strong>
-	 * 
-	 * @return the first available server or null if no servers are currently available
-	 *         (very, very unlikely, almost impossible)
-	 */
-	@Deprecated
-	public static Server getFirstAvailableServer() {
-		return null;
 	}
 
 	/**
