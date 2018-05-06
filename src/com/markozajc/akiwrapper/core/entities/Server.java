@@ -23,6 +23,11 @@ public interface Server {
 	FRENCH,
 	GERMAN,
 	HINDI,
+	HEBREW,
+	/**
+	 * @deprecated Please use {@link Language#HEBREW} instead.
+	 */
+	@Deprecated
 	ISRAELI,
 	ITALIAN,
 	JAPANESE,
