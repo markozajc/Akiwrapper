@@ -54,4 +54,4 @@ If this happens, the best way to handle it is to let user see all guesses (no ma
 
 
 ---
-That's it! If you need more help, be sure to check an example [here](https://github.com/markozajc/Akiwrapper/example/) for an out-of-the-box working example.
+That's it! If you need more help, be sure to check an example [here](https://github.com/markozajc/Akiwrapper/tree/master/example) for an out-of-the-box working example.
