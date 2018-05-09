@@ -11,7 +11,7 @@ Put this: into your pom.xml (replace LATEST_VERSION with [ ![Download](https://a
 	<version>LATEST_VERSION</version>
 </dependency>
 ```
-You can find an example POM [here](https://github.com/markozajc/Akiwrapper/example/pom.xml).
+You can find an example POM [here](https://github.com/markozajc/Akiwrapper/blob/master/example/pom.xml).
 
 ## Usage
 It's really easy to get started with Akiwrapper. First off, we'll need to create a new Akinator API session:
