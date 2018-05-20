@@ -11,7 +11,7 @@ Put this: into your pom.xml (replace LATEST_VERSION with [ ![Download](https://a
 	<version>LATEST_VERSION</version>
 </dependency>
 ```
-You can find an example POM [here](https://github.com/markozajc/Akiwrapper/example/pom.xml).
+You can find an example POM [here](https://github.com/markozajc/Akiwrapper/blob/master/example/pom.xml).
 
 ## Usage
 It's really easy to get started with Akiwrapper. First off, we'll need to create a new Akinator API session:
@@ -54,4 +54,4 @@ If this happens, the best way to handle it is to let user see all guesses (no ma
 
 
 ---
-That's it! If you need more help, be sure to check an example [here](https://github.com/markozajc/Akiwrapper/example/) for an out-of-the-box working example.
+That's it! If you need more help, be sure to check an example [here](https://github.com/markozajc/Akiwrapper/tree/master/example) for an out-of-the-box working example.
