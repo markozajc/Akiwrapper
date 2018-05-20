@@ -24,7 +24,6 @@ import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
  * 
  * @author Marko Zajc
  */
-@SuppressWarnings("deprecation")
 public class Servers {
 
 	/**
@@ -92,13 +91,6 @@ public class Servers {
 		servers.put(Language.HEBREW, new ServerGroupImpl(Language.HEBREW, new Server[] {
 				new ServerImpl("ns623133.ovh.net:8006", Language.HEBREW),
 		}));
-
-		// DEPRECATED =======================================================
-		// Israeli
-		servers.put(Language.ISRAELI, new ServerGroupImpl(Language.ISRAELI, new Server[] {
-				new ServerImpl("ns623133.ovh.net:8006", Language.ISRAELI),
-		}));
-		// ==================================================================
 
 		// Italian
 		servers.put(Language.ITALIAN, new ServerGroupImpl(Language.ITALIAN, new Server[] {

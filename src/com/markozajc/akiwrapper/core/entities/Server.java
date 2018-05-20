@@ -24,11 +24,6 @@ public interface Server {
 	GERMAN,
 	HINDI,
 	HEBREW,
-	/**
-	 * @deprecated Please use {@link Language#HEBREW} instead.
-	 */
-	@Deprecated
-	ISRAELI,
 	ITALIAN,
 	JAPANESE,
 	KOREAN,
