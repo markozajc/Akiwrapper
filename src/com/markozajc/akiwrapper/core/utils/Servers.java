@@ -37,54 +37,49 @@ public class Servers {
 
 		// Arabic
 		servers.put(Language.ARABIC, new ServerGroupImpl(Language.ARABIC, new Server[] {
-				new ServerImpl("api-ar2.akinator.com", Language.ARABIC),
-				new ServerImpl("api-ar3.akinator.com", Language.ARABIC),
+				new ServerImpl("ns623157.ovh.net:8121", Language.ARABIC),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8155", Language.ARABIC),
 		}));
 
 		// Chinese
 		servers.put(Language.CHINESE, new ServerGroupImpl(Language.CHINESE, new Server[] {
-				new ServerImpl("api-cn1.akinator.com", Language.CHINESE),
-				new ServerImpl("api-cn3.akinator.com", Language.CHINESE),
+				new ServerImpl("ns623157.ovh.net:8125", Language.CHINESE),
+				new ServerImpl("ns3003941.ip-37-187-149.eu:8148", Language.CHINESE),
 		}));
 
 		// Dutch
 		servers.put(Language.DUTCH, new ServerGroupImpl(Language.DUTCH, new Server[] {
-				new ServerImpl("api-nl2.akinator.com", Language.DUTCH),
-				new ServerImpl("api-nl3.akinator.com", Language.DUTCH),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:8133", Language.DUTCH),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8158", Language.DUTCH),
 		}));
 
 		// English
 		servers.put(Language.ENGLISH, new ServerGroupImpl(Language.ENGLISH, new Server[] {
-				new ServerImpl("api-en1.akinator.com", Language.ENGLISH),
 				new ServerImpl("api-en3.akinator.com", Language.ENGLISH),
-				new ServerImpl("api-en4.akinator.com", Language.ENGLISH),
-				new ServerImpl("api-usa1.akinator.com", Language.ENGLISH),
-				new ServerImpl("api-usa3.akinator.com", Language.ENGLISH),
-				new ServerImpl("api-usa4.akinator.com", Language.ENGLISH),
-				new ServerImpl("api-usa5.akinator.com", Language.ENGLISH),
 				new ServerImpl("api-usa6.akinator.com", Language.ENGLISH),
-				new ServerImpl("api-us3.akinator.com", Language.ENGLISH),
-				new ServerImpl("api-us4.akinator.com", Language.ENGLISH),
 				new ServerImpl("ns623133.ovh.net:8014", Language.ENGLISH),
+				new ServerImpl("62-4-22-192.rev.poneytelecom.eu:8117", Language.ENGLISH),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:8118", Language.ENGLISH),
+				new ServerImpl("ns3003941.ip-37-187-149.eu:8141", Language.ENGLISH),
+				new ServerImpl("ns3003941.ip-37-187-149.eu:8144", Language.ENGLISH),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8157", Language.ENGLISH),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8162", Language.ENGLISH),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8163", Language.ENGLISH),
 		}));
 
 		// French
 		servers.put(Language.FRENCH, new ServerGroupImpl(Language.FRENCH, new Server[] {
-				new ServerImpl("api-obj-fr1.akinator.com", Language.FRENCH),
-				new ServerImpl("api-obj-fr3.akinator.com", Language.FRENCH),
 				new ServerImpl("ns623133.ovh.net:8030", Language.FRENCH),
+				new ServerImpl("62-4-22-192.rev.poneytelecom.eu:8165", Language.FRENCH),
+				new ServerImpl("62-4-22-192.rev.poneytelecom.eu:8167", Language.FRENCH),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:8138", Language.FRENCH),
 		}));
 
 		// German
 		servers.put(Language.GERMAN, new ServerGroupImpl(Language.GERMAN, new Server[] {
-				new ServerImpl("api-de3.akinator.com ", Language.GERMAN),
+				new ServerImpl("api-de3.akinator.com", Language.GERMAN),
 				new ServerImpl("ns623133.ovh.net:8005", Language.GERMAN),
-		}));
-
-		// Hindi
-		servers.put(Language.HINDI, new ServerGroupImpl(Language.HINDI, new Server[] {
-				new ServerImpl("api-in1.akinator.com", Language.HINDI),
-				new ServerImpl("api-in2.akinator.com", Language.HINDI),
+				new ServerImpl("ns3003941.ip-37-187-149.eu:8145", Language.GERMAN),
 		}));
 
 		// Hebrew
@@ -94,53 +89,52 @@ public class Servers {
 
 		// Italian
 		servers.put(Language.ITALIAN, new ServerGroupImpl(Language.ITALIAN, new Server[] {
-				new ServerImpl("api-it2.akinator.com", Language.ITALIAN),
-				new ServerImpl("api-it3.akinator.com", Language.ITALIAN),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:8131", Language.ITALIAN),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8159", Language.ITALIAN),
 		}));
 
 		// Japanese
 		servers.put(Language.JAPANESE, new ServerGroupImpl(Language.JAPANESE, new Server[] {
-				new ServerImpl("api-jp2.akinator.com", Language.JAPANESE),
-				new ServerImpl("api-jp3.akinator.com", Language.JAPANESE),
 				new ServerImpl("ns623133.ovh.net:8012", Language.JAPANESE),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:8132", Language.JAPANESE),
+				new ServerImpl("ns3003941.ip-37-187-149.eu:8146", Language.JAPANESE),
 		}));
 
 		// Korean
 		servers.put(Language.KOREAN, new ServerGroupImpl(Language.KOREAN, new Server[] {
-				new ServerImpl("api-kr1.akinator.com", Language.KOREAN),
-				new ServerImpl("api-kr4.akinator.com", Language.KOREAN),
+				new ServerImpl("62-4-22-192.rev.poneytelecom.eu:8167", Language.KOREAN),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8156", Language.KOREAN),
 		}));
 
 		// Polish
 		servers.put(Language.POLISH, new ServerGroupImpl(Language.POLISH, new Server[] {
-				new ServerImpl("api-pl1.akinator.com", Language.POLISH),
-				new ServerImpl("api-pl3.akinator.com", Language.POLISH),
+				new ServerImpl("ns3003941.ip-37-187-149.eu:8143", Language.POLISH),
 		}));
 
 		// Portuguese
 		servers.put(Language.PORTUGUESE, new ServerGroupImpl(Language.PORTUGUESE, new Server[] {
-				new ServerImpl("api-pt3.akinator.com", Language.PORTUGUESE),
-				new ServerImpl("api-pt4.akinator.com", Language.PORTUGUESE),
+				new ServerImpl("62-4-22-192.rev.poneytelecom.eu:8166", Language.PORTUGUESE),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:8111", Language.PORTUGUESE),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8161", Language.PORTUGUESE),
 		}));
 
 		// Russian
 		servers.put(Language.RUSSIAN, new ServerGroupImpl(Language.RUSSIAN, new Server[] {
-				new ServerImpl("api-ru1.akinator.com", Language.RUSSIAN),
-				new ServerImpl("api-ru3.akinator.com", Language.RUSSIAN),
-				new ServerImpl("api-ru4.akinator.com", Language.RUSSIAN),
+				new ServerImpl("ns623157.ovh.net:8124", Language.RUSSIAN),
+				new ServerImpl("62-4-22-192.rev.poneytelecom.eu:8169", Language.RUSSIAN),
+				new ServerImpl("ns3003941.ip-37-187-149.eu:8142", Language.RUSSIAN),
 		}));
 
 		// Spanish
 		servers.put(Language.SPANISH, new ServerGroupImpl(Language.SPANISH, new Server[] {
-				new ServerImpl("api-es3.akinator.com", Language.SPANISH),
-				new ServerImpl("api-es4.akinator.com", Language.SPANISH),
 				new ServerImpl("ns623133.ovh.net:8013", Language.SPANISH),
+				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8160", Language.SPANISH),
 		}));
 
 		// Turkish
 		servers.put(Language.TURKISH, new ServerGroupImpl(Language.TURKISH, new Server[] {
-				new ServerImpl("api-tr1.akinator.com", Language.TURKISH),
-				new ServerImpl("api-tr3.akinator.com", Language.TURKISH),
+				new ServerImpl("62-4-22-192.rev.poneytelecom.eu:8164", Language.TURKISH),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:8134", Language.TURKISH),
 		}));
 
 		SERVER_GROUPS = Collections.unmodifiableMap(servers);

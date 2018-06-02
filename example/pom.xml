@@ -3,9 +3,30 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.example</groupId>
-	<artifactId>MyApp</artifactId>
-	<version>0.0.1</version>
+	<groupId>com.github.markozajc</groupId>
+	<artifactId>akiwrapper-example</artifactId>
+	<version>1.0</version>
+
+	<name>Akiwrapper Example</name>
+	<description>An example for Akiwrapper, the Java API wrapper for Akinator</description>
+	<url>https://github.com/markozajc/Akiwrapper</url>
+
+	<inceptionYear>2017</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>The GNU General Public License, Version 3.0</name>
+			<url>https://www.gnu.org/licenses/gpl.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Marko Zajc</name>
+			<email>sigmund.brotbeck@gmail.com</email>
+			<url>https://github.com/markozajc</url>
+		</developer>
+	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

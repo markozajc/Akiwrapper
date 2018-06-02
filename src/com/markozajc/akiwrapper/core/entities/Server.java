@@ -22,7 +22,6 @@ public interface Server {
 	ENGLISH,
 	FRENCH,
 	GERMAN,
-	HINDI,
 	HEBREW,
 	ITALIAN,
 	JAPANESE,
