@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
+import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
@@ -67,7 +68,7 @@ public class AkinatorExample {
 	public static void main(String[] args) throws Exception {
 		try (Scanner sc = new Scanner(System.in)) {
 
-			System.out.println("What's your name? (desktopPlayer)");
+			System.out.println("What's your name? (" + AkiwrapperMetadata.DEFAULT_NAME + ")");
 			String name = sc.nextLine().trim();
 			if (name.equals(""))
 				name = "desktopPlayer";
