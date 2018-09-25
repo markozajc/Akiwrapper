@@ -89,7 +89,7 @@ public class Servers {
 
 		// Italian
 		servers.put(Language.ITALIAN, new ServerGroupImpl(Language.ITALIAN, new Server[] {
-				new ServerImpl("ns6624370.ip-5-196-85.eu:8131", Language.ITALIAN),
+				new ServerImpl("ns6624370.ip-5-196-85.eu:9131", Language.ITALIAN),
 				new ServerImpl("62-210-100-133.rev.poneytelecom.eu:8159", Language.ITALIAN),
 		}));
 
