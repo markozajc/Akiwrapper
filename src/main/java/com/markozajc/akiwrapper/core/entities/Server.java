@@ -16,21 +16,21 @@ public interface Server {
 	 */
 	@SuppressWarnings("javadoc")
 	public static enum Language {
-	ARABIC,
-	CHINESE,
-	DUTCH,
-	ENGLISH,
-	FRENCH,
-	GERMAN,
-	HEBREW,
-	ITALIAN,
-	JAPANESE,
-	KOREAN,
-	POLISH,
-	PORTUGUESE,
-	RUSSIAN,
-	SPANISH,
-	TURKISH;
+		ARABIC,
+		CHINESE,
+		DUTCH,
+		ENGLISH,
+		FRENCH,
+		GERMAN,
+		HEBREW,
+		ITALIAN,
+		JAPANESE,
+		KOREAN,
+		POLISH,
+		PORTUGUESE,
+		RUSSIAN,
+		SPANISH,
+		TURKISH;
 	}
 
 	/**

@@ -37,7 +37,7 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(
-			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27",
+			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&frontaddr=MTc4LjMzLjIzMS45OA%%3D%%3D&uid_ext_session=5bb4a77382d62",
 			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
 
 	/**
@@ -73,7 +73,7 @@ public class Route {
 	 */
 	public static final Route LIST = new Route("list?session=%s&signature=%s&mode_question=0&step=%s", 3);
 
-	private static void testResponse(JSONObject response, Server server) {
+	static void testResponse(JSONObject response, Server server) {
 		Status compl = new StatusImpl(response);
 		if (compl.getLevel().equals(Level.ERROR)) {
 			if (compl.getReason().toLowerCase().equals("server down")) {
@@ -182,7 +182,7 @@ public class Route {
 		private URLConnection connection;
 		private byte[] bytes = null;
 
-		private Request(URL url, String userAgent) throws IOException {
+		Request(URL url, String userAgent) throws IOException {
 			this.connection = url.openConnection();
 			this.connection.setRequestProperty("User-Agent", userAgent);
 		}

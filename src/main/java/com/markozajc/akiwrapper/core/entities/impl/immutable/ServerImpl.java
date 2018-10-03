@@ -21,7 +21,7 @@ public class ServerImpl implements Server {
 	 *            the localization language of this server
 	 */
 	public ServerImpl(String baseUrl, Language localization) {
-		this.baseUrl = "http://" + baseUrl + "/ws/";
+		this.baseUrl = "https://" + baseUrl + "/ws/";
 		this.localization = localization;
 	}
 
