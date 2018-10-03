@@ -55,6 +55,14 @@ public class AkiwrapperImpl implements Akiwrapper {
 			this.session = session;
 		}
 
+		long getSignature() {
+			return signature;
+		}
+
+		int getSession() {
+			return session;
+		}
+
 	}
 
 	private final String userAgent;
@@ -109,7 +117,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		{
 			String name = metadata.getName();
 			if (name == null || name.equals(""))
-				name = AkiwrapperBuilder.DEFAULT_NAME;
+				name = AkiwrapperMetadata.DEFAULT_NAME;
 
 			try {
 				question = Route.NEW_SESSION.getRequest(this.server.getBaseUrl(), this.filterProfanity, name).getJSON();
@@ -145,8 +153,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.ANSWER
-				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.session,
-						"" + this.token.signature, "" + this.currentQuestion.getStep(), "" + answer.getId())
+				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.getSession(),
+						"" + this.token.getSignature(), "" + this.currentQuestion.getStep(), "" + answer.getId())
 				.getJSON();
 
 		try {
@@ -170,8 +178,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.session,
-						"" + this.token.signature, "" + current.getStep())
+				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.getSession(),
+						"" + this.token.getSignature(), "" + current.getStep())
 				.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject("parameters"), new StatusImpl(question));
@@ -190,8 +198,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(userAgent)
-					.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + token.session,
-							"" + token.signature, "" + this.currentStep)
+					.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + token.getSession(),
+							"" + token.getSignature(), "" + this.currentStep)
 					.getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel().equals(Level.ERROR)) {
