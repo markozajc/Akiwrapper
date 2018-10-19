@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
+import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
@@ -187,11 +188,15 @@ public class AkinatorExample {
 					} else if (answer.equals("b")) {
 						aw.undoAnswer();
 
+					} else if (answer.equals("resetkey")) {
+						Route.scrapApiKey();
+
 					} else if (answer.equals("debug")) {
 						System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getBaseUrl()
 								+ "\n\tCurrent guess count: " + aw.getGuesses().size()
-								+ "(freshly fetched)\n\tCurrent API server availability: "
-								+ (aw.getServer().isUp() ? "ONLINE" : "OFFILNE"));
+								+ "\n\tCurrent API server availability: "
+								+ (aw.getServer().isUp() ? "ONLINE" : "OFFILNE") + "\n\tCurrent API key: "
+								+ Route.getApiKey());
 						continue;
 						// Displays some debug information.
 
