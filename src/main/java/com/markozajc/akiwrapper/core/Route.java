@@ -1,11 +1,11 @@
 package com.markozajc.akiwrapper.core;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
@@ -16,6 +16,9 @@ import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
+import com.markozajc.akiwrapper.core.utils.HTTPUtils;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A class defining various API endpoints (routes).
@@ -24,10 +27,58 @@ import com.markozajc.akiwrapper.core.exceptions.StatusException;
  */
 public class Route {
 
+	private static final String BASE_AKINATOR_URL = "https://en.akinator.com";
+	// The base Akinator URL, used for scraping various elements (and not for the API
+	// calls)
+
+	private static String API_KEY;
+
+	/**
+	 * @return the current API key scraped from Akinator. A new key can be scraped using
+	 *         {@link #scrapApiKey()}
+	 */
+	public static String getApiKey() {
+		return API_KEY;
+	}
+
+	private static final Pattern API_KEY_PATTERN = Pattern.compile("(var uid_ext_session = ')(.*)(')");
+
+	static {
+		try {
+			scrapApiKey();
+		} catch (IOException e) {
+			API_KEY = "";
+			System.err.println(
+					"[Akiwrapper] Couldn't scrap the API key. Code that uses Akiwrapper might not work correctly. "
+							+ "Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+		}
+	}
+
+	/**
+	 * Scraps the API key from Akinator's website and stores it for later use.
+	 * 
+	 * @throws IOException
+	 */
+	public static void scrapApiKey() throws IOException {
+		System.out.println("Scraping the API key..");
+
+		Matcher matcher = API_KEY_PATTERN
+				.matcher(new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection())));
+		if (matcher.find()) {
+			API_KEY = matcher.group(2);
+			System.out.println("Found " + API_KEY);
+
+		} else {
+			throw new IOException(
+					"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+		}
+	}
+
 	/**
 	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting this
 	 * to false may result in unpredicted exceptions!
 	 */
+	@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 	public static boolean DEFAULT_RUN_CHECKS = true;
 
 	/**
@@ -37,7 +88,8 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(
-			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&frontaddr=NDYuMTA1LjExMC40NQ%%3D%%3D&uid_ext_session=5bc8759c5336f",
+			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&frontaddr=NDYuMTA1LjExMC40NQ%%3D%%3D&uid_ext_session="
+					+ API_KEY,
 			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
 
 	/**
@@ -196,19 +248,8 @@ public class Route {
 		 */
 		public byte[] read() throws IOException {
 			if (this.bytes == null) {
-				try (BufferedInputStream is = new BufferedInputStream(this.connection.getInputStream())) {
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-					byte[] chunk = new byte[4096];
-					int bytesRead;
-
-					while ((bytesRead = is.read(chunk)) > -1)
-						outputStream.write(chunk, 0, bytesRead);
-
-					byte[] result = outputStream.toByteArray();
-					this.bytes = result;
-					return result;
-				}
+				byte[] bytes = HTTPUtils.read(connection);
+				this.bytes = bytes;
 			}
 
 			return this.bytes.clone();

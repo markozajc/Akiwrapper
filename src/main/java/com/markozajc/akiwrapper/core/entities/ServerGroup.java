@@ -27,13 +27,16 @@ public interface ServerGroup {
 
 	/**
 	 * @return the first available server of this {@link ServerGroup}. The chances of
-	 *         this returning {@code null} (aka. all servers of this group are down)
+	 *         this returning {@code null} (aka all servers of this group are down)
 	 *         depend on this {@link ServerGroup}'s size. You should choose calling this
 	 *         method over getting a server manually with {@link #getServers()}
 	 */
 	@Nullable
 	default Server getFirstAvailableServer() {
-		return getServers().stream().filter(s -> Servers.isUp(s)).findAny().orElse(null);
+		return getServers().stream().filter(s -> {
+			boolean up = Servers.isUp(s);
+			return up;
+		}).findFirst().orElse(null);
 	}
 
 }

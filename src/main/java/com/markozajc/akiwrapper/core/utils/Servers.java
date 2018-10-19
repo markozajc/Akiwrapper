@@ -19,7 +19,7 @@ import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerGroupImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
-import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
+import com.markozajc.akiwrapper.core.exceptions.StatusException;
 
 /**
  * A class containing various API server utilities.
@@ -29,7 +29,7 @@ import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 public class Servers {
 
 	/**
-	 * A list of known Akinator's API servers
+	 * A list of all known Akinator's API servers.
 	 */
 	public static final Map<Language, ServerGroup> SERVER_GROUPS;
 
@@ -165,11 +165,38 @@ public class Servers {
 					.getRequest(server.getBaseUrl(), AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
 							AkiwrapperMetadata.DEFAULT_NAME)
 					.getJSON();
+			// Checks if a server can be connected to by creating a new session on it
 
-			if (new StatusImpl(question).getLevel().equals(Level.OK)) {
+			if (new StatusImpl(question).getLevel().equals(Level.OK))
 				return true;
+
+		} catch (StatusException e) {
+			if (e.getMessage().equals("KEY NOT FOUND")) {
+				// Checks if the exception was thrown because of an obsolete API key
+
+				try {
+					Route.scrapApiKey();
+					return isUp(server);
+					// Attempts to "rescrap" the API key and run the method again
+
+				} catch (IOException ioe) {
+					// In case API key can not be scraped. If this ever occurs, it's Akiwrapper's fault
+					// (or you haven't updated to the newest version)
+					ioe.printStackTrace();
+					return false;
+
+				} catch (StackOverflowError soe) {
+					// In case something goes terribly wrong and the API key does not get scraped, but
+					// neither is an exception thrown on the Route.scrapApiKey call
+					return false;
+				}
+
 			}
-		} catch (ServerUnavailableException | IllegalArgumentException | IOException e) {
+
+			return false;
+
+		} catch (IllegalArgumentException | IOException e) {
+			// If the server is unreachable
 			return false;
 		}
 
