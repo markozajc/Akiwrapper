@@ -60,13 +60,10 @@ public class Route {
 	 * @throws IOException
 	 */
 	public static void scrapApiKey() throws IOException {
-		System.out.println("Scraping the API key..");
-
 		Matcher matcher = API_KEY_PATTERN
 				.matcher(new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection())));
 		if (matcher.find()) {
 			API_KEY = matcher.group(2);
-			System.out.println("Found " + API_KEY);
 
 		} else {
 			throw new IOException(

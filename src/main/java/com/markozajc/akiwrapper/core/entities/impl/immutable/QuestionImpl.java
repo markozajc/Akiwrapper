@@ -3,9 +3,9 @@ package com.markozajc.akiwrapper.core.entities.impl.immutable;
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.core.Route;
+import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Status;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
-import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
 import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
@@ -84,7 +84,7 @@ public class QuestionImpl implements Question {
 
 	@Override
 	public double getGain() {
-		return this.gain; // TODO check if this is real
+		return this.gain;
 	}
 
 	@Override
