@@ -23,7 +23,6 @@ import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
 import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
-import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
@@ -91,11 +90,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			throws ServerGroupUnavailableException, IllegalArgumentException {
 		{
 			Server server = metadata.getServer();
-			if (server == null) {
+			if (server == null)
 				server = Servers.getFirstAvailableServer(metadata.getLocalization());
-			}
-			if (!server.isUp())
-				throw new ServerUnavailableException(server);
 
 			this.server = server;
 		}
