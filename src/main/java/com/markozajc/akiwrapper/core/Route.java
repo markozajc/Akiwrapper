@@ -147,7 +147,7 @@ public class Route {
 	}
 
 	private Route(String path, String filteredAppendix, int parameters, String userAgent) {
-		this.path = path.replace("{API_KEY}", API_KEY);
+		this.path = path;
 		this.filteredAppendix = filteredAppendix;
 		this.parametersQuantity = parameters;
 		this.userAgent = userAgent;
@@ -180,8 +180,10 @@ public class Route {
 		for (int i = 0; i < parameters.length; i++)
 			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
 
-		return new Request(new URL(baseUrl + String.format(this.path, (Object[]) encodedParams)
-				+ (filterProfanity ? this.filteredAppendix : "")), this.userAgent);
+		return new Request(
+				new URL(baseUrl + String.format(this.path.replace("{API_KEY}", API_KEY), (Object[]) encodedParams)
+						+ (filterProfanity ? this.filteredAppendix : "")),
+				this.userAgent);
 	}
 
 	/**
