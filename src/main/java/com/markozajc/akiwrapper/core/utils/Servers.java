@@ -171,7 +171,7 @@ public class Servers {
 				return true;
 
 		} catch (StatusException e) {
-			if (e.getMessage().equals("KEY NOT FOUND")) {
+			if (e.getStatus().getReason().equals("KEY NOT FOUND")) {
 				// Checks if the exception was thrown because of an obsolete API key
 
 				try {
