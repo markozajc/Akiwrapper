@@ -33,10 +33,7 @@ public interface ServerGroup {
 	 */
 	@Nullable
 	default Server getFirstAvailableServer() {
-		return getServers().stream().filter(s -> {
-			boolean up = Servers.isUp(s);
-			return up;
-		}).findFirst().orElse(null);
+		return getServers().stream().filter(Servers::isUp).findFirst().orElse(null);
 	}
 
 }

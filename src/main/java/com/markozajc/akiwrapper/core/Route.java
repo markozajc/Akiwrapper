@@ -85,8 +85,7 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(
-			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&frontaddr=NDYuMTA1LjExMC40NQ%%3D%%3D&uid_ext_session="
-					+ API_KEY,
+			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&frontaddr=NDYuMTA1LjExMC40NQ%%3D%%3D&uid_ext_session={API_KEY}",
 			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
 
 	/**
@@ -148,7 +147,7 @@ public class Route {
 	}
 
 	private Route(String path, String filteredAppendix, int parameters, String userAgent) {
-		this.path = path;
+		this.path = path.replace("{API_KEY}", API_KEY);
 		this.filteredAppendix = filteredAppendix;
 		this.parametersQuantity = parameters;
 		this.userAgent = userAgent;
