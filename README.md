@@ -6,7 +6,7 @@ Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
 Put this: into your pom.xml (replace LATEST_VERSION with [ ![Download](https://api.bintray.com/packages/iareas/Libraries/Akiwrapper/images/download.svg) ](https://bintray.com/iareas/Libraries/Akiwrapper/_latestVersion):
 ```xml
 <dependency>
-	<groupId>com.github.markozajc/groupId>
+	<groupId>com.github.markozajc</groupId>
 	<artifactId>akiwrapper</artifactId>
 	<version>LATEST_VERSION</version>
 </dependency>
