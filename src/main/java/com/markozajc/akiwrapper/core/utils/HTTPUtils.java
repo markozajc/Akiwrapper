@@ -7,17 +7,19 @@ import java.net.URLConnection;
 
 /**
  * A utility class for making HTTP requests.
- * 
+ *
  * @author Marko Zajc
  */
 public class HTTPUtils {
 
+	private HTTPUtils() {}
+
 	/**
 	 * Reads {@link URLConnection} into a byte array.
-	 * 
+	 *
 	 * @param conn
 	 *            connection to read from
-	 * 
+	 *
 	 * @return content as a byte array
 	 * @throws IOException
 	 * @see String#String(byte[], String)

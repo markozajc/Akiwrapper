@@ -4,7 +4,7 @@ import com.markozajc.akiwrapper.core.entities.Server;
 
 /**
  * An implementation of {@link Server}.
- * 
+ *
  * @author Marko Zajc
  */
 public class ServerImpl implements Server {
@@ -14,7 +14,7 @@ public class ServerImpl implements Server {
 
 	/**
 	 * Creates a new instance of {@link ServerImpl}.
-	 * 
+	 *
 	 * @param baseUrl
 	 *            server's base URL (eg. {@code api-en1.akinator.com}}.
 	 * @param localization
@@ -32,7 +32,7 @@ public class ServerImpl implements Server {
 
 	@Override
 	public Language getLocalization() {
-		return localization;
+		return this.localization;
 	}
 
 }

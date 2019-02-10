@@ -10,7 +10,7 @@ import com.markozajc.akiwrapper.core.entities.ServerGroup;
 
 /**
  * An implementation of {@link ServerGroup}.
- * 
+ *
  * @author Marko Zajc
  */
 public class ServerGroupImpl implements ServerGroup {
@@ -20,7 +20,7 @@ public class ServerGroupImpl implements ServerGroup {
 
 	/**
 	 * Creates a new {@link ServerGroupImpl} instance.
-	 * 
+	 *
 	 * @param localization
 	 *            language of this {@link ServerGroupImpl}
 	 * @param servers
@@ -29,7 +29,7 @@ public class ServerGroupImpl implements ServerGroup {
 	 *             in case one or more of the given servers from {@code servers} do not
 	 *             have the same localization as {@code localization}.
 	 */
-	public ServerGroupImpl(Language localization, List<Server> servers) throws IllegalArgumentException {
+	public ServerGroupImpl(Language localization, List<Server> servers) {
 		if (servers.stream().anyMatch(s -> !s.getLocalization().equals(localization)))
 			throw new IllegalArgumentException(
 					"One or more servers do not have the same localization as this ServerGroup ("
@@ -41,7 +41,7 @@ public class ServerGroupImpl implements ServerGroup {
 
 	/**
 	 * Creates a new {@link ServerGroupImpl} instance.
-	 * 
+	 *
 	 * @param localization
 	 *            language of this {@link ServerGroupImpl}
 	 * @param servers
@@ -50,7 +50,7 @@ public class ServerGroupImpl implements ServerGroup {
 	 *             in case one or more of the given servers from {@code servers} do not
 	 *             have the same localization as {@code localization}.
 	 */
-	public ServerGroupImpl(Language localization, Server... servers) throws IllegalArgumentException {
+	public ServerGroupImpl(Language localization, Server... servers) {
 		this(localization, Arrays.asList(servers));
 	}
 

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +24,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A class defining various API endpoints (routes).
- * 
+ *
  * @author Marko Zajc
  */
 public class Route {
@@ -31,14 +33,14 @@ public class Route {
 	// The base Akinator URL, used for scraping various elements (and not for the API
 	// calls)
 
-	private static String API_KEY;
+	private static String apiKey;
 
 	/**
 	 * @return the current API key scraped from Akinator. A new key can be scraped using
 	 *         {@link #scrapApiKey()}
 	 */
 	public static String getApiKey() {
-		return API_KEY;
+		return apiKey;
 	}
 
 	private static final Pattern API_KEY_PATTERN = Pattern.compile("(var uid_ext_session = ')(.*)(')");
@@ -47,23 +49,23 @@ public class Route {
 		try {
 			scrapApiKey();
 		} catch (IOException e) {
-			API_KEY = "";
-			System.err.println(
-					"[Akiwrapper] Couldn't scrap the API key. Code that uses Akiwrapper might not work correctly. "
+			apiKey = "";
+			Logger.getLogger("Akiwrapper")
+					.severe("Couldn't scrape the API key. Code that uses Akiwrapper might not work correctly. "
 							+ "Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
 		}
 	}
 
 	/**
 	 * Scraps the API key from Akinator's website and stores it for later use.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public static void scrapApiKey() throws IOException {
-		Matcher matcher = API_KEY_PATTERN
-				.matcher(new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection())));
+		Matcher matcher = API_KEY_PATTERN.matcher(
+			new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
 		if (matcher.find()) {
-			API_KEY = matcher.group(2);
+			apiKey = matcher.group(2);
 
 		} else {
 			throw new IOException(
@@ -76,7 +78,7 @@ public class Route {
 	 * to false may result in unpredicted exceptions!
 	 */
 	@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
-	public static boolean DEFAULT_RUN_CHECKS = true;
+	public static boolean defaultRunChecks = true; // NOSONAR
 
 	/**
 	 * Creates a new session for further gameplay. Parameters:
@@ -124,7 +126,7 @@ public class Route {
 	static void testResponse(JSONObject response, Server server) {
 		Status compl = new StatusImpl(response);
 		if (compl.getLevel().equals(Level.ERROR)) {
-			if (compl.getReason().toLowerCase().equals("server down")) {
+			if (compl.getReason().equalsIgnoreCase("server down")) {
 				throw new ServerUnavailableException(server);
 			}
 
@@ -156,7 +158,7 @@ public class Route {
 	/**
 	 * Creates a request for this route that can later be called and converted into a
 	 * {@link JSONObject}.
-	 * 
+	 *
 	 * @param baseUrl
 	 *            base (API's) URL
 	 * @param filterProfanity
@@ -170,8 +172,7 @@ public class Route {
 	 * @throws IllegalArgumentException
 	 *             if you have passed too little parameters
 	 */
-	public Request getRequest(String baseUrl, boolean filterProfanity, String... parameters)
-			throws IOException, IllegalArgumentException {
+	public Request getRequest(String baseUrl, boolean filterProfanity, String... parameters) throws IOException {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(
 					"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
@@ -181,7 +182,7 @@ public class Route {
 			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
 
 		return new Request(
-				new URL(baseUrl + String.format(this.path.replace("{API_KEY}", API_KEY), (Object[]) encodedParams)
+				new URL(baseUrl + String.format(this.path.replace("{API_KEY}", apiKey), (Object[]) encodedParams)
 						+ (filterProfanity ? this.filteredAppendix : "")),
 				this.userAgent);
 	}
@@ -189,7 +190,7 @@ public class Route {
 	/**
 	 * Sets the user-agent that will be used in requests for this route. If no user-agent
 	 * is specified, {@link AkiwrapperMetadata#DEFAULT_USER_AGENT} will be used.
-	 * 
+	 *
 	 * @param userAgent
 	 * @return self, useful for chaining
 	 */
@@ -203,7 +204,7 @@ public class Route {
 	 * @return route's path (unformatted)
 	 */
 	public String getPath() {
-		return path;
+		return this.path;
 	}
 
 	/**
@@ -211,7 +212,7 @@ public class Route {
 	 *         {@link #getRequest(String, boolean, String...)}
 	 */
 	public int getParametersQuantity() {
-		return parametersQuantity;
+		return this.parametersQuantity;
 	}
 
 	/**
@@ -224,7 +225,7 @@ public class Route {
 
 	/**
 	 * A callable request.
-	 * 
+	 *
 	 * @author Marko Zajc
 	 */
 	public static class Request {
@@ -239,15 +240,15 @@ public class Route {
 
 		/**
 		 * Reads content of the request's URL into an array of bytes.
-		 * 
+		 *
 		 * @return content as a byte array
 		 * @throws IOException
 		 * @see String#String(byte[], String)
 		 */
 		public byte[] read() throws IOException {
 			if (this.bytes == null) {
-				byte[] bytes = HTTPUtils.read(connection);
-				this.bytes = bytes;
+				byte[] newBytes = HTTPUtils.read(this.connection);
+				this.bytes = newBytes;
 			}
 
 			return this.bytes.clone();
@@ -255,19 +256,19 @@ public class Route {
 
 		/**
 		 * Requests the server and returns the route's content as a {@link JSONObject}.
-		 * 
+		 *
 		 * @return route's content
 		 * @throws IOException
 		 * @throws ServerUnavailableException
 		 *             in case the server has went down (very unlikely to ever happen)
 		 */
-		public JSONObject getJSON() throws IOException, ServerUnavailableException {
-			return getJSON(DEFAULT_RUN_CHECKS);
+		public JSONObject getJSON() throws IOException {
+			return getJSON(defaultRunChecks);
 		}
 
 		/**
 		 * Requests the server and returns the route's content as a {@link JSONObject}.
-		 * 
+		 *
 		 * @param runChecks
 		 *            whether to run checks for error status codes.
 		 * @return route's content
@@ -275,8 +276,8 @@ public class Route {
 		 * @throws ServerUnavailableException
 		 *             in case the server has went down (very unlikely to ever happen)
 		 */
-		public JSONObject getJSON(boolean runChecks) throws IOException, ServerUnavailableException {
-			JSONObject result = new JSONObject(new String(read(), "UTF-8"));
+		public JSONObject getJSON(boolean runChecks) throws IOException {
+			JSONObject result = new JSONObject(new String(read(), StandardCharsets.UTF_8));
 
 			URLConnection connection = this.connection;
 			if (runChecks)

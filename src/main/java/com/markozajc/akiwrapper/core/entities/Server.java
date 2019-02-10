@@ -4,18 +4,18 @@ import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
  * An interface representing an API server.
- * 
+ *
  * @author Marko Zajc
  */
 public interface Server {
 
 	/**
 	 * A localization language specific to a {@link Server} (or a {@link ServerGroup}).
-	 * 
+	 *
 	 * @author Marko Zajc
 	 */
 	@SuppressWarnings("javadoc")
-	public static enum Language {
+	public enum Language {
 		ARABIC,
 		CHINESE,
 		DUTCH,
@@ -47,7 +47,7 @@ public interface Server {
 	/**
 	 * Check if the current {@link Server} is still available. This is a shortcut for
 	 * {@link Servers#isUp(Server)}
-	 * 
+	 *
 	 * @return true if that API server is available, false if not
 	 * @see Servers#isUp(Server)
 	 */

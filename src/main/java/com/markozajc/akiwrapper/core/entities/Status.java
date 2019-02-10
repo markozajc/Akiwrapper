@@ -2,7 +2,7 @@ package com.markozajc.akiwrapper.core.entities;
 
 /**
  * An interface used to represent API call's completion status.
- * 
+ *
  * @author Marko Zajc
  */
 public interface Status {
@@ -43,21 +43,21 @@ public interface Status {
 		 * Returns this level's name as provided by the official API.
 		 */
 		public String toString() {
-			return name;
+			return this.name;
 		}
 
 	}
 
 	/**
 	 * Returns error level
-	 * 
+	 *
 	 * @return status level
 	 */
 	Level getLevel();
 
 	/**
 	 * Returns error reason
-	 * 
+	 *
 	 * @return error reason or null if level is OK
 	 */
 	String getReason();
