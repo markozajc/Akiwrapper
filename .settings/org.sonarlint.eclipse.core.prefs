@@ -1,4 +1,4 @@
 autoEnabled=true
 eclipse.preferences.version=1
 extraProperties=
-fileExclusions=DIRECTORY\:target
+fileExclusions=DIRECTORY\:target\r\nGLOB\:src/main/java/com/markozajc/akiwrapper/listbuilder/*.*\r\nDIRECTORY\:example

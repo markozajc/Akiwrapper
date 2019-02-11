@@ -112,7 +112,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 			name = AkiwrapperMetadata.DEFAULT_NAME;
 
 		try {
-			question = Route.NEW_SESSION.getRequest(this.server.getBaseUrl(), this.filterProfanity, name).getJSON();
+			question = Route.NEW_SESSION.getRequest(this.server.getApiUrl(), this.filterProfanity, name).getJSON();
 		} catch (IOException e) {
 			/*
 			 * Shouldn't happen, the server was requested before
@@ -144,7 +144,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.ANSWER
-				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.getSession(),
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
 					"" + this.token.getSignature(), "" + this.currentQuestion.getStep(), "" + answer.getId())
 				.getJSON();
 
@@ -169,7 +169,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-				.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.getSession(),
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
 					"" + this.token.getSignature(), "" + current.getStep())
 				.getJSON();
 
@@ -189,7 +189,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(this.userAgent)
-					.getRequest(this.server.getBaseUrl(), this.filterProfanity, "" + this.token.getSession(),
+					.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
 						"" + this.token.getSignature(), "" + this.currentStep)
 					.getJSON();
 		} catch (StatusException e) {

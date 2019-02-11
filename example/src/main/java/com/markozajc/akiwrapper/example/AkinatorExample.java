@@ -192,7 +192,7 @@ public class AkinatorExample {
 						Route.scrapApiKey();
 
 					} else if (answer.equals("debug")) {
-						System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getBaseUrl()
+						System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getApiUrl()
 								+ "\n\tCurrent guess count: " + aw.getGuesses().size()
 								+ "\n\tCurrent API server availability: "
 								+ (aw.getServer().isUp() ? "ONLINE" : "OFFILNE") + "\n\tCurrent API key: "

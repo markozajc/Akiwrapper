@@ -20,7 +20,7 @@ public class ServerUnavailableException extends StatusException {
 	 */
 	public ServerUnavailableException(Server server) {
 		super(new StatusImpl("KO - SERVER DOWN"));
-		this.serverUrl = server.getBaseUrl();
+		this.serverUrl = server.getApiUrl();
 	}
 
 	/**
@@ -30,7 +30,7 @@ public class ServerUnavailableException extends StatusException {
 	 */
 	public ServerUnavailableException(Collection<Server> servers) {
 		super(new StatusImpl("KO - SERVER DOWN"));
-		this.serverUrl = servers.stream().map(Server::getBaseUrl).collect(Collectors.joining(", "));
+		this.serverUrl = servers.stream().map(Server::getApiUrl).collect(Collectors.joining(", "));
 	}
 
 	/**

@@ -75,7 +75,8 @@ public class Route {
 
 	/**
 	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting this
-	 * to false may result in unpredicted exceptions!
+	 * to false may result in unpredicted exceptions! <b>You usually don't need to alter
+	 * this value</b>
 	 */
 	@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
 	public static boolean defaultRunChecks = true; // NOSONAR
@@ -123,7 +124,21 @@ public class Route {
 	 */
 	public static final Route LIST = new Route("list?session=%s&signature=%s&mode_question=0&step=%s", 3);
 
-	static void testResponse(JSONObject response, Server server) {
+	/**
+	 * Tests whether a response is a successful or a failed one.
+	 *
+	 * @param response
+	 *            the response to test
+	 * @param server
+	 *            the {@link Server} to include in a {@link ServerUnavailableException},
+	 *            if it occurs
+	 * @throws ServerUnavailableException
+	 *             throws if the status is equal to {@link Level#ERROR} and the error
+	 *             message hints that the server is down
+	 * @throws StatusException
+	 *             thrown if the status is equal to {@link Level#ERROR}
+	 */
+	public static void testResponse(JSONObject response, Server server) {
 		Status compl = new StatusImpl(response);
 		if (compl.getLevel().equals(Level.ERROR)) {
 			if (compl.getReason().equalsIgnoreCase("server down")) {
@@ -230,11 +245,25 @@ public class Route {
 	 */
 	public static class Request {
 
-		private URLConnection connection;
+		/**
+		 * The connection timeout in milliseconds. Set this to something lower if you're
+		 * going to send a lot of request to not-confirmed servers. Set this to {@code -1} to
+		 * use {@link URLConnection}'s default timeout setting. <b>You usually don't need to
+		 * alter this value</b>
+		 */
+		@SuppressFBWarnings({
+				"MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
+		})
+		public static int connectionTimeout = 2500; // NOSONAR
+
+		URLConnection connection;
 		private byte[] bytes = null;
 
 		Request(URL url, String userAgent) throws IOException {
 			this.connection = url.openConnection();
+			if (connectionTimeout != -1)
+				this.connection.setConnectTimeout(connectionTimeout);
+
 			this.connection.setRequestProperty("User-Agent", userAgent);
 		}
 
@@ -274,23 +303,26 @@ public class Route {
 		 * @return route's content
 		 * @throws IOException
 		 * @throws ServerUnavailableException
-		 *             in case the server has went down (very unlikely to ever happen)
+		 *             thrown if the server has gone down
+		 * @throws StatusException
+		 *             thrown if the server returns an error response
+		 *
 		 */
 		public JSONObject getJSON(boolean runChecks) throws IOException {
 			JSONObject result = new JSONObject(new String(read(), StandardCharsets.UTF_8));
 
-			URLConnection connection = this.connection;
 			if (runChecks)
 				testResponse(result, new Server() {
 
 					@Override
-					public String getBaseUrl() {
-						return connection.getURL().getHost();
+					public Language getLocalization() {
+						return null; // testResponse() does not need to know the language
 					}
 
 					@Override
-					public Language getLocalization() {
-						return null; // testResponse() does not need to know the language
+					public String getHost() {
+						return Request.this.connection.getURL().getHost() + ":"
+								+ Request.this.connection.getURL().getPort();
 					}
 
 				});

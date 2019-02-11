@@ -1,3 +1,4 @@
+<!-- Replace the Akiwrapper dependency version before using! -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -78,7 +79,7 @@
 		<dependency>
 			<groupId>com.github.markozajc</groupId>
 			<artifactId>akiwrapper</artifactId>
-			<version>REPLACE THIS WITH THE LATEST VERSION THAT CAN BE FOUND IN README.md</version>
+			<version><!-- Replace me with the version found in an icon in README.md --></version>
 		</dependency>
 
 	</dependencies>

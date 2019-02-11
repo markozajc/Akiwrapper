@@ -12,6 +12,8 @@ import com.markozajc.akiwrapper.core.entities.Status;
  */
 public class StatusImpl implements Status {
 
+	private static final String STATUS_FORMAT = "%s - %s";
+
 	private final String reason;
 	private final Level level;
 
@@ -60,4 +62,11 @@ public class StatusImpl implements Status {
 	public Level getLevel() {
 		return this.level;
 	}
+
+
+	@Override
+	public String toString() {
+		return String.format(STATUS_FORMAT, this.level.toString(), this.reason);
+	}
+
 }
