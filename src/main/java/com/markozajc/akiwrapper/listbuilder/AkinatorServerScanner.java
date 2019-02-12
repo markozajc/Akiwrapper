@@ -15,6 +15,9 @@
  * (also it might break your router so that you'll have to restart it if you set the
  * THREAD_POOL_SIZE value too high, but it's nothing severe)
  *
+ * (also my sincerest apologies for every "/.../ a ENGLISH /.../" you see while using
+ * this!)
+ *
  * With that out of the way, you're free to tweak and use this piece of software to
  * any extent.
  */
@@ -81,15 +84,19 @@ public class AkinatorServerScanner {
 
 	private static final int CONNECTION_TIMEOUT = 150;
 	// Connection timeout. Lower values mean faster but less accurate, higher mean the
-	// opposite.
+	// opposite. Decreasing this below 70 might go godspeed, but rest assured that
+	// results will be a lot less accurate that way.
+	// Decrease this to get more accurate results (slower, more accurate).
+	// Increase this to allow for better multi-threading (faster, less accurate).
 
-	private static final int THREAD_POOL_SIZE = 5;
-	// Thread poll size of the server scanner ExecutorService fixed thread pool. Increase
-	// to allow better multi-threading (faster). Increasing this to something too high
-	// might crash your JVM, your router (no joke),
+	private static final int THREAD_POOL_SIZE = 1;
+	// Thread poll size of the server scanner ExecutorService fixed thread pool.
+	// Increasing this to something too high might crash your JVM, your router (no joke),
 	// or get you kicked offline by your ISP (again, not kidding as it might get a bit
-	// spammy and thus considered an abuse by your ISP), it might even decrease the
-	// accuracy of the results!
+	// spammy and thus considered an abuse by your ISP). Increasing it above 50 might
+	// have unwanted side effects.
+	// Decrease this to maybe get more accurate results (slower, more accurate).
+	// Increase this to allow for better multi-threading (faster, less accurate).
 
 	private static final boolean IGNORE_PING_FAILS = false;
 	// Whether to still scan the hosts that returned errors on a ping (EXPERIMENTAL,
