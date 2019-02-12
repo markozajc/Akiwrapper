@@ -25,7 +25,6 @@ import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
-import com.markozajc.akiwrapper.resources.AkiwrapperResources;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -58,7 +57,7 @@ public class Servers {
 		try {
 			Map<Language, List<Server>> servers = new EnumMap<>(Language.class);
 
-			try (InputStream is = AkiwrapperResources.class.getResourceAsStream("servers.json")) {
+			try (InputStream is = Servers.class.getResourceAsStream("/servers.json")) {
 				try (Scanner s = new Scanner(is, "UTF-8")) {
 					s.useDelimiter("\\A");
 
