@@ -1,9 +1,14 @@
 package com.markozajc.akiwrapper.core.utils;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 
@@ -20,13 +25,26 @@ import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
+import com.markozajc.akiwrapper.resources.AkiwrapperResources;
+
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * A class containing various API server utilities.
- * 
+ *
  * @author Marko Zajc
  */
+@SuppressFBWarnings("REC_CATCH_EXCEPTION")
 public class Servers {
+
+	/**
+	 * The format for Akinator's base URL format. Use with
+	 * {@link String#format(String, Object...)} and provide the hostname and the port as
+	 * the parameter (for example {@code srv1.akinator.com.9100}}.
+	 */
+	public static final String BASE_URL_FORMAT = "https://%s/ws/";
+
+	private Servers() {}
 
 	/**
 	 * A list of all known Akinator's API servers.
@@ -35,126 +53,45 @@ public class Servers {
 
 	static {
 
-		Map<Language, ServerGroup> servers = new HashMap<>();
+		Map<Language, ServerGroup> serverGroups = new EnumMap<>(Language.class);
 
-		// Arabic
-		servers.put(Language.ARABIC, new ServerGroupImpl(Language.ARABIC, new Server[] {
-				new ServerImpl("srv2.akinator.com:9155", Language.ARABIC),
-				new ServerImpl("srv5.akinator.com:9121", Language.ARABIC),
-		}));
+		try {
+			Map<Language, List<Server>> servers = new EnumMap<>(Language.class);
 
-		// Chinese
-		servers.put(Language.CHINESE, new ServerGroupImpl(Language.CHINESE, new Server[] {
-				new ServerImpl("srv5.akinator.com:9125", Language.CHINESE),
-				new ServerImpl("srv7.akinator.com:9148", Language.CHINESE),
-				new ServerImpl("srv9.akinator.com:9135", Language.CHINESE),
-				new ServerImpl("srv11.akinator.com:9150", Language.CHINESE),
-		}));
+			try (InputStream is = AkiwrapperResources.class.getResourceAsStream("servers.json")) {
+				try (Scanner s = new Scanner(is, "UTF-8")) {
+					s.useDelimiter("\\A");
 
-		// Dutch
-		servers.put(Language.DUTCH, new ServerGroupImpl(Language.DUTCH, new Server[] {
-				new ServerImpl("srv2.akinator.com:9158", Language.DUTCH),
-				new ServerImpl("srv9.akinator.com:9133", Language.DUTCH),
-		}));
+					JSONObject serversBaseJson = new JSONObject(s.hasNext() ? s.next() : "{}");
 
-		// English
-		servers.put(Language.ENGLISH, new ServerGroupImpl(Language.ENGLISH, new Server[] {
-				new ServerImpl("srv2.akinator.com:9157", Language.ENGLISH),
-				new ServerImpl("srv2.akinator.com:9162", Language.ENGLISH),
-				new ServerImpl("srv2.akinator.com:9163", Language.ENGLISH),
-				new ServerImpl("srv3.akinator.com:9117", Language.ENGLISH),
-				new ServerImpl("srv4.akinator.com:9014", Language.ENGLISH),
-				new ServerImpl("srv5.akinator.com:9122", Language.ENGLISH),
-				new ServerImpl("srv6.akinator.com:9126", Language.ENGLISH),
-				new ServerImpl("srv7.akinator.com:9141", Language.ENGLISH),
-				new ServerImpl("srv7.akinator.com:9144", Language.ENGLISH),
-				new ServerImpl("srv10.akinator.com:9129", Language.ENGLISH),
-				new ServerImpl("srv11.akinator.com:9152", Language.ENGLISH),
-		}));
+					if (!serversBaseJson.has("servers"))
+						throw new IOException();
 
-		// French
-		servers.put(Language.FRENCH, new ServerGroupImpl(Language.FRENCH, new Server[] {
-				new ServerImpl("srv3.akinator.com:9165", Language.FRENCH),
-				new ServerImpl("srv3.akinator.com:9167", Language.FRENCH),
-				new ServerImpl("srv4.akinator.com:9030", Language.FRENCH),
-				new ServerImpl("srv4.akinator.com:9178", Language.FRENCH),
-				new ServerImpl("srv9.akinator.com:9138", Language.FRENCH),
-				new ServerImpl("srv10.akinator.com:9176", Language.FRENCH),
-		}));
+					serversBaseJson.getJSONArray("servers").forEach(o -> {
+						JSONObject serverJson = (JSONObject) o;
+						Language localization = Language.valueOf(serverJson.getString("localization"));
 
-		// German
-		servers.put(Language.GERMAN, new ServerGroupImpl(Language.GERMAN, new Server[] {
-				new ServerImpl("srv7.akinator.com:9145", Language.GERMAN),
-				new ServerImpl("srv11.akinator.com:9171", Language.GERMAN),
-		}));
+						if (!servers.containsKey(localization))
+							servers.put(localization, new ArrayList<>());
 
-		// Hebrew
-		servers.put(Language.HEBREW, new ServerGroupImpl(Language.HEBREW, new Server[] {
-				new ServerImpl("srv4.akinator.com:9170", Language.HEBREW),
-				new ServerImpl("srv10.akinator.com:9119", Language.HEBREW),
-		}));
+						servers.get(localization).add(new ServerImpl(serverJson.getString("host"), localization));
+					});
 
-		// Italian
-		servers.put(Language.ITALIAN, new ServerGroupImpl(Language.ITALIAN, new Server[] {
-				new ServerImpl("srv2.akinator.com:9159", Language.ITALIAN),
-				new ServerImpl("srv9.akinator.com:9131", Language.ITALIAN),
-		}));
+				}
+			}
 
-		// Japanese
-		servers.put(Language.JAPANESE, new ServerGroupImpl(Language.JAPANESE, new Server[] {
-				new ServerImpl("srv4.akinator.com:9154", Language.JAPANESE),
-				new ServerImpl("srv7.akinator.com:9146", Language.JAPANESE),
-				new ServerImpl("srv9.akinator.com:9132", Language.JAPANESE),
-				new ServerImpl("srv10.akinator.com:9120", Language.JAPANESE),
-				new ServerImpl("srv11.akinator.com:9153", Language.JAPANESE),
-				new ServerImpl("srv11.akinator.com:9172", Language.JAPANESE),
-		}));
+			servers.forEach((l, s) -> serverGroups.put(l, new ServerGroupImpl(l, s)));
 
-		// Korean
-		servers.put(Language.KOREAN, new ServerGroupImpl(Language.KOREAN, new Server[] {
-				new ServerImpl("srv2.akinator.com:9156", Language.KOREAN),
-				new ServerImpl("srv3.akinator.com:9168", Language.KOREAN),
-		}));
+		} catch (Exception e) {
+			System.err.println("[ERROR] Akiwrapper - Couldn't load the server list; " + e); // NOSONAR
+		}
 
-		// Polish
-		servers.put(Language.POLISH, new ServerGroupImpl(Language.POLISH, new Server[] {
-				new ServerImpl("srv5.akinator.com:9123", Language.POLISH),
-				new ServerImpl("srv7.akinator.com:9143", Language.POLISH),
-		}));
-
-		// Portuguese
-		servers.put(Language.PORTUGUESE, new ServerGroupImpl(Language.PORTUGUESE, new Server[] {
-				new ServerImpl("srv2.akinator.com:9161", Language.PORTUGUESE),
-				new ServerImpl("srv3.akinator.com:9166", Language.PORTUGUESE),
-				new ServerImpl("srv11.akinator.com:9174", Language.PORTUGUESE),
-		}));
-
-		// Russian
-		servers.put(Language.RUSSIAN, new ServerGroupImpl(Language.RUSSIAN, new Server[] {
-				new ServerImpl("srv3.akinator.com:9169", Language.RUSSIAN),
-				new ServerImpl("srv5.akinator.com:9124", Language.RUSSIAN),
-				new ServerImpl("srv7.akinator.com:9142", Language.RUSSIAN),
-		}));
-
-		// Spanish
-		servers.put(Language.SPANISH, new ServerGroupImpl(Language.SPANISH, new Server[] {
-				new ServerImpl("srv2.akinator.com:9160", Language.SPANISH),
-				new ServerImpl("srv6.akinator.com:9127", Language.SPANISH),
-				new ServerImpl("srv11.akinator.com:9151", Language.SPANISH),
-		}));
-
-		// Turkish
-		servers.put(Language.TURKISH, new ServerGroupImpl(Language.TURKISH, new Server[] {
-				new ServerImpl("srv3.akinator.com:9164", Language.TURKISH),
-				new ServerImpl("srv9.akinator.com:9134", Language.TURKISH),
-		}));
-
-		SERVER_GROUPS = Collections.unmodifiableMap(servers);
+		SERVER_GROUPS = Collections.unmodifiableMap(serverGroups);
 	}
 
 	/**
 	 * Checks if an API server is online.
-	 * 
+	 *
 	 * @param server
 	 *            a server to check
 	 * @return true if a new session can be created on the provided server, false if not
@@ -162,8 +99,8 @@ public class Servers {
 	public static boolean isUp(Server server) {
 		try {
 			JSONObject question = Route.NEW_SESSION
-					.getRequest(server.getBaseUrl(), AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
-							AkiwrapperMetadata.DEFAULT_NAME)
+					.getRequest(server.getApiUrl(), AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
+						AkiwrapperMetadata.DEFAULT_NAME)
 					.getJSON();
 			// Checks if a server can be connected to by creating a new session on it
 
@@ -182,7 +119,7 @@ public class Servers {
 				} catch (IOException ioe) {
 					// In case API key can not be scraped. If this ever occurs, it's Akiwrapper's fault
 					// (or you haven't updated to the newest version)
-					ioe.printStackTrace();
+					Logger.getLogger("Akiwrapper").severe("Couldn't scrape the API key; " + ioe.toString());
 					return false;
 
 				} catch (StackOverflowError soe) {
@@ -206,7 +143,7 @@ public class Servers {
 	/**
 	 * Searches for an available server for the given localization language. If there is
 	 * no available server, this will throw a {@link ServerGroupUnavailableException}.
-	 * 
+	 *
 	 * @param localization
 	 *            language of the server to search for
 	 * @return the first server available for that language
@@ -217,8 +154,7 @@ public class Servers {
 	 *             if there are no available servers for language {@code localization}
 	 */
 	@Nonnull
-	public static Server getFirstAvailableServer(@Nonnull Language localization)
-			throws UnsupportedOperationException, ServerGroupUnavailableException {
+	public static Server getFirstAvailableServer(@Nonnull Language localization) {
 		ServerGroup sg = SERVER_GROUPS.get(localization);
 		if (sg == null)
 			throw new UnsupportedOperationException(

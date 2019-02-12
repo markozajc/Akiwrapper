@@ -12,7 +12,7 @@ import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
 /**
  * An implementation of {@link Guess}.
- * 
+ *
  * @author Marko Zajc
  */
 public class GuessImpl implements Guess {
@@ -41,7 +41,7 @@ public class GuessImpl implements Guess {
 
 	/**
 	 * Creates a new {@link GuessImpl} instance from raw parameters.
-	 * 
+	 *
 	 * @param id
 	 * @param name
 	 * @param description
@@ -58,7 +58,7 @@ public class GuessImpl implements Guess {
 
 	/**
 	 * Creates a new {@link GuessImpl} instance.
-	 * 
+	 *
 	 * @param json
 	 *            JSON parameters to use (acquired with {@link Route#LIST} > {@link JSONArray}
 	 *            elements > {@link JSONObject} (an index) > {@link JSONObject}

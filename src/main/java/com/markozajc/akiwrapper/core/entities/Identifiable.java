@@ -3,7 +3,7 @@ package com.markozajc.akiwrapper.core.entities;
 /**
  * An interface used to represent an identifiable object (if the object has an
  * appended ID set by Akinator's servers).
- * 
+ *
  * @author Marko Zajc
  */
 public interface Identifiable {
@@ -15,7 +15,7 @@ public interface Identifiable {
 
 	/**
 	 * @return ID as a long
-	 * 
+	 *
 	 * @see #getId()
 	 */
 	default long getIdLong() {

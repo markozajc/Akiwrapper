@@ -12,10 +12,10 @@ import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
  * A mutable implementation of {@link AkiwrapperMetadata}.
- * 
+ *
  * @author Marko Zajc
  */
-public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
+public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
 	protected String name;
 	protected String userAgent;
@@ -27,7 +27,7 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 
 	/**
 	 * Creates a new {@link MutableAkiwrapperMetadata} instance.
-	 * 
+	 *
 	 * @param server
 	 *            the API server to use
 	 * @param name
@@ -52,12 +52,12 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 
 	@Override
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
 	 * Sets user's name.
-	 * 
+	 *
 	 * @param name
 	 * @return current instance, used for chaining
 	 * @see #getName()
@@ -70,12 +70,12 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 
 	@Override
 	public String getUserAgent() {
-		return userAgent;
+		return this.userAgent;
 	}
 
 	/**
 	 * Sets the user-agent.
-	 * 
+	 *
 	 * @param userAgent
 	 * @return current instance, used for chaining
 	 * @see #getUserAgent()
@@ -88,12 +88,12 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 
 	@Override
 	public Server getServer() {
-		return server;
+		return this.server;
 	}
 
 	/**
 	 * Sets the API server.
-	 * 
+	 *
 	 * @param server
 	 * @return current instance, used for chaining
 	 * @see #getServer()
@@ -113,7 +113,7 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 
 	/**
 	 * Sets the "filter profanity" mode.
-	 * 
+	 *
 	 * @param filterProfanity
 	 * @return current instance, used for chaining
 	 * @see #doesFilterProfanity()
@@ -126,12 +126,12 @@ public abstract class MutableAkiwrapperMetadata implements AkiwrapperMetadata {
 
 	@Override
 	public Language getLocalization() {
-		return localization;
+		return this.localization;
 	}
 
 	/**
 	 * Sets the localization language.
-	 * 
+	 *
 	 * @param localization
 	 * @return current instance, used for chaining
 	 * @see #getLocalization()

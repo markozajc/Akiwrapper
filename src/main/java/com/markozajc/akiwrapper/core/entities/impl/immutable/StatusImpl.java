@@ -7,17 +7,19 @@ import com.markozajc.akiwrapper.core.entities.Status;
 
 /**
  * An implementation of {@link Status}.
- * 
+ *
  * @author Marko Zajc
  */
 public class StatusImpl implements Status {
+
+	private static final String STATUS_FORMAT = "%s - %s";
 
 	private final String reason;
 	private final Level level;
 
 	/**
 	 * Creates a new {@link StatusImpl} instance from raw parameters.
-	 * 
+	 *
 	 * @param completion
 	 */
 	public StatusImpl(String completion) {
@@ -42,7 +44,7 @@ public class StatusImpl implements Status {
 
 	/**
 	 * Creates a new {@link StatusImpl} instance.
-	 * 
+	 *
 	 * @param json
 	 *            completion level (acquired with (Any {@link Route}) >
 	 *            {@link JSONObject} completion)
@@ -53,11 +55,18 @@ public class StatusImpl implements Status {
 
 	@Override
 	public String getReason() {
-		return reason;
+		return this.reason;
 	}
 
 	@Override
 	public Level getLevel() {
-		return level;
+		return this.level;
 	}
+
+
+	@Override
+	public String toString() {
+		return String.format(STATUS_FORMAT, this.level.toString(), this.reason);
+	}
+
 }

@@ -10,7 +10,7 @@ import com.markozajc.akiwrapper.core.utils.Servers;
 /**
  * An interface representing a group of API servers. Servers are (usually) grouped by
  * their assigned language.
- * 
+ *
  * @author Marko Zajc
  */
 public interface ServerGroup {

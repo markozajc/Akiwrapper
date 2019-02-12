@@ -9,10 +9,10 @@ import com.markozajc.akiwrapper.core.entities.Server.Language;
 
 /**
  * An immutable implementation of {@link AkiwrapperMetadata}.
- * 
+ *
  * @author Marko Zajc
  */
-public abstract class ImmutableAkiwrapperMetadata implements AkiwrapperMetadata {
+public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
 	protected final String name;
 	protected final String userAgent;
@@ -24,7 +24,7 @@ public abstract class ImmutableAkiwrapperMetadata implements AkiwrapperMetadata 
 
 	/**
 	 * Creates a new {@link ImmutableAkiwrapperMetadata} instance.
-	 * 
+	 *
 	 * @param server
 	 *            the API server to use
 	 * @param name
@@ -49,27 +49,27 @@ public abstract class ImmutableAkiwrapperMetadata implements AkiwrapperMetadata 
 
 	@Override
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	@Override
 	public String getUserAgent() {
-		return userAgent;
+		return this.userAgent;
 	}
 
 	@Override
 	public Server getServer() {
-		return server;
+		return this.server;
 	}
 
 	@Override
 	public boolean doesFilterProfanity() {
-		return filterProfanity;
+		return this.filterProfanity;
 	}
 
 	@Override
 	public Language getLocalization() {
-		return localization;
+		return this.localization;
 	}
 
 }

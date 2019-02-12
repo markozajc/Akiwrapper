@@ -11,7 +11,7 @@ import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
 /**
  * An implementation of {@link Question}.
- * 
+ *
  * @author Marko Zajc
  */
 public class QuestionImpl implements Question {
@@ -26,7 +26,7 @@ public class QuestionImpl implements Question {
 
 	/**
 	 * Creates a new {@link QuestionImpl} instance from raw parameters.
-	 * 
+	 *
 	 * @param id
 	 * @param question
 	 * @param step
@@ -34,12 +34,11 @@ public class QuestionImpl implements Question {
 	 * @param progression
 	 * @param status
 	 * @throws MissingQuestionException
-	 *             if the message is missing (no more messages left to answer, get
-	 *             the final guesses)
+	 *             if the message is missing (no more messages left to answer, get the
+	 *             final guesses)
 	 */
-	public QuestionImpl(String id, String question, int step, double gain, double progression, Status status)
-			throws MissingQuestionException {
-		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equals("no question"))
+	public QuestionImpl(String id, String question, int step, double gain, double progression, Status status) {
+		if (status.getLevel().equals(Level.WARNING) && status.getReason().equalsIgnoreCase("no question"))
 			throw new MissingQuestionException();
 
 		this.id = id;
@@ -51,18 +50,18 @@ public class QuestionImpl implements Question {
 
 	/**
 	 * Creates a new {@link QuestionImpl} instance.
-	 * 
+	 *
 	 * @param json
 	 *            JSON parameters to use (acquired with {@link Route#ANSWER} or
 	 *            {@link Route#NEW_SESSION} > {@link JSONObject} parameters)
 	 * @param status
 	 *            call completion status
 	 * @throws MissingQuestionException
-	 *             if the message is missing (no more messages left to answer, get
-	 *             the final guesses)
+	 *             if the message is missing (no more messages left to answer, get the
+	 *             final guesses)
 	 */
-	public QuestionImpl(JSONObject json, Status status) throws MissingQuestionException {
-		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equals("no question"))
+	public QuestionImpl(JSONObject json, Status status) {
+		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equalsIgnoreCase("no question"))
 			throw new MissingQuestionException();
 
 		this.id = json.getString("questionid");
@@ -74,12 +73,12 @@ public class QuestionImpl implements Question {
 
 	@Override
 	public double getProgression() {
-		return progression;
+		return this.progression;
 	}
 
 	@Override
 	public int getStep() {
-		return step;
+		return this.step;
 	}
 
 	@Override
@@ -89,7 +88,7 @@ public class QuestionImpl implements Question {
 
 	@Override
 	public String getQuestion() {
-		return question;
+		return this.question;
 	}
 
 	@Override

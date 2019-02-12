@@ -4,16 +4,16 @@ import com.markozajc.akiwrapper.core.entities.Status;
 
 /**
  * An exception signaling that the server returned an error code ("KO").
- * 
+ *
  * @author Marko Zajc
  */
 public class StatusException extends RuntimeException {
 
-	private Status status;
+	private final Status status;
 
 	/**
 	 * Creates a new {@link StatusException}.
-	 * 
+	 *
 	 * @param status
 	 *            status to append
 	 */
@@ -26,7 +26,7 @@ public class StatusException extends RuntimeException {
 	 * @return the problematic status that has been returned
 	 */
 	public Status getStatus() {
-		return status;
+		return this.status;
 	}
 
 }

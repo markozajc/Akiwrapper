@@ -4,35 +4,35 @@ import com.markozajc.akiwrapper.core.entities.Server;
 
 /**
  * An implementation of {@link Server}.
- * 
+ *
  * @author Marko Zajc
  */
 public class ServerImpl implements Server {
 
-	private final String baseUrl;
+	private final String host;
 	private final Language localization;
 
 	/**
 	 * Creates a new instance of {@link ServerImpl}.
-	 * 
-	 * @param baseUrl
-	 *            server's base URL (eg. {@code api-en1.akinator.com}}.
+	 *
+	 * @param host
+	 *            server's host (for example {@code srv1.akinator.com.9100}}.
 	 * @param localization
 	 *            the localization language of this server
 	 */
-	public ServerImpl(String baseUrl, Language localization) {
-		this.baseUrl = "https://" + baseUrl + "/ws/";
+	public ServerImpl(String host, Language localization) {
+		this.host = host;
 		this.localization = localization;
 	}
 
 	@Override
-	public String getBaseUrl() {
-		return this.baseUrl;
+	public Language getLocalization() {
+		return this.localization;
 	}
 
 	@Override
-	public Language getLocalization() {
-		return localization;
+	public String getHost() {
+		return this.host;
 	}
 
 }

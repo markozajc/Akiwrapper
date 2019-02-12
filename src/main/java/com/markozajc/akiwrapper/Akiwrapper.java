@@ -13,7 +13,7 @@ import com.markozajc.akiwrapper.core.entities.Server;
 /**
  * The "core" of interaction with the Akinator's API. Contains all methods required
  * to fully utilize all (known) Akinator's API's endpoints.
- * 
+ *
  * @author Marko Zajc
  */
 public interface Akiwrapper {
@@ -57,7 +57,7 @@ public interface Akiwrapper {
 		 * @return this answer's ID which is passed to the API
 		 */
 		public int getId() {
-			return id;
+			return this.id;
 		}
 
 	}
@@ -66,10 +66,10 @@ public interface Akiwrapper {
 	 * Answers current question and retrieves the next one. The next question is passed
 	 * as return value and can be retrieved later on with {@link #getCurrentQuestion()}.
 	 * If there are no more questions left, this will return {@code null}.
-	 * 
+	 *
 	 * @param answer
 	 *            the answer
-	 * 
+	 *
 	 * @return the latest question or null if an answer was found
 	 * @throws IOException
 	 *             if something goes wrong
@@ -88,7 +88,7 @@ public interface Akiwrapper {
 	 * actually be changed!<br>
 	 * This will also return {@code null} if {@link #getCurrentQuestion()} returns
 	 * {@code null},</strong>
-	 * 
+	 *
 	 * @return the past message
 	 * @throws IOException
 	 */
@@ -99,7 +99,7 @@ public interface Akiwrapper {
 	 * Returns current question. You can answer it with
 	 * {@link #answerCurrentQuestion(Answer)}. If there are no more questions left, this
 	 * will return {@code null}.
-	 * 
+	 *
 	 * @return current question
 	 */
 	@Nullable
