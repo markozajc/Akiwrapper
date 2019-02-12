@@ -63,10 +63,6 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-
-					<excludes>
-						<exclude>com.markozajc.akiwrapper.listbuilder</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 
