@@ -4,10 +4,12 @@ import org.json.JSONObject;
 
 /**
  * A set of utilities for JSON that prevent type errors.
- * 
+ *
  * @author Marko Zajc
  */
 public class JSONUtils {
+
+	private JSONUtils() {}
 
 	/**
 	 * @param json
@@ -16,7 +18,7 @@ public class JSONUtils {
 	 * @throws NumberFormatException
 	 *             if the value could in no way be transferred to an integer
 	 */
-	public static Integer getInteger(JSONObject json, String key) throws NumberFormatException {
+	public static Integer getInteger(JSONObject json, String key) {
 		Object object = json.get(key);
 
 		if (object == null)
