@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class Route {
 
+	private static final String AUTH_QUERYSTRING = "session=%s&signature=%s&challenge_auth=%s";
 	private static final String BASE_AKINATOR_URL = "https://en.akinator.com";
 	// The base Akinator URL, used for scraping various elements (and not for the API
 	// calls)
@@ -100,7 +101,7 @@ public class Route {
 	 * <li>Answer's ID</li>
 	 * </ol>
 	 */
-	public static final Route ANSWER = new Route("answer?session=%s&signature=%s&step=%s&answer=%s",
+	public static final Route ANSWER = new Route("answer?" + AUTH_QUERYSTRING + "step=%s&answer=%s",
 			"&question_filter=cat=1", 4);
 
 	/**
@@ -111,7 +112,7 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route CANCEL_ANSWER = new Route("cancel_answer?session=%s&signature=%s&step=%s&answer=-1",
+	public static final Route CANCEL_ANSWER = new Route("cancel_answer?" + AUTH_QUERYSTRING + "&step=%s&answer=-1",
 			"&question_filter=cat=1", 3);
 
 	/**
@@ -122,7 +123,7 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route LIST = new Route("list?session=%s&signature=%s&mode_question=0&step=%s", 3);
+	public static final Route LIST = new Route("list?" + AUTH_QUERYSTRING + "&mode_question=0&step=%s", 3);
 
 	/**
 	 * Tests whether a response is a successful or a failed one.
