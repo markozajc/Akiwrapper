@@ -285,7 +285,6 @@ public class Route {
 		private byte[] bytes = null;
 
 		Request(URL url, String userAgent) throws IOException {
-			System.err.println(">> " + url); // TODO remove
 
 			this.connection = url.openConnection();
 			if (connectionTimeout != -1)
@@ -305,9 +304,6 @@ public class Route {
 			if (this.bytes == null) {
 				byte[] newBytes = HTTPUtils.read(this.connection);
 				this.bytes = newBytes;
-
-				System.err.println("<< "); // TODO remove
-				System.err.println(new String(newBytes, StandardCharsets.UTF_8)); // TODO remove
 			}
 
 			return this.bytes.clone();
