@@ -66,6 +66,9 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return this.session;
 		}
 
+		/**
+		 * @return the compiled token
+		 */
 		public String compile() {
 			return String.format(AUTH_QUERYSTRING, "" + this.getSession(), "" + this.getSignature());
 		}
@@ -175,8 +178,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
-					this.server.getApiUrl(), "" + current.getStep())
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, this.server.getApiUrl(),
+					"" + current.getStep())
 				.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
@@ -195,8 +198,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(this.userAgent)
-					.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
-						"" + this.currentStep)
+					.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
 					.getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel().equals(Level.ERROR)

@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.json.JSONObject;
 
@@ -181,6 +182,8 @@ public class Route {
 	 * @param filterProfanity
 	 *            whether to filter profanity. Akinator's website will automatically
 	 *            enable that if you choose an age below 16
+	 * @param token
+	 *            the token used for session authentication
 	 * @param parameters
 	 *            parameters to pass to the route (parameters are specified in that
 	 *            Route's JavaDoc)
@@ -189,7 +192,7 @@ public class Route {
 	 * @throws IllegalArgumentException
 	 *             if you have passed too little parameters
 	 */
-	public Request getRequest(String baseUrl, boolean filterProfanity, Token token, String... parameters)
+	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token, String... parameters)
 			throws IOException {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(

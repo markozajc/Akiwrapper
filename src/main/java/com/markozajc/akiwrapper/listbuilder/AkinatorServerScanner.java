@@ -269,7 +269,7 @@ public class AkinatorServerScanner {
 		System.out.printf(FILE_COMPLETE, servers.size(), filename);
 	}
 
-	public static void isAvailable(String host, int timeout) throws IOException {
+	private static void isAvailable(String host, int timeout) throws IOException {
 		try (Socket socket = new Socket()) {
 			try {
 				socket.connect(new InetSocketAddress(host, 80 /* not all servers support HTTPS! */), timeout);
