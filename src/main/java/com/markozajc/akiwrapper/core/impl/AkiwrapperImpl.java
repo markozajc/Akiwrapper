@@ -42,9 +42,10 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 */
 	public static class Token {
 
+		private static final String AUTH_QUERYSTRING = "&session=%s&signature=%s";
+
 		private final long signature;
 		private final int session;
-		private final String auth;
 
 		/**
 		 * Creates a new {@link Token}.
@@ -52,22 +53,21 @@ public class AkiwrapperImpl implements Akiwrapper {
 		 * @param signature
 		 * @param session
 		 */
-		public Token(long signature, int session, String auth) {
+		public Token(long signature, int session) {
 			this.signature = signature;
 			this.session = session;
-			this.auth = auth;
 		}
 
-		long getSignature() {
+		private long getSignature() {
 			return this.signature;
 		}
 
-		int getSession() {
+		private int getSession() {
 			return this.session;
 		}
-		
-		String getAuth() {
-			return this.auth:
+
+		public String compile() {
+			return String.format(AUTH_QUERYSTRING, "" + this.getSession(), "" + this.getSignature());
 		}
 
 	}
@@ -131,7 +131,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject identification = question.getJSONObject(PARAMETERS_KEY).getJSONObject("identification");
 
 		this.token = new Token(Long.parseLong(identification.getString("signature")),
-				Integer.parseInt(identification.getString("session")), identification.getString("challenge_auth"));
+				Integer.parseInt(identification.getString("session")));
 
 		this.currentQuestion = new QuestionImpl(
 				question.getJSONObject(PARAMETERS_KEY).getJSONObject("step_information"), new StatusImpl("OK")
@@ -150,8 +150,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
-					"" + this.token.getSignature(), this.token.getAuth(),  "" + this.currentQuestion.getStep(), "" + answer.getId())
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
+					"" + this.currentQuestion.getStep(), "" + answer.getId())
 				.getJSON();
 
 		try {
@@ -175,8 +175,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
-					"" + this.token.getSignature(), this.token.getAuth(), "" + current.getStep())
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
+					this.server.getApiUrl(), "" + current.getStep())
 				.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
@@ -195,8 +195,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(this.userAgent)
-					.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
-						"" + this.token.getSignature(), this.token.getAuth(), "" + this.currentStep)
+					.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
+						"" + this.currentStep)
 					.getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel().equals(Level.ERROR)

@@ -111,7 +111,7 @@ public class Servers {
 				// Checks if the exception was thrown because of an obsolete API key
 
 				try {
-					Route.scrapApiKey();
+					Route.accquireApiKey();
 					return isUp(server);
 					// Attempts to "rescrap" the API key and run the method again
 

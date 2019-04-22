@@ -34,20 +34,20 @@ public class AkinatorExample {
 			System.out.println("Is that your character? (y/n)");
 			String line = sc.nextLine();
 			switch (line) {
-			case "y":
-				// If the user has responded positively.
-				answered = true;
-				isCharacter = true;
-				break;
+				case "y":
+					// If the user has responded positively.
+					answered = true;
+					isCharacter = true;
+					break;
 
-			case "n":
-				// If the user has responded negatively.
-				answered = true;
-				isCharacter = false;
-				break;
+				case "n":
+					// If the user has responded negatively.
+					answered = true;
+					isCharacter = false;
+					break;
 
-			default:
-				break;
+				default:
+					break;
 			}
 		}
 
@@ -161,7 +161,7 @@ public class AkinatorExample {
 
 				if (question.getStep() == 0)
 					System.out.println(
-							"\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
+						"\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
 				// Displays the tip (only for the first time).
 
 				boolean answered = false;
@@ -189,20 +189,19 @@ public class AkinatorExample {
 						aw.undoAnswer();
 
 					} else if (answer.equals("resetkey")) {
-						Route.scrapApiKey();
+						Route.accquireApiKey();
 
 					} else if (answer.equals("debug")) {
 						System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getApiUrl()
 								+ "\n\tCurrent guess count: " + aw.getGuesses().size()
 								+ "\n\tCurrent API server availability: "
-								+ (aw.getServer().isUp() ? "ONLINE" : "OFFILNE") + "\n\tCurrent API key: "
-								+ Route.getApiKey());
+								+ (aw.getServer().isUp() ? "ONLINE" : "OFFILNE"));
 						continue;
 						// Displays some debug information.
 
 					} else {
 						System.out.println(
-								"Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
+							"Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
 						continue;
 					}
 
