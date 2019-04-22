@@ -27,7 +27,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -79,7 +81,7 @@ public class AkinatorServerScanner {
 	private static final int FAILURE_COMBO_TOLERANCE = 5;
 	// How many UnknownHostExceptions can be hit before the host scanner aborts
 
-	private static final boolean DEBUG_OUTPUT = false;
+	private static final boolean DEBUG_OUTPUT = true;
 	// Whether to output debug information
 
 	private static final int CONNECTION_TIMEOUT = 150;
@@ -106,13 +108,15 @@ public class AkinatorServerScanner {
 	// Messages format
 	// ===========================================
 
-	// You may change these, but adding "%s" tokens might throw a
+	// You may modify these, but adding "%s" tokens might throw a
 	// java.util.MissingFormatArgumentException at runtime!
 
 	private static final String HOST_EXISTS_BUT_TIMEOUTS = "[WARN] Host %s exists, but appears to be unavailable. Excluding it from the API scan.\n";
 	private static final String HOST_CANT_PING = "[ERORR] Couldn't ping host %s; %s.\n";
 	private static final String HOST_LISTING = "[INFO] Listing API hosts.\n";
 	private static final String HOST_LISTED = "[INFO] Listed %s API hosts. Took %s milliseconds.\n";
+	private static final String HOST_VERIFIED = "[DEBUG] Host %s is most likely an API server.\n";
+	private static final String HOST_CANT_CONNECT = "[DEBUG] Can't connect to host %s, most likely due to it blocking connections on port 80.\n";
 
 	private static final String API_LISTING = "[INFO] Initializing the localized API services scan (roughly %s ports).\n";
 	private static final String API_PORT_QUERYING = "[DEBUG] Submitting a search for a localized API service @ %s to the ExecutorService.\n";
@@ -265,22 +269,37 @@ public class AkinatorServerScanner {
 		System.out.printf(FILE_COMPLETE, servers.size(), filename);
 	}
 
+	public static void isAvailable(String host, int timeout) throws IOException {
+		try (Socket socket = new Socket()) {
+			try {
+				socket.connect(new InetSocketAddress(host, 80 /* not all servers support HTTPS! */), timeout);
+			} catch (ConnectException e) {
+				if (DEBUG_OUTPUT) {
+					System.out.printf(HOST_CANT_CONNECT, host);
+				}
+			}
+		}
+	}
+
 	private static List<String> listHosts() {
 		List<String> result = new ArrayList<>();
 		int failCombo = 0;
 		for (int i = 1; failCombo <= FAILURE_COMBO_TOLERANCE; i++) {
 			String hostname = String.format(HOSTNAME_FORMAT, i);
 			try {
-				if (InetAddress.getByName(hostname).isReachable(3000)) {
-					result.add(hostname);
-				} else {
-					System.err.printf(HOST_EXISTS_BUT_TIMEOUTS, hostname);
-
-					if (IGNORE_PING_FAILS)
-						result.add(hostname);
-				}
-
+				isAvailable(hostname, 3000);
+				result.add(hostname);
 				failCombo = 0;
+
+				if (DEBUG_OUTPUT)
+					System.out.printf(HOST_VERIFIED, hostname);
+
+			} catch (SocketTimeoutException e) {
+				System.err.printf(HOST_EXISTS_BUT_TIMEOUTS, hostname);
+
+				if (IGNORE_PING_FAILS)
+					result.add(hostname);
+
 			} catch (UnknownHostException e) {
 				failCombo++;
 
@@ -288,9 +307,6 @@ public class AkinatorServerScanner {
 				failCombo++;
 
 				System.err.printf(HOST_CANT_PING, hostname, e);
-
-				if (IGNORE_PING_FAILS)
-					result.add(hostname);
 			}
 		}
 
