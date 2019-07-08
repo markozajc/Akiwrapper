@@ -42,6 +42,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 */
 	public static class Token {
 
+		private static final String AUTH_QUERYSTRING = "&session=%s&signature=%s";
+
 		private final long signature;
 		private final int session;
 
@@ -56,12 +58,19 @@ public class AkiwrapperImpl implements Akiwrapper {
 			this.session = session;
 		}
 
-		long getSignature() {
+		private long getSignature() {
 			return this.signature;
 		}
 
-		int getSession() {
+		private int getSession() {
 			return this.session;
+		}
+
+		/**
+		 * @return the compiled token
+		 */
+		public String compile() {
+			return String.format(AUTH_QUERYSTRING, "" + this.getSession(), "" + this.getSignature());
 		}
 
 	}
@@ -144,8 +153,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
-					"" + this.token.getSignature(), "" + this.currentQuestion.getStep(), "" + answer.getId())
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
+					"" + this.currentQuestion.getStep(), "" + answer.getId())
 				.getJSON();
 
 		try {
@@ -169,8 +178,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
-					"" + this.token.getSignature(), "" + current.getStep())
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, this.server.getApiUrl(),
+					"" + current.getStep())
 				.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
@@ -189,8 +198,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(this.userAgent)
-					.getRequest(this.server.getApiUrl(), this.filterProfanity, "" + this.token.getSession(),
-						"" + this.token.getSignature(), "" + this.currentStep)
+					.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
 					.getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel().equals(Level.ERROR)

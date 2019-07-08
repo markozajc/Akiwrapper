@@ -1,13 +1,16 @@
 package com.markozajc.akiwrapper.core;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.json.JSONObject;
 
@@ -18,6 +21,7 @@ import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
+import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Token;
 import com.markozajc.akiwrapper.core.utils.HTTPUtils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -29,48 +33,55 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class Route {
 
+	private static class ApiKey {
+
+		private static final String FORMAT = "frontaddr=%s&uid_ext_session=%s";
+
+		@Nonnull
+		private final String sessionUid;
+		@Nonnull
+		private final String frontAddress;
+
+		ApiKey(@Nonnull String sessionUid, @Nonnull String frontAddress) {
+			this.sessionUid = sessionUid;
+			this.frontAddress = frontAddress;
+		}
+
+		@SuppressWarnings("null")
+		@Nonnull
+		String compile() {
+			try {
+				return String.format(FORMAT, URLEncoder.encode(this.frontAddress, "UTF-8"), this.sessionUid);
+			} catch (UnsupportedEncodingException e) {
+				return ""; // never throws
+			}
+		}
+
+	}
+
 	private static final String BASE_AKINATOR_URL = "https://en.akinator.com";
 	// The base Akinator URL, used for scraping various elements (and not for the API
 	// calls)
 
-	private static String apiKey;
-
-	/**
-	 * @return the current API key scraped from Akinator. A new key can be scraped using
-	 *         {@link #scrapApiKey()}
-	 */
-	public static String getApiKey() {
-		return apiKey;
-	}
-
-	private static final Pattern API_KEY_PATTERN = Pattern.compile("(var uid_ext_session = ')(.*)(')");
-
-	static {
-		try {
-			scrapApiKey();
-		} catch (IOException e) {
-			apiKey = "";
-			Logger.getLogger("Akiwrapper")
-					.severe("Couldn't scrape the API key. Code that uses Akiwrapper might not work correctly. "
-							+ "Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
-		}
-	}
+	private static final Pattern API_KEY_PATTERN = Pattern
+			.compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
 
 	/**
 	 * Scraps the API key from Akinator's website and stores it for later use.
 	 *
+	 * @return the API key
 	 * @throws IOException
+	 *             in case the API key can't be scraped
 	 */
-	public static void scrapApiKey() throws IOException {
+	@SuppressWarnings("null")
+	public static ApiKey accquireApiKey() throws IOException {
 		Matcher matcher = API_KEY_PATTERN.matcher(
 			new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
-		if (matcher.find()) {
-			apiKey = matcher.group(2);
-
-		} else {
+		if (!matcher.find())
 			throw new IOException(
 					"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
-		}
+
+		return new ApiKey(matcher.group(1), matcher.group(2));
 	}
 
 	/**
@@ -88,41 +99,33 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(
-			"new_session?partner=5&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&frontaddr=NDYuMTA1LjExMC40NQ%%3D%%3D&uid_ext_session={API_KEY}",
+			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}",
 			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
 
 	/**
 	 * Answers a question. Parameters:
 	 * <ol>
-	 * <li>Session's ID</li>
-	 * <li>Session's signature</li>
 	 * <li>Current step</li>
 	 * <li>Answer's ID</li>
 	 * </ol>
 	 */
-	public static final Route ANSWER = new Route("answer?session=%s&signature=%s&step=%s&answer=%s",
-			"&question_filter=cat=1", 4);
+	public static final Route ANSWER = new Route("answer?step=%s&answer=%s", "&question_filter=cat=1", 2);
 
 	/**
 	 * Cancels (undoes) an answer. Parameters:
 	 * <ol>
-	 * <li>Session's ID</li>
-	 * <li>Session's signature</li>
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route CANCEL_ANSWER = new Route("cancel_answer?session=%s&signature=%s&step=%s&answer=-1",
-			"&question_filter=cat=1", 3);
+	public static final Route CANCEL_ANSWER = new Route("cancel_answer?step=%s&answer=-1", "&question_filter=cat=1", 1);
 
 	/**
 	 * Lists all available guesses. Parameters:
 	 * <ol>
-	 * <li>Session's ID</li>
-	 * <li>Session's signature</li>
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route LIST = new Route("list?session=%s&signature=%s&mode_question=0&step=%s", 3);
+	public static final Route LIST = new Route("list?mode_question=0&step=%s", 1);
 
 	/**
 	 * Tests whether a response is a successful or a failed one.
@@ -179,6 +182,42 @@ public class Route {
 	 * @param filterProfanity
 	 *            whether to filter profanity. Akinator's website will automatically
 	 *            enable that if you choose an age below 16
+	 * @param token
+	 *            the token used for session authentication
+	 * @param parameters
+	 *            parameters to pass to the route (parameters are specified in that
+	 *            Route's JavaDoc)
+	 * @return a callable request
+	 * @throws IOException
+	 * @throws IllegalArgumentException
+	 *             if you have passed too little parameters
+	 */
+	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token, String... parameters)
+			throws IOException {
+		if (parameters.length < this.parametersQuantity)
+			throw new IllegalArgumentException(
+					"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
+
+		String[] encodedParams = new String[parameters.length];
+		for (int i = 0; i < parameters.length; i++)
+			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
+
+		return new Request(new URL(baseUrl
+				+ String.format(this.path.replace("{API_KEY}", accquireApiKey().compile().replace("%", "%%")),
+					(Object[]) encodedParams)
+				+ (filterProfanity ? this.filteredAppendix : "") + (token != null ? token.compile() : "")),
+				this.userAgent);
+	}
+
+	/**
+	 * Creates a request for this route that can later be called and converted into a
+	 * {@link JSONObject}.
+	 *
+	 * @param baseUrl
+	 *            base (API's) URL
+	 * @param filterProfanity
+	 *            whether to filter profanity. Akinator's website will automatically
+	 *            enable that if you choose an age below 16
 	 * @param parameters
 	 *            parameters to pass to the route (parameters are specified in that
 	 *            Route's JavaDoc)
@@ -188,18 +227,7 @@ public class Route {
 	 *             if you have passed too little parameters
 	 */
 	public Request getRequest(String baseUrl, boolean filterProfanity, String... parameters) throws IOException {
-		if (parameters.length < this.parametersQuantity)
-			throw new IllegalArgumentException(
-					"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
-
-		String[] encodedParams = new String[parameters.length];
-		for (int i = 0; i < parameters.length; i++)
-			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
-
-		return new Request(
-				new URL(baseUrl + String.format(this.path.replace("{API_KEY}", apiKey), (Object[]) encodedParams)
-						+ (filterProfanity ? this.filteredAppendix : "")),
-				this.userAgent);
+		return this.getRequest(baseUrl, filterProfanity, null, parameters);
 	}
 
 	/**
@@ -260,6 +288,7 @@ public class Route {
 		private byte[] bytes = null;
 
 		Request(URL url, String userAgent) throws IOException {
+
 			this.connection = url.openConnection();
 			if (connectionTimeout != -1)
 				this.connection.setConnectTimeout(connectionTimeout);
