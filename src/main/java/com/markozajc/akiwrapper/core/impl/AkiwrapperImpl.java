@@ -178,8 +178,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, this.server.getApiUrl(),
-					"" + current.getStep())
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
+					Integer.toString(current.getStep()))
 				.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
