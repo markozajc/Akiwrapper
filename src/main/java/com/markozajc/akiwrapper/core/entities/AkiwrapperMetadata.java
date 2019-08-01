@@ -21,7 +21,7 @@ public abstract class AkiwrapperMetadata {
 	 * The default user-agent for new {@link Akiwrapper} instances.
 	 */
 	public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
-			+ "Chrome/66.0.3359.181 Safari/537.36";
+		+ "Chrome/66.0.3359.181 Safari/537.36";
 
 	/**
 	 * The default profanity filter for new {@link Akiwrapper} instances.
@@ -37,11 +37,13 @@ public abstract class AkiwrapperMetadata {
 	/**
 	 * @return user's name, does not have any impact on gameplay
 	 */
+	@Nonnull
 	public abstract String getName();
 
 	/**
 	 * @return user-agent used in HTTP requests
 	 */
+	@Nonnull
 	public abstract String getUserAgent();
 
 	/**
@@ -49,6 +51,7 @@ public abstract class AkiwrapperMetadata {
 	 *         endpoints but some might be down so you should never hard-code usage of a
 	 *         specific API server
 	 */
+	@Nonnull
 	public abstract Server getServer();
 
 	/**
