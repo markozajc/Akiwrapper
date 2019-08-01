@@ -3,7 +3,7 @@ Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
 
 ## Installation
 #### Maven
-Put this: into your pom.xml (replace LATEST_VERSION with [ ![Download](https://api.bintray.com/packages/iareas/Libraries/Akiwrapper/images/download.svg) ](https://bintray.com/iareas/Libraries/Akiwrapper/_latestVersion):
+Put this: into your pom.xml (replace LATEST_VERSION with [![Maven Central](https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.markozajc%22%20AND%20a:%22akiwrapper%22):
 ```xml
 <dependency>
 	<groupId>com.github.markozajc</groupId>
@@ -50,7 +50,7 @@ if (aw.answerCurrentQuestion(someAnswer) == null || aw.getCurrentQuestion() == n
 	// - Akiwrapper#getCurrentQuestion() will also keep returning null
 }
 ```
-If this happens, the best way to handle it is to let user see all guesses (no matter their probability) with iterating over `aw.getGuesses()` and asking user if this is their character on each. If they reject them all, make them feel good by telling them that they have finally defeated akinator :D .
+If this happens, the best way to handle it is to let user see all guesses (no matter their probability) with iterating over `aw.getGuesses()` and asking user if this is their character on each. If they reject them all, make them feel good by telling them that they have finally defeated Akinator.
 
 
 ---
