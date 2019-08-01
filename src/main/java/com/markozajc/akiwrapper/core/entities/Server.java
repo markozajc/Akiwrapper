@@ -26,11 +26,12 @@ public interface Server {
 		ITALIAN,
 		JAPANESE,
 		KOREAN,
+		MALAY,
 		POLISH,
 		PORTUGUESE,
 		RUSSIAN,
 		SPANISH,
-		TURKISH;
+		TURKISH,
 	}
 
 	/**

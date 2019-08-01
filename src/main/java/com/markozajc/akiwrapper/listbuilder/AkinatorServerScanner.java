@@ -136,8 +136,8 @@ public class AkinatorServerScanner {
 
 	private static final String FILE_CANT_DUMP = "[ERROR] Couldn't dump into %s (%s). %s API servers have been dumped into stout (as JSON)!\n";
 	private static final String FILE_COMPLETE = "=======================================================\n"
-			+ "[INFO] Done! Dumped %s API servers into %s (as JSON)!\n"
-			+ "==========================================================\n";
+		+ "[INFO] Done! Dumped %s API servers into %s (as JSON)!\n"
+		+ "==========================================================\n";
 
 	private static final String STATUS = "[INFO] Scanning ports.. %s/%s (%s%%)\n";
 
@@ -202,6 +202,7 @@ public class AkinatorServerScanner {
 		answerMappings.put("\u042f \u043d\u0435 \u0437\u043d\u0430\u044e", Language.RUSSIAN);
 		answerMappings.put("No lo s\u00e9", Language.SPANISH);
 		answerMappings.put("Bilmiyorum", Language.TURKISH);
+		answerMappings.put("Tidak tahu", Language.MALAY);
 		// Escaped non-ASCII characters for better platform encoding independence
 
 		Request.connectionTimeout = CONNECTION_TIMEOUT;
@@ -357,12 +358,12 @@ public class AkinatorServerScanner {
 
 		try {
 			String answer = NEW_SESSION.getRequest(String.format(Servers.BASE_URL_FORMAT, base), false, PROBE_NAME)
-					.getJSON()
-					.getJSONObject("parameters")
-					.getJSONObject("step_information")
-					.getJSONArray("answers")
-					.getJSONObject(ANSWER_INDEX)
-					.getString("answer");
+				.getJSON()
+				.getJSONObject("parameters")
+				.getJSONObject("step_information")
+				.getJSONArray("answers")
+				.getJSONObject(ANSWER_INDEX)
+				.getString("answer");
 
 			Language localization = ANSWER_MAPPINGS.get(answer);
 			if (localization == null) {
