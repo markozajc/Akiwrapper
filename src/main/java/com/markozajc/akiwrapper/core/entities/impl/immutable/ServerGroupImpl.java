@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 import com.markozajc.akiwrapper.core.entities.ServerGroup;
@@ -15,7 +17,9 @@ import com.markozajc.akiwrapper.core.entities.ServerGroup;
  */
 public class ServerGroupImpl implements ServerGroup {
 
+	@Nonnull
 	private final Language localization;
+	@Nonnull
 	private final List<Server> servers;
 
 	/**
@@ -29,11 +33,12 @@ public class ServerGroupImpl implements ServerGroup {
 	 *             in case one or more of the given servers from {@code servers} do not
 	 *             have the same localization as {@code localization}.
 	 */
-	public ServerGroupImpl(Language localization, List<Server> servers) {
+	@SuppressWarnings("null")
+	public ServerGroupImpl(@Nonnull Language localization, @Nonnull List<Server> servers) {
 		if (servers.stream().anyMatch(s -> !s.getLocalization().equals(localization)))
 			throw new IllegalArgumentException(
-					"One or more servers do not have the same localization as this ServerGroup ("
-							+ localization.toString() + "!");
+				"One or more servers do not have the same localization as this ServerGroup (" + localization.toString()
+					+ "!");
 
 		this.localization = localization;
 		this.servers = Collections.unmodifiableList(servers);
@@ -50,7 +55,8 @@ public class ServerGroupImpl implements ServerGroup {
 	 *             in case one or more of the given servers from {@code servers} do not
 	 *             have the same localization as {@code localization}.
 	 */
-	public ServerGroupImpl(Language localization, Server... servers) {
+	@SuppressWarnings("null")
+	public ServerGroupImpl(@Nonnull Language localization, @Nonnull Server... servers) {
 		this(localization, Arrays.asList(servers));
 	}
 

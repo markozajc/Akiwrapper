@@ -3,6 +3,10 @@ package com.markozajc.akiwrapper.core.entities.impl.immutable;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,24 +21,29 @@ import com.markozajc.akiwrapper.core.utils.JSONUtils;
  */
 public class GuessImpl implements Guess {
 
+	@Nonnull
 	private final String id;
+	@Nonnull
 	private final String name;
+	@Nullable
 	private final String description;
-
+	@Nullable
 	private final URL image;
-
+	@Nonnegative
 	private final double probability;
 
-	private static URL getImage(JSONObject json) {
+	@Nullable
+	private static URL getImage(@Nonnull JSONObject json) {
 		try {
 			return json.getString("picture_path").equals("none.jpg") ? null
-					: new URL(json.getString("absolute_picture_path"));
+				: new URL(json.getString("absolute_picture_path"));
 		} catch (MalformedURLException e) {
 			return null;
 		}
 	}
 
-	private static String getDescription(JSONObject json) {
+	@Nullable
+	private static String getDescription(@Nonnull JSONObject json) {
 		String desc = json.getString("description");
 		return desc.equals("-") ? null : desc;
 	}
@@ -48,7 +57,8 @@ public class GuessImpl implements Guess {
 	 * @param image
 	 * @param probability
 	 */
-	public GuessImpl(String id, String name, String description, URL image, double probability) {
+	public GuessImpl(@Nonnull String id, @Nonnull String name, @Nullable String description, @Nullable URL image,
+		@Nonnegative double probability) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -60,13 +70,14 @@ public class GuessImpl implements Guess {
 	 * Creates a new {@link GuessImpl} instance.
 	 *
 	 * @param json
-	 *            JSON parameters to use (acquired with {@link Route#LIST} > {@link JSONArray}
-	 *            elements > {@link JSONObject} (an index) > {@link JSONObject}
-	 *            element)
+	 *            JSON parameters to use (acquired with {@link Route#LIST} >
+	 *            {@link JSONArray} elements > {@link JSONObject} (an index) >
+	 *            {@link JSONObject} element)
 	 */
-	public GuessImpl(JSONObject json) {
+	@SuppressWarnings("null")
+	public GuessImpl(@Nonnull JSONObject json) {
 		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
-				JSONUtils.getDouble(json, "proba").doubleValue());
+			JSONUtils.getDouble(json, "proba").doubleValue());
 	}
 
 	@Override
