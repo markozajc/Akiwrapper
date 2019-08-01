@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author Marko Zajc
  */
+@SuppressWarnings("null")
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 public class Servers {
 
@@ -80,7 +81,7 @@ public class Servers {
 				}
 			}
 
-			servers.forEach((l, s) -> serverGroups.put(l, new ServerGroupImpl(l, s)));
+			servers.forEach((language, server) -> serverGroups.put(language, new ServerGroupImpl(language, server)));
 
 		} catch (Exception e) {
 			System.err.println("[ERROR] Akiwrapper - Couldn't load the server list; " + e); // NOSONAR
@@ -112,7 +113,7 @@ public class Servers {
 			JSONObject question = Route.NEW_SESSION
 				.getRequest(server.getApiUrl(), AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
 					AkiwrapperMetadata.DEFAULT_NAME)
-				.getJSON();
+				.getJSON(true);
 			// Checks if a server can be connected to by creating a new session on it
 
 			if (new StatusImpl(question).getLevel().equals(Level.OK))
@@ -142,11 +143,8 @@ public class Servers {
 
 			}
 
-			return false;
-
 		} catch (IllegalArgumentException | IOException e) {
 			// If the server is unreachable
-			return false;
 		}
 
 		return false;
