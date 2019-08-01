@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,12 +77,16 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	}
 
+	@Nonnull
 	private final String userAgent;
+	@Nonnull
 	private final Server server;
 	private final boolean filterProfanity;
+	@Nonnull
 	private final Token token;
-
+	@Nonnegative
 	private int currentStep;
+	@Nullable
 	private Question currentQuestion;
 
 	/**
@@ -97,6 +103,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 * @throws IllegalArgumentException
 	 *             is {@code metadata} is null
 	 */
+	@SuppressWarnings("null")
 	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) {
 		Server serverCopy = metadata.getServer();
 		if (serverCopy == null)
@@ -105,11 +112,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		this.server = serverCopy;
 		// Checks & sets the server
 
-		String userAgentCopy = metadata.getUserAgent();
-		if (userAgentCopy == null || userAgentCopy.equals(""))
-			userAgentCopy = AkiwrapperMetadata.DEFAULT_USER_AGENT;
-
-		this.userAgent = userAgentCopy;
+		this.userAgent = metadata.getUserAgent();
 		// Checks & sets the user-agent
 
 		this.filterProfanity = metadata.doesFilterProfanity();
@@ -117,8 +120,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 		JSONObject question;
 		String name = metadata.getName();
-		if (name == null || name.equals(""))
-			name = AkiwrapperMetadata.DEFAULT_NAME;
 
 		try {
 			question = Route.NEW_SESSION.getRequest(this.server.getApiUrl(), this.filterProfanity, name).getJSON();
@@ -134,10 +135,10 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject identification = question.getJSONObject(PARAMETERS_KEY).getJSONObject("identification");
 
 		this.token = new Token(Long.parseLong(identification.getString("signature")),
-				Integer.parseInt(identification.getString("session")));
+			Integer.parseInt(identification.getString("session")));
 
 		this.currentQuestion = new QuestionImpl(
-				question.getJSONObject(PARAMETERS_KEY).getJSONObject("step_information"), new StatusImpl("OK")
+			question.getJSONObject(PARAMETERS_KEY).getJSONObject("step_information"), new StatusImpl("OK")
 		/*
 		 * We can assume that the completion is OK because if it wouldn't be, calling the
 		 * Route.NEW_SESSION would have thrown ServerUnavailableException
@@ -147,27 +148,31 @@ public class AkiwrapperImpl implements Akiwrapper {
 		this.currentStep = 0;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public Question answerCurrentQuestion(Answer answer) throws IOException {
-		if (this.currentQuestion == null)
-			return null;
-
-		JSONObject question = Route.ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
-					"" + this.currentQuestion.getStep(), "" + answer.getId())
+		Question currentQuestion2 = this.currentQuestion;
+		if (currentQuestion2 != null) {
+			JSONObject question = Route.ANSWER
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
+					"" + answer.getId())
 				.getJSON();
+			try {
+				this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY),
+					new StatusImpl(question));
+			} catch (MissingQuestionException e) {
+				this.currentQuestion = null;
+				return null;
+			}
 
-		try {
-			this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
-		} catch (MissingQuestionException e) {
-			this.currentQuestion = null;
-			return null;
+			this.currentStep += 1;
+			return this.currentQuestion;
 		}
 
-		this.currentStep += 1;
-		return this.currentQuestion;
+		return null;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public Question undoAnswer() throws IOException {
 		Question current = getCurrentQuestion();
@@ -178,9 +183,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token,
-					Integer.toString(current.getStep()))
-				.getJSON();
+			.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
+			.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
 
@@ -193,16 +197,17 @@ public class AkiwrapperImpl implements Akiwrapper {
 		return this.currentQuestion;
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public List<Guess> getGuesses() throws IOException {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(this.userAgent)
-					.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
-					.getJSON();
+				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
+				.getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel().equals(Level.ERROR)
-					&& e.getStatus().getReason().equalsIgnoreCase("elem list is empty")) {
+				&& e.getStatus().getReason().equalsIgnoreCase("elem list is empty")) {
 				return Collections.unmodifiableList(new ArrayList<>());
 			}
 

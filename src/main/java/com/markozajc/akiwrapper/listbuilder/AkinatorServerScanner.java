@@ -353,6 +353,7 @@ public class AkinatorServerScanner {
 		return futures;
 	}
 
+	@SuppressWarnings("null")
 	private static Server scanServer(String hostname, int port) {
 		String base = String.format(API_FORMAT, hostname, port);
 

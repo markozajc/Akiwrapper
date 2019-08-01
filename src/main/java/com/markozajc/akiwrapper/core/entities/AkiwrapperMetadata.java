@@ -1,6 +1,7 @@
 package com.markozajc.akiwrapper.core.entities;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
@@ -51,7 +52,7 @@ public abstract class AkiwrapperMetadata {
 	 *         endpoints but some might be down so you should never hard-code usage of a
 	 *         specific API server
 	 */
-	@Nonnull
+	@Nullable
 	public abstract Server getServer();
 
 	/**

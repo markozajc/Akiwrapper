@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.Guess;
@@ -22,30 +23,30 @@ public interface Akiwrapper {
 	 * An enum used to represent an answer to Akinator's question
 	 */
 	public enum Answer {
-	/**
-	 * Answers with "yes" (positive)
-	 */
-	YES(0),
+		/**
+		 * Answers with "yes" (positive)
+		 */
+		YES(0),
 
-	/**
-	 * Answers with "no" (negative)
-	 */
-	NO(1),
+		/**
+		 * Answers with "no" (negative)
+		 */
+		NO(1),
 
-	/**
-	 * Skips this question (neutral answer)
-	 */
-	DONT_KNOW(2),
+		/**
+		 * Skips this question (neutral answer)
+		 */
+		DONT_KNOW(2),
 
-	/**
-	 * Answers with "probably" (almost positive)
-	 */
-	PROBABLY(3),
+		/**
+		 * Answers with "probably" (almost positive)
+		 */
+		PROBABLY(3),
 
-	/**
-	 * Answers with "probably not" (almost negative)
-	 */
-	PROBABLY_NOT(4);
+		/**
+		 * Answers with "probably not" (almost negative)
+		 */
+		PROBABLY_NOT(4);
 
 		private final int id;
 
@@ -111,11 +112,13 @@ public interface Akiwrapper {
 	 *             if API call isn't successful
 	 * @see Akiwrapper#getGuessesAboveProbability(double)
 	 */
+	@Nonnull
 	List<Guess> getGuesses() throws IOException;
 
 	/**
 	 * @return the API server this instance of Akiwrapper uses
 	 */
+	@Nonnull
 	Server getServer();
 
 	/**
@@ -126,6 +129,8 @@ public interface Akiwrapper {
 	 * @throws IOException
 	 * @see Akiwrapper#getGuesses()
 	 */
+	@SuppressWarnings("null")
+	@Nonnull
 	default List<Guess> getGuessesAboveProbability(double probability) throws IOException {
 		return getGuesses().stream().filter(g -> g.getProbability() > probability).collect(Collectors.toList());
 	}
