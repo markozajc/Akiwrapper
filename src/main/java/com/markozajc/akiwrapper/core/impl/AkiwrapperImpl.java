@@ -124,10 +124,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		try {
 			question = Route.NEW_SESSION.getRequest(this.server.getApiUrl(), this.filterProfanity, name).getJSON();
 		} catch (IOException e) {
-			/*
-			 * Shouldn't happen, the server was requested before
-			 */
-
+			// Shouldn't happen, the server was requested before
 			throw new IllegalStateException(e);
 		}
 		// Checks & uses the name
