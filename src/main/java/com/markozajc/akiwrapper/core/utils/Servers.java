@@ -111,8 +111,7 @@ public class Servers {
 	private static boolean isUp(Server server, int attempt) {
 		try {
 			JSONObject question = Route.NEW_SESSION
-				.getRequest(server.getApiUrl(), AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
-					AkiwrapperMetadata.DEFAULT_NAME)
+				.getRequest(server.getApiUrl(), true, AkiwrapperMetadata.DEFAULT_NAME)
 				.getJSON(true);
 			// Checks if a server can be connected to by creating a new session on it
 
