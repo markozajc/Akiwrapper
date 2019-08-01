@@ -102,7 +102,7 @@ public class Route {
 	 */
 	public static final Route NEW_SESSION = new Route(1,
 		"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}",
-		"ETAT=%27EN%27", "cat=1");
+		"ETAT=%%27EN%%27", "cat=1");
 
 	/**
 	 * Answers a question. Parameters:
