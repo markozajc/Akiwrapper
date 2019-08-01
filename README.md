@@ -1,7 +1,7 @@
 [central]: https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central
 [travis]: https://travis-ci.org/markozajc/Akiwrapper.svg?branch=master
 [![travis]](https://travis-ci.org/markozajc/Akiwrapper.svg?branch=master)
-[![central]]
+![central]
 
 
 # Akiwrapper
@@ -9,7 +9,7 @@ Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
 
 ## Installation
 #### Maven
-Put this: into your pom.xml (replace LATEST_VERSION with [![central]]:
+Put this: into your pom.xml (replace LATEST_VERSION with ![central]:
 ```xml
 <dependency>
 	<groupId>com.github.markozajc</groupId>
