@@ -17,11 +17,12 @@ import com.markozajc.akiwrapper.core.utils.Servers;
  */
 public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
+	@Nonnull
 	protected String name;
+	@Nonnull
 	protected String userAgent;
 	protected Server server;
 	protected boolean filterProfanity;
-
 	@Nonnull
 	protected Language localization;
 
@@ -41,8 +42,8 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 *            the localization language that will be passed to the API server. This
 	 *            affects textual elements such as {@link Question}-s
 	 */
-	public MutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
-			@Nonnull Language localization) {
+	public MutableAkiwrapperMetadata(@Nonnull String name, @Nonnull String userAgent, @Nullable Server server,
+		boolean filterProfanity, @Nonnull Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
@@ -62,7 +63,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @return current instance, used for chaining
 	 * @see #getName()
 	 */
-	public MutableAkiwrapperMetadata setName(String name) {
+	public MutableAkiwrapperMetadata setName(@Nonnull String name) {
 		this.name = name;
 
 		return this;
@@ -80,7 +81,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @return current instance, used for chaining
 	 * @see #getUserAgent()
 	 */
-	public MutableAkiwrapperMetadata setUserAgent(@Nullable String userAgent) {
+	public MutableAkiwrapperMetadata setUserAgent(@Nonnull String userAgent) {
 		this.userAgent = userAgent;
 
 		return this;
@@ -100,7 +101,8 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @see Servers#SERVER_GROUPS
 	 * @see ServerGroup#getFirstAvailableServer()
 	 */
-	public MutableAkiwrapperMetadata setServer(Server server) {
+	@Nonnull
+	public MutableAkiwrapperMetadata setServer(@Nullable Server server) {
 		this.server = server;
 
 		return this;
@@ -118,6 +120,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @return current instance, used for chaining
 	 * @see #doesFilterProfanity()
 	 */
+	@Nonnull
 	public MutableAkiwrapperMetadata setFilterProfanity(boolean filterProfanity) {
 		this.filterProfanity = filterProfanity;
 
@@ -136,6 +139,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @return current instance, used for chaining
 	 * @see #getLocalization()
 	 */
+	@Nonnull
 	public MutableAkiwrapperMetadata setLocalization(@Nonnull Language localization) {
 		this.localization = localization;
 

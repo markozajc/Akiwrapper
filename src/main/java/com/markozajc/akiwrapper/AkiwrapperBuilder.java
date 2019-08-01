@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
@@ -19,9 +21,10 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * available server. If a value is not changed, a constant default from
 	 * {@link AkiwrapperMetadata} is used.
 	 */
+	@SuppressWarnings("null")
 	public AkiwrapperBuilder() {
 		super(AkiwrapperMetadata.DEFAULT_NAME, AkiwrapperMetadata.DEFAULT_USER_AGENT, null,
-				AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION);
+			AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION);
 	}
 
 	@Override
@@ -64,6 +67,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * @throws ServerGroupUnavailableException
 	 *             in case no servers of that language are available
 	 */
+	@Nonnull
 	public Akiwrapper build() {
 		return new AkiwrapperImpl(this);
 	}

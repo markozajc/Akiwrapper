@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.entities.Server;
 
 /**
@@ -9,7 +11,9 @@ import com.markozajc.akiwrapper.core.entities.Server;
  */
 public class ServerImpl implements Server {
 
+	@Nonnull
 	private final String host;
+	@Nonnull
 	private final Language localization;
 
 	/**
@@ -20,7 +24,7 @@ public class ServerImpl implements Server {
 	 * @param localization
 	 *            the localization language of this server
 	 */
-	public ServerImpl(String host, Language localization) {
+	public ServerImpl(@Nonnull String host, @Nonnull Language localization) {
 		this.host = host;
 		this.localization = localization;
 	}

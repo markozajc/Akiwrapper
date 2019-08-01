@@ -2,6 +2,7 @@ package com.markozajc.akiwrapper.core.entities;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.Server.Language;
@@ -18,11 +19,13 @@ public interface ServerGroup {
 	/**
 	 * @return current language of this server group
 	 */
+	@Nonnull
 	Language getLocalization();
 
 	/**
 	 * @return an unmodifiable list of servers of this {@link ServerGroup}
 	 */
+	@Nonnull
 	List<Server> getServers();
 
 	/**

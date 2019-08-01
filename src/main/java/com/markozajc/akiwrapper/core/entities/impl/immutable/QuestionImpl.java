@@ -1,5 +1,8 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.core.Route;
@@ -16,12 +19,15 @@ import com.markozajc.akiwrapper.core.utils.JSONUtils;
  */
 public class QuestionImpl implements Question {
 
+	@Nonnull
 	private final String id;
+	@Nonnull
 	private final String question;
-
+	@Nonnegative
 	private final int step;
-
+	@Nonnegative
 	private final double gain;
+	@Nonnegative
 	private final double progression;
 
 	/**
@@ -37,7 +43,8 @@ public class QuestionImpl implements Question {
 	 *             if the message is missing (no more messages left to answer, get the
 	 *             final guesses)
 	 */
-	public QuestionImpl(String id, String question, int step, double gain, double progression, Status status) {
+	public QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
+		@Nonnegative double progression, @Nonnull Status status) {
 		if (status.getLevel().equals(Level.WARNING) && status.getReason().equalsIgnoreCase("no question"))
 			throw new MissingQuestionException();
 
@@ -60,7 +67,8 @@ public class QuestionImpl implements Question {
 	 *             if the message is missing (no more messages left to answer, get the
 	 *             final guesses)
 	 */
-	public QuestionImpl(JSONObject json, Status status) {
+	@SuppressWarnings("null")
+	public QuestionImpl(@Nonnull JSONObject json, @Nonnull Status status) {
 		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equalsIgnoreCase("no question"))
 			throw new MissingQuestionException();
 

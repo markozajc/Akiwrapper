@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
@@ -26,11 +28,12 @@ public interface Server {
 		ITALIAN,
 		JAPANESE,
 		KOREAN,
+		MALAY,
 		POLISH,
 		PORTUGUESE,
 		RUSSIAN,
 		SPANISH,
-		TURKISH;
+		TURKISH,
 	}
 
 	/**
@@ -38,6 +41,7 @@ public interface Server {
 	 * @deprecated Changed for clarification. Use {@link #getApiUrl()} instead.
 	 */
 	@Deprecated
+	@Nonnull
 	default String getBaseUrl() {
 		return getApiUrl();
 	}
@@ -45,6 +49,8 @@ public interface Server {
 	/**
 	 * @return the base (API's) URL for this server
 	 */
+	@SuppressWarnings("null")
+	@Nonnull
 	default String getApiUrl() {
 		return String.format(Servers.BASE_URL_FORMAT, getHost());
 	}
@@ -52,12 +58,14 @@ public interface Server {
 	/**
 	 * @return the bare host for this server (in a {@code hostname:port} format)
 	 */
+	@Nonnull
 	String getHost();
 
 	/**
 	 * @return this server's localization language. The server will return localized
 	 *         elements (eg. questions) depending on its localization language
 	 */
+	@Nonnull
 	Language getLocalization();
 
 	/**

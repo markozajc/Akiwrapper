@@ -33,9 +33,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author Marko Zajc
  */
+@SuppressWarnings("null")
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 public class Servers {
 
+	private static final int MAX_SCRAP_ATTEMPTS = 3;
 	/**
 	 * The format for Akinator's base URL format. Use with
 	 * {@link String#format(String, Object...)} and provide the hostname and the port as
@@ -79,7 +81,7 @@ public class Servers {
 				}
 			}
 
-			servers.forEach((l, s) -> serverGroups.put(l, new ServerGroupImpl(l, s)));
+			servers.forEach((language, server) -> serverGroups.put(language, new ServerGroupImpl(language, server)));
 
 		} catch (Exception e) {
 			System.err.println("[ERROR] Akiwrapper - Couldn't load the server list; " + e); // NOSONAR
@@ -96,23 +98,40 @@ public class Servers {
 	 * @return true if a new session can be created on the provided server, false if not
 	 */
 	public static boolean isUp(Server server) {
+		return isUp(server, 0);
+	}
+
+	/**
+	 * Checks if an API server is online.
+	 *
+	 * @param server
+	 *            a server to check
+	 * @return true if a new session can be created on the provided server, false if not
+	 */
+	private static boolean isUp(Server server, int attempt) {
 		try {
 			JSONObject question = Route.NEW_SESSION
-					.getRequest(server.getApiUrl(), AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
-						AkiwrapperMetadata.DEFAULT_NAME)
-					.getJSON();
+				.getRequest(server.getApiUrl(), AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
+					AkiwrapperMetadata.DEFAULT_NAME)
+				.getJSON(true);
 			// Checks if a server can be connected to by creating a new session on it
 
 			if (new StatusImpl(question).getLevel().equals(Level.OK))
 				return true;
 
 		} catch (StatusException e) {
-			if (e.getStatus().getReason().equals("KEY NOT FOUND")) {
+			if (e.getStatus().getReason().startsWith("KEY NOT FOUND")) {
 				// Checks if the exception was thrown because of an obsolete API key
+
+				if (attempt > MAX_SCRAP_ATTEMPTS)
+					return false;
+				// In case something goes terribly wrong and the API key does not get scraped, but
+				// neither is an exception thrown on the Route.scrapApiKey call - or the KNF error
+				// has been returned for a reason not connected with the API key
 
 				try {
 					Route.accquireApiKey();
-					return isUp(server);
+					return isUp(server, attempt + 1);
 					// Attempts to "rescrap" the API key and run the method again
 
 				} catch (IOException ioe) {
@@ -120,20 +139,12 @@ public class Servers {
 					// (or you haven't updated to the newest version)
 					Logger.getLogger("Akiwrapper").severe("Couldn't scrape the API key; " + ioe.toString());
 					return false;
-
-				} catch (StackOverflowError soe) {
-					// In case something goes terribly wrong and the API key does not get scraped, but
-					// neither is an exception thrown on the Route.scrapApiKey call
-					return false;
 				}
 
 			}
 
-			return false;
-
 		} catch (IllegalArgumentException | IOException e) {
 			// If the server is unreachable
-			return false;
 		}
 
 		return false;
@@ -156,8 +167,8 @@ public class Servers {
 	public static Server getFirstAvailableServer(@Nonnull Language localization) {
 		ServerGroup sg = SERVER_GROUPS.get(localization);
 		if (sg == null)
-			throw new UnsupportedOperationException(
-					"Language " + localization.toString() + " is not supported by the Akinator's API.");
+			throw new IllegalArgumentException(
+				"Language " + localization.toString() + " is not supported by the Akinator's API.");
 
 		Server result = sg.getFirstAvailableServer();
 		if (result == null)

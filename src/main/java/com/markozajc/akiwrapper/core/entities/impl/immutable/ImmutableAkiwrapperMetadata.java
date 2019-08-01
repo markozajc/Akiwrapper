@@ -14,11 +14,13 @@ import com.markozajc.akiwrapper.core.entities.Server.Language;
  */
 public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
+	@Nonnull
 	protected final String name;
+	@Nonnull
 	protected final String userAgent;
+	@Nonnull
 	protected final Server server;
 	protected final boolean filterProfanity;
-
 	@Nonnull
 	protected final Language localization;
 
@@ -38,8 +40,8 @@ public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 *            the localization language that will be passed to the API server. This
 	 *            affects textual elements such as {@link Question}-s
 	 */
-	public ImmutableAkiwrapperMetadata(String name, String userAgent, Server server, boolean filterProfanity,
-			@Nonnull Language localization) {
+	public ImmutableAkiwrapperMetadata(@Nonnull String name, @Nonnull String userAgent, @Nonnull Server server,
+		boolean filterProfanity, @Nonnull Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;

@@ -5,7 +5,7 @@
 
 	<groupId>com.github.markozajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.4.2</version>
+	<version>1.4.3</version>
 
 	<name>Akiwrapper</name>
 	<description>A Java API wrapper for Akinator</description>
@@ -37,16 +37,6 @@
 	<issueManagement>
 		<url>https://github.com/markozajc/Akiwrapper/issues</url>
 	</issueManagement>
-
-	<distributionManagement>
-
-		<repository>
-			<id>bintray</id>
-			<name>Bintray Repo</name>
-			<url>https://api.bintray.com/maven/iareas/Libraries/Akiwrapper/;publish=1</url>
-		</repository>
-
-	</distributionManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -118,6 +108,33 @@
 				<version>2.7</version>
 			</plugin>
 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.8</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
@@ -138,7 +155,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.2.0</version>
+			<version>5.5.1</version>
 			<scope>test</scope>
 		</dependency>
 

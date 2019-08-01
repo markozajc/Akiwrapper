@@ -33,6 +33,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  */
 public class Route {
 
+	private static final Pattern FILTER_ARGUMENT_PATTERN = Pattern.compile("\\{FILTER\\}");
+
 	private static class ApiKey {
 
 		private static final String FORMAT = "frontaddr=%s&uid_ext_session=%s";
@@ -64,7 +66,7 @@ public class Route {
 	// calls)
 
 	private static final Pattern API_KEY_PATTERN = Pattern
-			.compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
+		.compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
 
 	/**
 	 * Scraps the API key from Akinator's website and stores it for later use.
@@ -79,7 +81,7 @@ public class Route {
 			new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
 		if (!matcher.find())
 			throw new IOException(
-					"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+				"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
 
 		return new ApiKey(matcher.group(1), matcher.group(2));
 	}
@@ -98,9 +100,9 @@ public class Route {
 	 * <li>Player's name</li>
 	 * </ol>
 	 */
-	public static final Route NEW_SESSION = new Route(
-			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}",
-			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
+	public static final Route NEW_SESSION = new Route(1,
+		"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}",
+		"ETAT=%27EN%27", "cat=1");
 
 	/**
 	 * Answers a question. Parameters:
@@ -109,7 +111,7 @@ public class Route {
 	 * <li>Answer's ID</li>
 	 * </ol>
 	 */
-	public static final Route ANSWER = new Route("answer?step=%s&answer=%s", "&question_filter=cat=1", 2);
+	public static final Route ANSWER = new Route(2, "answer?step=%s&answer=%s", "&question_filter=cat=1");
 
 	/**
 	 * Cancels (undoes) an answer. Parameters:
@@ -117,7 +119,7 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route CANCEL_ANSWER = new Route("cancel_answer?step=%s&answer=-1", "&question_filter=cat=1", 1);
+	public static final Route CANCEL_ANSWER = new Route(1, "cancel_answer?step=%s&answer=-1", "&question_filter=cat=1");
 
 	/**
 	 * Lists all available guesses. Parameters:
@@ -125,7 +127,7 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route LIST = new Route("list?mode_question=0&step=%s", 1);
+	public static final Route LIST = new Route(1, "list?mode_question=0&step=%s");
 
 	/**
 	 * Tests whether a response is a successful or a failed one.
@@ -153,24 +155,19 @@ public class Route {
 	}
 
 	private final String path;
-	private final String filteredAppendix;
-	private String userAgent;
+	private final String[] filterArguments;
+	private String userAgent = AkiwrapperMetadata.DEFAULT_USER_AGENT;
 
 	private final int parametersQuantity;
 
-	private Route(String path, int parameters) {
-		this(path, "", parameters);
+	private Route(int parameters, String path) {
+		this(parameters, path, new String[0]);
 	}
 
-	private Route(String path, String filteredAppendix, int parameters) {
-		this(path, filteredAppendix, parameters, AkiwrapperMetadata.DEFAULT_USER_AGENT);
-	}
-
-	private Route(String path, String filteredAppendix, int parameters, String userAgent) {
+	private Route(int parameters, String path, String... filterArguments) {
 		this.path = path;
-		this.filteredAppendix = filteredAppendix;
+		this.filterArguments = filterArguments.clone();
 		this.parametersQuantity = parameters;
-		this.userAgent = userAgent;
 	}
 
 	/**
@@ -193,20 +190,36 @@ public class Route {
 	 *             if you have passed too little parameters
 	 */
 	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token, String... parameters)
-			throws IOException {
+		throws IOException {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(
-					"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
+				"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
 
 		String[] encodedParams = new String[parameters.length];
 		for (int i = 0; i < parameters.length; i++)
 			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
 
-		return new Request(new URL(baseUrl
-				+ String.format(this.path.replace("{API_KEY}", accquireApiKey().compile().replace("%", "%%")),
-					(Object[]) encodedParams)
-				+ (filterProfanity ? this.filteredAppendix : "") + (token != null ? token.compile() : "")),
-				this.userAgent);
+		String formattedPath = this.path;
+
+		Matcher matcher = FILTER_ARGUMENT_PATTERN.matcher(formattedPath);
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; matcher.find(); i++) {
+			matcher.appendReplacement(sb, filterProfanity ? this.filterArguments[i] : "");
+		}
+		matcher.appendTail(sb);
+		formattedPath = sb.toString();
+
+		formattedPath = formattedPath.replace("{API_KEY}", accquireApiKey().compile().replace("%", "%%"));
+
+		formattedPath = String.format(formattedPath, (Object[]) encodedParams);
+
+		String jQueryCallback = "jQuery331023608747682107778_" + System.currentTimeMillis();
+		formattedPath = formattedPath + "&callback=" + jQueryCallback;
+
+		if (token != null)
+			formattedPath = formattedPath + token.compile();
+
+		return new Request(new URL(baseUrl + formattedPath), this.userAgent, jQueryCallback);
 	}
 
 	/**
@@ -280,15 +293,16 @@ public class Route {
 		 * alter this value</b>
 		 */
 		@SuppressFBWarnings({
-				"MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
+			"MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
 		})
 		public static int connectionTimeout = 2500; // NOSONAR
 
 		URLConnection connection;
 		private byte[] bytes = null;
+		private final String jQueryCallback;
 
-		Request(URL url, String userAgent) throws IOException {
-
+		Request(URL url, String userAgent, String jQueryCallback) throws IOException {
+			this.jQueryCallback = jQueryCallback;
 			this.connection = url.openConnection();
 			if (connectionTimeout != -1)
 				this.connection.setConnectTimeout(connectionTimeout);
@@ -338,20 +352,22 @@ public class Route {
 		 *
 		 */
 		public JSONObject getJSON(boolean runChecks) throws IOException {
-			JSONObject result = new JSONObject(new String(read(), StandardCharsets.UTF_8));
+			String response = new String(read(), StandardCharsets.UTF_8).replace(this.jQueryCallback, "");
+			response = response.substring(1, response.length() - 1);
+			JSONObject result = new JSONObject(response);
 
 			if (runChecks)
 				testResponse(result, new Server() {
 
 					@Override
 					public Language getLocalization() {
-						return null; // testResponse() does not need to know the language
+						throw new UnsupportedOperationException(); // testResponse() does not need to know the language
 					}
 
 					@Override
 					public String getHost() {
 						return Request.this.connection.getURL().getHost() + ":"
-								+ Request.this.connection.getURL().getPort();
+							+ Request.this.connection.getURL().getPort();
 					}
 
 				});

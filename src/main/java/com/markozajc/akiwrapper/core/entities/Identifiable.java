@@ -1,5 +1,8 @@
 package com.markozajc.akiwrapper.core.entities;
 
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+
 /**
  * An interface used to represent an identifiable object (if the object has an
  * appended ID set by Akinator's servers).
@@ -11,6 +14,7 @@ public interface Identifiable {
 	/**
 	 * @return ID of that object. Each object has an unique ID
 	 */
+	@Nonnull
 	String getId();
 
 	/**
@@ -18,6 +22,7 @@ public interface Identifiable {
 	 *
 	 * @see #getId()
 	 */
+	@Nonnegative
 	default long getIdLong() {
 		return Long.parseLong(getId());
 	}
