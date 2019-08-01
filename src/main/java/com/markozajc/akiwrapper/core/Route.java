@@ -64,7 +64,7 @@ public class Route {
 	// calls)
 
 	private static final Pattern API_KEY_PATTERN = Pattern
-			.compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
+		.compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
 
 	/**
 	 * Scraps the API key from Akinator's website and stores it for later use.
@@ -79,7 +79,7 @@ public class Route {
 			new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
 		if (!matcher.find())
 			throw new IOException(
-					"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+				"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
 
 		return new ApiKey(matcher.group(1), matcher.group(2));
 	}
@@ -99,8 +99,8 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(
-			"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}",
-			"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
+		"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}",
+		"&soft_constraint=ETAT=%27EN%27&question_filter=cat=1", 1);
 
 	/**
 	 * Answers a question. Parameters:
@@ -193,20 +193,19 @@ public class Route {
 	 *             if you have passed too little parameters
 	 */
 	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token, String... parameters)
-			throws IOException {
+		throws IOException {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(
-					"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
+				"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
 
 		String[] encodedParams = new String[parameters.length];
 		for (int i = 0; i < parameters.length; i++)
 			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
 
 		return new Request(new URL(baseUrl
-				+ String.format(this.path.replace("{API_KEY}", accquireApiKey().compile().replace("%", "%%")),
-					(Object[]) encodedParams)
-				+ (filterProfanity ? this.filteredAppendix : "") + (token != null ? token.compile() : "")),
-				this.userAgent);
+			+ String.format(this.path.replace("{API_KEY}", accquireApiKey().compile().replace("%", "%%")),
+				(Object[]) encodedParams)
+			+ (filterProfanity ? this.filteredAppendix : "") + (token != null ? token.compile() : "")), this.userAgent);
 	}
 
 	/**
@@ -280,7 +279,7 @@ public class Route {
 		 * alter this value</b>
 		 */
 		@SuppressFBWarnings({
-				"MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
+			"MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
 		})
 		public static int connectionTimeout = 2500; // NOSONAR
 
@@ -345,13 +344,13 @@ public class Route {
 
 					@Override
 					public Language getLocalization() {
-						return null; // testResponse() does not need to know the language
+						throw new UnsupportedOperationException(); // testResponse() does not need to know the language
 					}
 
 					@Override
 					public String getHost() {
 						return Request.this.connection.getURL().getHost() + ":"
-								+ Request.this.connection.getURL().getPort();
+							+ Request.this.connection.getURL().getPort();
 					}
 
 				});
