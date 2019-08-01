@@ -15,9 +15,9 @@ class TestServerAvailability {
 	 */
 	private static final boolean FAIL_IF_SERVER_DOWN = false;
 	/**
-	 * Whether to fail if a {@link ServerGroup} (a {@link Language}) is unavailable.
+	 * Whether to fail if a {@link ServerGroup} (a {@link Language}) is completely unavailable.
 	 */
-	private static final boolean FAIL_IF_GROUP_DOWN = false;
+	private static final boolean FAIL_IF_GROUP_DOWN = true;
 
 	private static final String GROUP_DOWN = "[FATAL] %s is down!\n";
 	private static final String GROUP_AVAILABLE = "[INFO] %s is up with %s available servers.\n";
