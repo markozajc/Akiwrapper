@@ -1,6 +1,6 @@
 [central]: https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central
 [travis]: https://travis-ci.org/markozajc/Akiwrapper.svg?branch=master
-[![travis]](https://travis-ci.org/markozajc/Akiwrapper.svg?branch=master)
+[![travis]](https://travis-ci.org/markozajc/Akiwrapper)
 ![central]
 
 
