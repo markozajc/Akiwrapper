@@ -21,7 +21,6 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * available server. If a value is not changed, a constant default from
 	 * {@link AkiwrapperMetadata} is used.
 	 */
-	@SuppressWarnings("null")
 	public AkiwrapperBuilder() {
 		super(AkiwrapperMetadata.DEFAULT_NAME, AkiwrapperMetadata.DEFAULT_USER_AGENT, null,
 		    AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION);
@@ -64,7 +63,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 
 	/**
 	 * @return a new {@link Akiwrapper} instance that will use all set preferences
-	 * 
+	 *
 	 * @throws ServerGroupUnavailableException
 	 *             in case no servers of that language are available
 	 */
