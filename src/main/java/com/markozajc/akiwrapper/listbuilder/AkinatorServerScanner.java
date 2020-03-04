@@ -81,15 +81,13 @@ public class AkinatorServerScanner {
 	private static final int FAILURE_COMBO_TOLERANCE = 5;
 	// How many UnknownHostExceptions can be hit before the host scanner aborts
 
-	private static final boolean DEBUG_OUTPUT = true;
+	private static final boolean DEBUG_OUTPUT = false;
 	// Whether to output debug information
 
 	private static final int CONNECTION_TIMEOUT = 150;
 	// Connection timeout. Lower values mean faster but less accurate, higher mean the
 	// opposite. Decreasing this below 70 might go godspeed, but rest assured that
 	// results will be a lot less accurate that way.
-	// Decrease this to get more accurate results (slower, more accurate).
-	// Increase this to allow for better multi-threading (faster, less accurate).
 
 	private static final int THREAD_POOL_SIZE = 1;
 	// Thread poll size of the server scanner ExecutorService fixed thread pool.
@@ -136,8 +134,8 @@ public class AkinatorServerScanner {
 
 	private static final String FILE_CANT_DUMP = "[ERROR] Couldn't dump into %s (%s). %s API servers have been dumped into stout (as JSON)!\n";
 	private static final String FILE_COMPLETE = "=======================================================\n"
-		+ "[INFO] Done! Dumped %s API servers into %s (as JSON)!\n"
-		+ "==========================================================\n";
+	    + "[INFO] Done! Dumped %s API servers into %s (as JSON)!\n"
+	    + "==========================================================\n";
 
 	private static final String STATUS = "[INFO] Scanning ports.. %s/%s (%s%%)\n";
 
@@ -359,12 +357,12 @@ public class AkinatorServerScanner {
 
 		try {
 			String answer = NEW_SESSION.getRequest(String.format(Servers.BASE_URL_FORMAT, base), false, PROBE_NAME)
-				.getJSON()
-				.getJSONObject("parameters")
-				.getJSONObject("step_information")
-				.getJSONArray("answers")
-				.getJSONObject(ANSWER_INDEX)
-				.getString("answer");
+			    .getJSON()
+			    .getJSONObject("parameters")
+			    .getJSONObject("step_information")
+			    .getJSONArray("answers")
+			    .getJSONObject(ANSWER_INDEX)
+			    .getString("answer");
 
 			Language localization = ANSWER_MAPPINGS.get(answer);
 			if (localization == null) {
@@ -400,7 +398,7 @@ public class AkinatorServerScanner {
 	private static void reportStatus(int remaining) {
 
 		System.out.printf(STATUS, remaining, totalPorts,
-			Long.toString(Math.round((double) remaining / (double) totalPorts * 100)).replace(".0", ""));
+		    Long.toString(Math.round((double) remaining / (double) totalPorts * 100)).replace(".0", ""));
 	}
 
 	private static String serializeServers(List<Server> servers) {

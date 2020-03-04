@@ -14,7 +14,9 @@ public class JSONUtils {
 	/**
 	 * @param json
 	 * @param key
+	 * 
 	 * @return value from that key as an integer
+	 * 
 	 * @throws NumberFormatException
 	 *             if the value could in no way be transferred to an integer
 	 */
@@ -31,13 +33,15 @@ public class JSONUtils {
 			return Integer.valueOf((String) object);
 
 		throw new NumberFormatException(
-				"Could not format \"" + object + "\" of type " + object.getClass().getName() + " into an Integer.");
+		    "Could not format \"" + object + "\" of type " + object.getClass().getName() + " into an Integer.");
 	}
 
 	/**
 	 * @param json
 	 * @param key
+	 * 
 	 * @return value from that key as a double
+	 * 
 	 * @throws NumberFormatException
 	 *             if the value could in no way be transferred to a double
 	 */
@@ -54,14 +58,15 @@ public class JSONUtils {
 			return Double.valueOf((String) object);
 
 		throw new NumberFormatException(
-				"Could not format \"" + object + "\" of type " + object.getClass().getName() + " into a Double.");
+		    "Could not format \"" + object + "\" of type " + object.getClass().getName() + " into a Double.");
 	}
 
 	/**
 	 * @param json
 	 * @param key
-	 * @return value from that key as a string (calls {@link Object#toString()} on
-	 *         the object)
+	 * 
+	 * @return value from that key as a string (calls {@link Object#toString()} on the
+	 *         object)
 	 */
 	public static String getString(JSONObject json, String key) {
 		return json.get(key).toString();

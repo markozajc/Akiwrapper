@@ -21,7 +21,9 @@ public class HTTPUtils {
 	 *            connection to read from
 	 *
 	 * @return content as a byte array
+	 * 
 	 * @throws IOException
+	 * 
 	 * @see String#String(byte[], String)
 	 */
 	public static byte[] read(URLConnection conn) throws IOException {

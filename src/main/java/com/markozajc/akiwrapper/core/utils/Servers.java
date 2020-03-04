@@ -95,6 +95,7 @@ public class Servers {
 	 *
 	 * @param server
 	 *            a server to check
+	 * 
 	 * @return true if a new session can be created on the provided server, false if not
 	 */
 	public static boolean isUp(Server server) {
@@ -106,13 +107,14 @@ public class Servers {
 	 *
 	 * @param server
 	 *            a server to check
+	 * 
 	 * @return true if a new session can be created on the provided server, false if not
 	 */
 	private static boolean isUp(Server server, int attempt) {
 		try {
 			JSONObject question = Route.NEW_SESSION
-				.getRequest(server.getApiUrl(), true, AkiwrapperMetadata.DEFAULT_NAME)
-				.getJSON(true);
+			    .getRequest(server.getApiUrl(), true, AkiwrapperMetadata.DEFAULT_NAME)
+			    .getJSON(true);
 			// Checks if a server can be connected to by creating a new session on it
 
 			if (new StatusImpl(question).getLevel().equals(Level.OK))
@@ -155,7 +157,9 @@ public class Servers {
 	 *
 	 * @param localization
 	 *            language of the server to search for
+	 * 
 	 * @return the first server available for that language
+	 * 
 	 * @throws UnsupportedOperationException
 	 *             if language {@code localization} is not supported by the Akinator's
 	 *             API
@@ -167,7 +171,7 @@ public class Servers {
 		ServerGroup sg = SERVER_GROUPS.get(localization);
 		if (sg == null)
 			throw new IllegalArgumentException(
-				"Language " + localization.toString() + " is not supported by the Akinator's API.");
+			    "Language " + localization.toString() + " is not supported by the Akinator's API.");
 
 		Server result = sg.getFirstAvailableServer();
 		if (result == null)

@@ -63,7 +63,6 @@ public class StatusImpl implements Status {
 		return this.level;
 	}
 
-
 	@Override
 	public String toString() {
 		return String.format(STATUS_FORMAT, this.level.toString(), this.reason);

@@ -41,7 +41,7 @@ public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 *            affects textual elements such as {@link Question}-s
 	 */
 	public ImmutableAkiwrapperMetadata(@Nonnull String name, @Nonnull String userAgent, @Nonnull Server server,
-		boolean filterProfanity, @Nonnull Language localization) {
+	                                   boolean filterProfanity, @Nonnull Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;

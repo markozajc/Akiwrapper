@@ -23,6 +23,7 @@ public interface Akiwrapper {
 	 * An enum used to represent an answer to Akinator's question
 	 */
 	public enum Answer {
+
 		/**
 		 * Answers with "yes" (positive)
 		 */
@@ -72,6 +73,7 @@ public interface Akiwrapper {
 	 *            the answer
 	 *
 	 * @return the latest question or null if an answer was found
+	 * 
 	 * @throws IOException
 	 *             if something goes wrong
 	 */
@@ -91,6 +93,7 @@ public interface Akiwrapper {
 	 * {@code null},</strong>
 	 *
 	 * @return the past message
+	 * 
 	 * @throws IOException
 	 */
 	@Nullable
@@ -108,8 +111,10 @@ public interface Akiwrapper {
 
 	/**
 	 * @return an unmodifiable list of Akinator's guesses, empty if there are no guesses
+	 * 
 	 * @throws IOException
 	 *             if API call isn't successful
+	 * 
 	 * @see Akiwrapper#getGuessesAboveProbability(double)
 	 */
 	@Nonnull
@@ -124,9 +129,12 @@ public interface Akiwrapper {
 	/**
 	 * @param probability
 	 *            probability threshold
+	 * 
 	 * @return a list of Akinator's guesses with probability above the specified
 	 *         probability threshold.
+	 * 
 	 * @throws IOException
+	 * 
 	 * @see Akiwrapper#getGuesses()
 	 */
 	@SuppressWarnings("null")

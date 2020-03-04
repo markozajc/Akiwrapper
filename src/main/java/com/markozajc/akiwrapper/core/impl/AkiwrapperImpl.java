@@ -132,10 +132,10 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject identification = question.getJSONObject(PARAMETERS_KEY).getJSONObject("identification");
 
 		this.token = new Token(Long.parseLong(identification.getString("signature")),
-			Integer.parseInt(identification.getString("session")));
+		    Integer.parseInt(identification.getString("session")));
 
 		this.currentQuestion = new QuestionImpl(
-			question.getJSONObject(PARAMETERS_KEY).getJSONObject("step_information"), new StatusImpl("OK")
+		    question.getJSONObject(PARAMETERS_KEY).getJSONObject("step_information"), new StatusImpl("OK")
 		/*
 		 * We can assume that the completion is OK because if it wouldn't be, calling the
 		 * Route.NEW_SESSION would have thrown ServerUnavailableException
@@ -151,12 +151,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 		Question currentQuestion2 = this.currentQuestion;
 		if (currentQuestion2 != null) {
 			JSONObject question = Route.ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
-					"" + answer.getId())
-				.getJSON();
+			    .getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
+			        "" + answer.getId())
+			    .getJSON();
 			try {
 				this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY),
-					new StatusImpl(question));
+				    new StatusImpl(question));
 			} catch (MissingQuestionException e) {
 				this.currentQuestion = null;
 				return null;
@@ -180,8 +180,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-			.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
-			.getJSON();
+		    .getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
+		    .getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
 
@@ -200,11 +200,11 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.setUserAgent(this.userAgent)
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
-				.getJSON();
+			    .getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
+			    .getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel().equals(Level.ERROR)
-				&& e.getStatus().getReason().equalsIgnoreCase("elem list is empty")) {
+			    && e.getStatus().getReason().equalsIgnoreCase("elem list is empty")) {
 				return Collections.unmodifiableList(new ArrayList<>());
 			}
 

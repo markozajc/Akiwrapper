@@ -43,7 +43,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 *            affects textual elements such as {@link Question}-s
 	 */
 	public MutableAkiwrapperMetadata(@Nonnull String name, @Nonnull String userAgent, @Nullable Server server,
-		boolean filterProfanity, @Nonnull Language localization) {
+	                                 boolean filterProfanity, @Nonnull Language localization) {
 		this.name = name;
 		this.userAgent = userAgent;
 		this.server = server;
@@ -60,7 +60,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * Sets user's name.
 	 *
 	 * @param name
+	 * 
 	 * @return current instance, used for chaining
+	 * 
 	 * @see #getName()
 	 */
 	public MutableAkiwrapperMetadata setName(@Nonnull String name) {
@@ -78,7 +80,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * Sets the user-agent.
 	 *
 	 * @param userAgent
+	 * 
 	 * @return current instance, used for chaining
+	 * 
 	 * @see #getUserAgent()
 	 */
 	public MutableAkiwrapperMetadata setUserAgent(@Nonnull String userAgent) {
@@ -96,7 +100,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * Sets the API server.
 	 *
 	 * @param server
+	 * 
 	 * @return current instance, used for chaining
+	 * 
 	 * @see #getServer()
 	 * @see Servers#SERVER_GROUPS
 	 * @see ServerGroup#getFirstAvailableServer()
@@ -117,7 +123,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * Sets the "filter profanity" mode.
 	 *
 	 * @param filterProfanity
+	 * 
 	 * @return current instance, used for chaining
+	 * 
 	 * @see #doesFilterProfanity()
 	 */
 	@Nonnull
@@ -136,7 +144,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * Sets the localization language.
 	 *
 	 * @param localization
+	 * 
 	 * @return current instance, used for chaining
+	 * 
 	 * @see #getLocalization()
 	 */
 	@Nonnull

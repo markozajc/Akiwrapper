@@ -15,7 +15,8 @@ class TestServerAvailability {
 	 */
 	private static final boolean FAIL_IF_SERVER_DOWN = false;
 	/**
-	 * Whether to fail if a {@link ServerGroup} (a {@link Language}) is completely unavailable.
+	 * Whether to fail if a {@link ServerGroup} (a {@link Language}) is completely
+	 * unavailable.
 	 */
 	private static final boolean FAIL_IF_GROUP_DOWN = true;
 

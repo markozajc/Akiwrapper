@@ -66,22 +66,23 @@ public class Route {
 	// calls)
 
 	private static final Pattern API_KEY_PATTERN = Pattern
-		.compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
+	    .compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
 
 	/**
 	 * Scraps the API key from Akinator's website and stores it for later use.
 	 *
 	 * @return the API key
+	 * 
 	 * @throws IOException
 	 *             in case the API key can't be scraped
 	 */
 	@SuppressWarnings("null")
 	public static ApiKey accquireApiKey() throws IOException {
 		Matcher matcher = API_KEY_PATTERN.matcher(
-			new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
+		    new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
 		if (!matcher.find())
 			throw new IOException(
-				"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+			    "Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
 
 		return new ApiKey(matcher.group(1), matcher.group(2));
 	}
@@ -101,8 +102,8 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(1,
-		"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}",
-		"ETAT=%%27EN%%27", "cat=1");
+	    "new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}",
+	    "ETAT=%%27EN%%27", "cat=1");
 
 	/**
 	 * Answers a question. Parameters:
@@ -137,6 +138,7 @@ public class Route {
 	 * @param server
 	 *            the {@link Server} to include in a {@link ServerUnavailableException},
 	 *            if it occurs
+	 * 
 	 * @throws ServerUnavailableException
 	 *             throws if the status is equal to {@link Level#ERROR} and the error
 	 *             message hints that the server is down
@@ -184,16 +186,18 @@ public class Route {
 	 * @param parameters
 	 *            parameters to pass to the route (parameters are specified in that
 	 *            Route's JavaDoc)
+	 * 
 	 * @return a callable request
+	 * 
 	 * @throws IOException
 	 * @throws IllegalArgumentException
 	 *             if you have passed too little parameters
 	 */
-	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token, String... parameters)
-		throws IOException {
+	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token,
+	                          String... parameters) throws IOException {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(
-				"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
+			    "Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
 
 		String[] encodedParams = new String[parameters.length];
 		for (int i = 0; i < parameters.length; i++)
@@ -234,7 +238,9 @@ public class Route {
 	 * @param parameters
 	 *            parameters to pass to the route (parameters are specified in that
 	 *            Route's JavaDoc)
+	 * 
 	 * @return a callable request
+	 * 
 	 * @throws IOException
 	 * @throws IllegalArgumentException
 	 *             if you have passed too little parameters
@@ -248,6 +254,7 @@ public class Route {
 	 * is specified, {@link AkiwrapperMetadata#DEFAULT_USER_AGENT} will be used.
 	 *
 	 * @param userAgent
+	 * 
 	 * @return self, useful for chaining
 	 */
 	public Route setUserAgent(String userAgent) {
@@ -273,6 +280,7 @@ public class Route {
 
 	/**
 	 * @return user-agent for this route
+	 * 
 	 * @see #setUserAgent(String)
 	 */
 	public String getClientBuilder() {
@@ -293,7 +301,7 @@ public class Route {
 		 * alter this value</b>
 		 */
 		@SuppressFBWarnings({
-			"MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
+		    "MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
 		})
 		public static int connectionTimeout = 2500; // NOSONAR
 
@@ -314,7 +322,9 @@ public class Route {
 		 * Reads content of the request's URL into an array of bytes.
 		 *
 		 * @return content as a byte array
+		 * 
 		 * @throws IOException
+		 * 
 		 * @see String#String(byte[], String)
 		 */
 		public byte[] read() throws IOException {
@@ -330,6 +340,7 @@ public class Route {
 		 * Requests the server and returns the route's content as a {@link JSONObject}.
 		 *
 		 * @return route's content
+		 * 
 		 * @throws IOException
 		 * @throws ServerUnavailableException
 		 *             in case the server has went down (very unlikely to ever happen)
@@ -343,7 +354,9 @@ public class Route {
 		 *
 		 * @param runChecks
 		 *            whether to run checks for error status codes.
+		 * 
 		 * @return route's content
+		 * 
 		 * @throws IOException
 		 * @throws ServerUnavailableException
 		 *             thrown if the server has gone down
@@ -366,8 +379,9 @@ public class Route {
 
 					@Override
 					public String getHost() {
-						return Request.this.connection.getURL().getHost() + ":"
-							+ Request.this.connection.getURL().getPort();
+						return Request.this.connection.getURL().getHost()
+						    + ":"
+						    + Request.this.connection.getURL().getPort();
 					}
 
 				});

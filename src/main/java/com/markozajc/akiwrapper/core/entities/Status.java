@@ -11,26 +11,27 @@ public interface Status {
 	 * Indicates API call status level
 	 */
 	public enum Level {
-	/**
-	 * Everything is OK, you may continue normally.
-	 */
-	OK("OK"),
 
-	/**
-	 * The majority call has completed but something minor might have failed/not
-	 * completed.
-	 */
-	WARNING("WARN"),
+		/**
+		 * Everything is OK, you may continue normally.
+		 */
+		OK("OK"),
 
-	/**
-	 * The call has not completed due to an error
-	 */
-	ERROR("KO"),
+		/**
+		 * The majority call has completed but something minor might have failed/not
+		 * completed.
+		 */
+		WARNING("WARN"),
 
-	/**
-	 * Unknown status (should not ever occur under normal circumstances)
-	 */
-	UNKNOWN("");
+		/**
+		 * The call has not completed due to an error
+		 */
+		ERROR("KO"),
+
+		/**
+		 * Unknown status (should not ever occur under normal circumstances)
+		 */
+		UNKNOWN("");
 
 		private String name;
 

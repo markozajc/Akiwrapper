@@ -38,6 +38,7 @@ public interface Server {
 
 	/**
 	 * @return the base (API's) URL for this server
+	 * 
 	 * @deprecated Changed for clarification. Use {@link #getApiUrl()} instead.
 	 */
 	@Deprecated
@@ -73,6 +74,7 @@ public interface Server {
 	 * {@link Servers#isUp(Server)}
 	 *
 	 * @return true if that API server is available, false if not
+	 * 
 	 * @see Servers#isUp(Server)
 	 */
 	default boolean isUp() {

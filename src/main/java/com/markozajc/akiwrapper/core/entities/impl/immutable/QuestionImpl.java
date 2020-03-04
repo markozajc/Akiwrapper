@@ -39,12 +39,13 @@ public class QuestionImpl implements Question {
 	 * @param gain
 	 * @param progression
 	 * @param status
+	 * 
 	 * @throws MissingQuestionException
 	 *             if the message is missing (no more messages left to answer, get the
 	 *             final guesses)
 	 */
 	public QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
-		@Nonnegative double progression, @Nonnull Status status) {
+	                    @Nonnegative double progression, @Nonnull Status status) {
 		if (status.getLevel().equals(Level.WARNING) && status.getReason().equalsIgnoreCase("no question"))
 			throw new MissingQuestionException();
 
@@ -63,6 +64,7 @@ public class QuestionImpl implements Question {
 	 *            {@link Route#NEW_SESSION} > {@link JSONObject} parameters)
 	 * @param status
 	 *            call completion status
+	 * 
 	 * @throws MissingQuestionException
 	 *             if the message is missing (no more messages left to answer, get the
 	 *             final guesses)
