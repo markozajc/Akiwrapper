@@ -46,7 +46,7 @@ public class StatusImpl implements Status {
 	 * Creates a new {@link StatusImpl} instance.
 	 *
 	 * @param json
-	 *            completion level (acquired with (Any {@link Route}) >
+	 *            completion level (acquired with (Any {@link Route}) &gt;
 	 *            {@link JSONObject} completion)
 	 */
 	public StatusImpl(JSONObject json) {

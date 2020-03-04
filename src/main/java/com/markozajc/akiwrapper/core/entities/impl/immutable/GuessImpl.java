@@ -70,8 +70,8 @@ public class GuessImpl implements Guess {
 	 * Creates a new {@link GuessImpl} instance.
 	 *
 	 * @param json
-	 *            JSON parameters to use (acquired with {@link Route#LIST} >
-	 *            {@link JSONArray} elements > {@link JSONObject} (an index) >
+	 *            JSON parameters to use (acquired with {@link Route#LIST} &gt;
+	 *            {@link JSONArray} elements &gt; {@link JSONObject} (an index) &gt;
 	 *            {@link JSONObject} element)
 	 */
 	@SuppressWarnings("null")

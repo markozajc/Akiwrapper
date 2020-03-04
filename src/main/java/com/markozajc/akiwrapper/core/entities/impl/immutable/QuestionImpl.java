@@ -39,7 +39,7 @@ public class QuestionImpl implements Question {
 	 * @param gain
 	 * @param progression
 	 * @param status
-	 * 
+	 *
 	 * @throws MissingQuestionException
 	 *             if the message is missing (no more messages left to answer, get the
 	 *             final guesses)
@@ -61,10 +61,10 @@ public class QuestionImpl implements Question {
 	 *
 	 * @param json
 	 *            JSON parameters to use (acquired with {@link Route#ANSWER} or
-	 *            {@link Route#NEW_SESSION} > {@link JSONObject} parameters)
+	 *            {@link Route#NEW_SESSION} &gt; {@link JSONObject} parameters)
 	 * @param status
 	 *            call completion status
-	 * 
+	 *
 	 * @throws MissingQuestionException
 	 *             if the message is missing (no more messages left to answer, get the
 	 *             final guesses)
