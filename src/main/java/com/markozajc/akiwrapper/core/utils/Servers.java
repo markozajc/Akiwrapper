@@ -51,7 +51,12 @@ public final class Servers {
 		    .orElseThrow(ServerNotFoundException::new);
 	}
 
-	@SuppressWarnings("null")
+	/**
+	 * Fetches and builds a {@link Stream} of {@link Server}s from the server-listing API
+	 * endpoint. All servers in this list should be up and running.
+	 *
+	 * @return a {@link Stream} of all {@link Server}s.
+	 */
 	public static Stream<Server> getServers() {
 		return new XMLDocument(fetchListXml()).nodes("//RESULT/PARAMETERS")
 		    .stream()
