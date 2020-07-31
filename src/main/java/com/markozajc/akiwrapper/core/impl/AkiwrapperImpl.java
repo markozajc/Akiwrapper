@@ -101,7 +101,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 *             {@link AkiwrapperMetadata}.
 	 */
 	@SuppressWarnings("null")
-	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) { // NOSONAR That's a false-positive
+	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) throws ServerNotFoundException { // NOSONAR That's a false-positive
 		this.server = getServer(metadata);
 		this.filterProfanity = metadata.doesFilterProfanity();
 		this.currentStep = 0;
@@ -128,7 +128,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@Nonnull
-	private static Server getServer(@Nonnull AkiwrapperMetadata metadata) {
+	private static Server getServer(@Nonnull AkiwrapperMetadata metadata) throws ServerNotFoundException {
 		Server server = metadata.getServer();
 		if (server == null)
 			server = Servers.findServer(metadata.getLanguage(), metadata.getGuessType());

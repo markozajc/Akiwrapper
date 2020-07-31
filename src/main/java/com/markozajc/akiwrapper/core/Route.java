@@ -53,9 +53,13 @@ public final class Route {
 		    .setDefaultHeader("User-Agent",
 		        "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36"
 		            + "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
-		    .setDefaultHeader("Referer", "https://en.akinator.com/game");
+		    .setDefaultHeader("Referer", "https://en.akinator.com/game")
+		    .cookieSpec("ignore");
 		// Configures necessary headers
 		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
+		// Also disable cookies because they aren't necessary.
+		// NB: use "standard" if they become necessary. Default value causes log spam and
+		// probably doesn't even store cookies right.
 	}
 
 	/**

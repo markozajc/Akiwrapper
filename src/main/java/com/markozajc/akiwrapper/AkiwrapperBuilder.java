@@ -64,7 +64,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 *             available.
 	 */
 	@Nonnull
-	public Akiwrapper build() {
+	public Akiwrapper build() throws ServerNotFoundException {
 		return new AkiwrapperImpl(this);
 	}
 
