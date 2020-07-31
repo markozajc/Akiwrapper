@@ -16,6 +16,7 @@ import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey;
+import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 @SuppressWarnings("javadoc")
 public class AkinatorExample {
@@ -82,10 +83,16 @@ public class AkinatorExample {
 			GuessType guessType = getGuessType(sc);
 			// Gets the guess type.
 
-			Akiwrapper aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity)
-			    .setLanguage(language)
-			    .setGuessType(guessType)
-			    .build();
+			Akiwrapper aw;
+			try {
+				aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity)
+				    .setLanguage(language)
+				    .setGuessType(guessType)
+				    .build();
+			} catch (ServerNotFoundException e) {
+				System.err.println("Invalid combination of language and guess type. Try a different guess type.");
+				return;
+			}
 			// Builds the Akiwrapper instance, this is what we'll be using to perform
 			// operations such as answering questions, fetching guesses, etc.
 

@@ -19,12 +19,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  *
  * @author Marko Zajc
  */
-@SuppressWarnings("null")
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 public final class Servers {
 
 	private static final String FOOTPRINT = "cd8e6509f3420878e18d75b9831b317f";
-	private static final String LIST_URL = "https://global3.akinator.com/ws/instances_v2.php?media_id=14&mode=https&footprint="
+	private static final String LIST_URL = "https://global3.akinator.com/ws/instances_v2.php?media_id=14"
+	    + "&mode=https&footprint="
 	    + FOOTPRINT;
 
 	private Servers() {}
@@ -42,8 +42,10 @@ public final class Servers {
 	 * @throws ServerNotFoundException
 	 *             if there is no server that matches the query.
 	 */
+	@SuppressWarnings("null")
 	@Nonnull
-	public static Server findServer(@Nonnull Language localization, @Nonnull GuessType guessType) {
+	public static Server findServer(@Nonnull Language localization,
+	                                @Nonnull GuessType guessType) throws ServerNotFoundException {
 		return getServers().filter(s -> s.getGuessType() == guessType)
 		    .filter(s -> s.getLanguage() == localization)
 		    .findAny()
@@ -56,6 +58,7 @@ public final class Servers {
 	 *
 	 * @return a {@link Stream} of all {@link Server}s.
 	 */
+	@SuppressWarnings("null")
 	public static Stream<Server> getServers() {
 		return new XMLDocument(fetchListXml()).nodes("//RESULT/PARAMETERS/*")
 		    .stream()
