@@ -12,11 +12,11 @@ import javax.annotation.Nonnull;
 import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
-import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey;
 
 @SuppressWarnings("javadoc")
 public class AkinatorExample {
@@ -175,11 +175,11 @@ public class AkinatorExample {
 				aw.undoAnswer();
 
 			} else if (answer.equals("resetkey")) {
-				Route.accquireApiKey();
+				ApiKey.accquireApiKey();
 
 			} else if (answer.equals("debug")) {
 				System.out.println("Debug information:\n\tCurrent API server: "
-				    + aw.getServer().getApiUrl()
+				    + aw.getServer().getUrl()
 				    + "\n\tCurrent guess count: "
 				    + aw.getGuesses().size());
 				continue;
@@ -187,7 +187,7 @@ public class AkinatorExample {
 
 			} else {
 				System.out.println(
-				    "Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
+				    "Please answer with either [Y]ES, [N]O, [D|ONT |K]NOW, [P]ROBABLY or [P|ROBABLY |N]OT or go back one step with [B]ACK.");
 				continue;
 			}
 
