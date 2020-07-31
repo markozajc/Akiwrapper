@@ -1,6 +1,7 @@
 package com.markozajc.akiwrapper.core;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -165,20 +166,25 @@ public final class Route {
 	 *
 	 * @return a {@link Request}.
 	 *
-	 * @throws IOException
 	 * @throws IllegalArgumentException
 	 *             if you have passed too little parameters.s
 	 */
 	@Nonnull
 	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nullable Token token,
-	                          @Nonnull String... parameters) throws IOException {
+	                          @Nonnull String... parameters) {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(
 			    "Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
 
 		String[] encodedParams = new String[parameters.length];
-		for (int i = 0; i < parameters.length; i++)
-			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
+		for (int i = 0; i < parameters.length; i++) {
+			try {
+				encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// Can not occur
+				throw new RuntimeException(e);
+			}
+		}
 
 		String formattedPath = this.path;
 

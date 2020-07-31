@@ -1,6 +1,5 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
@@ -59,15 +58,15 @@ public class ApiKey {
 	 *
 	 * @return an {@link ApiKey}.
 	 *
-	 * @throws IOException
-	 *             in case the API key can't be scraped
+	 * @throws IllegalStateException
+	 *             if the API key can't be scraped
 	 */
 	@SuppressWarnings("null")
-	public static ApiKey accquireApiKey() throws IOException {
+	public static ApiKey accquireApiKey() {
 		Matcher matcher = API_KEY_PATTERN
 		    .matcher(Route.UNIREST.get(Route.BASE_AKINATOR_URL + "/game").asString().getBody());
 		if (!matcher.find())
-			throw new IOException("Couldn't find the API key! Please consider opening"
+			throw new IllegalStateException("Couldn't find the API key! Please consider opening"
 			    + "a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
 
 		return new ApiKey(matcher.group(1), matcher.group(2));
