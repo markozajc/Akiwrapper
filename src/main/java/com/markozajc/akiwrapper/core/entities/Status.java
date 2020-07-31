@@ -24,9 +24,14 @@ public interface Status {
 		WARNING("WARN"),
 
 		/**
-		 * The call has not completed due to an error
+		 * The call has not completed due to an error.
 		 */
 		ERROR("KO"),
+
+		/**
+		 * The call has completed, but an error has occurred on Akiwrapper's side.
+		 */
+		AKIWRAPPER_ERROR("AW-KO"),
 
 		/**
 		 * Unknown status (should not ever occur under normal circumstances)
@@ -35,7 +40,7 @@ public interface Status {
 
 		private String name;
 
-		private Level(String name) {
+		Level(String name) {
 			this.name = name;
 		}
 
