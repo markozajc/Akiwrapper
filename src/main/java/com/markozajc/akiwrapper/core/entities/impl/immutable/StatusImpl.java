@@ -17,7 +17,8 @@ public class StatusImpl implements Status {
 
 	private static final long serialVersionUID = 1;
 
-	private static final String STATUS_FORMAT = "%s - %s";
+	private static final String DIVIDER = " - ";
+	private static final String STATUS_FORMAT = "%s" + DIVIDER + "%s";
 
 	@Nullable
 	private final String reason;
@@ -46,9 +47,9 @@ public class StatusImpl implements Status {
 
 	@Nullable
 	private static String determineReason(@Nonnull String completion) {
-		int reasonSplitIndex = completion.indexOf(" - ");
+		int reasonSplitIndex = completion.indexOf(DIVIDER);
 		if (reasonSplitIndex != -1)
-			return completion.substring(reasonSplitIndex);
+			return completion.substring(reasonSplitIndex + DIVIDER.length());
 		return null;
 	}
 
