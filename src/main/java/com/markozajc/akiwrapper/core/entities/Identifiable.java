@@ -4,7 +4,7 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 /**
- * An representation of an object with a numeric identifier. Some objects in the API
+ * A representation of an object with a numeric identifier. Some objects in the API
  * have an ID appended to them.
  *
  * @author Marko Zajc
