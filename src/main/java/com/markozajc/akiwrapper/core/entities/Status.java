@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities;
 
+import javax.annotation.Nullable;
+
 /**
  * An interface used to represent API call's completion status.
  *
@@ -8,7 +10,7 @@ package com.markozajc.akiwrapper.core.entities;
 public interface Status {
 
 	/**
-	 * Indicates API call status level
+	 * Indicates the severity of a response from the API server.
 	 */
 	public enum Level {
 
@@ -18,23 +20,26 @@ public interface Status {
 		OK("OK"),
 
 		/**
-		 * The majority call has completed but something minor might have failed/not
-		 * completed.
+		 * The action has completed, but something minor might have failed/not completed.
 		 */
 		WARNING("WARN"),
 
 		/**
-		 * The call has not completed due to an error.
+		 * The action has not completed due to an error.
 		 */
 		ERROR("KO"),
 
 		/**
-		 * The call has completed, but an error has occurred on Akiwrapper's side.
+		 * The action might have completed completed, but an error has occurred on
+		 * Akiwrapper's side. This status is never actually returned by the API, but is made
+		 * up by Akiwrapper internally to indicate some errors caused by invalid or
+		 * unexpected API responses.
 		 */
 		AKIWRAPPER_ERROR("AW-KO"),
 
 		/**
-		 * Unknown status (should not ever occur under normal circumstances)
+		 * Unknown status (should not ever occur under normal circumstances), indicates that
+		 * the status level doesn't match any of the known ones.
 		 */
 		UNKNOWN("");
 
@@ -55,17 +60,20 @@ public interface Status {
 	}
 
 	/**
-	 * Returns error level
+	 * Returns the level of this status. Status level indicates severity of the status.
 	 *
 	 * @return status level
 	 */
 	Level getLevel();
 
 	/**
-	 * Returns error reason
+	 * Returns the status reason or {@code null} if it was not specified. Note that the
+	 * status reason is usually pretty cryptic and won't mean much to regular users or
+	 * anyone not experienced with the Akinator API.
 	 *
-	 * @return error reason or null if level is OK
+	 * @return status reason
 	 */
+	@Nullable
 	String getReason();
 
 }
