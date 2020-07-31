@@ -1,6 +1,5 @@
 package com.markozajc.akiwrapper;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,12 +72,9 @@ public interface Akiwrapper {
 	 *            the answer
 	 *
 	 * @return the latest question or null if an answer was found
-	 *
-	 * @throws IOException
-	 *             if something goes wrong
 	 */
 	@Nullable
-	Question answerCurrentQuestion(Answer answer) throws IOException;
+	Question answerCurrentQuestion(Answer answer);
 
 	/**
 	 * Goes one question backwards.<br>
@@ -92,14 +88,12 @@ public interface Akiwrapper {
 	 * {@code null} as well.</strong>
 	 *
 	 * @return the past message
-	 *
-	 * @throws IOException
 	 */
 	@Nullable
-	Question undoAnswer() throws IOException;
+	Question undoAnswer();
 
 	/**
-	 * Returns current question. You can answer it with
+	 * Returns the current question. You can answer it with
 	 * {@link #answerCurrentQuestion(Answer)}. If there are no more questions left, this
 	 * will return {@code null}.
 	 *
@@ -111,16 +105,13 @@ public interface Akiwrapper {
 	/**
 	 * @return an unmodifiable list of Akinator's guesses, empty if there are no guesses
 	 *
-	 * @throws IOException
-	 *             if API call isn't successful
-	 *
 	 * @see Akiwrapper#getGuessesAboveProbability(double)
 	 */
 	@Nonnull
-	List<Guess> getGuesses() throws IOException;
+	List<Guess> getGuesses();
 
 	/**
-	 * @return the API server this instance of Akiwrapper uses
+	 * @return the API server this instance of Akiwrapper uses.
 	 */
 	@Nonnull
 	Server getServer();
@@ -132,13 +123,11 @@ public interface Akiwrapper {
 	 * @return a list of Akinator's guesses with probability above the specified
 	 *         probability threshold.
 	 *
-	 * @throws IOException
-	 *
 	 * @see Akiwrapper#getGuesses()
 	 */
 	@SuppressWarnings("null")
 	@Nonnull
-	default List<Guess> getGuessesAboveProbability(double probability) throws IOException {
+	default List<Guess> getGuessesAboveProbability(double probability) {
 		return getGuesses().stream().filter(g -> g.getProbability() > probability).collect(Collectors.toList());
 	}
 }

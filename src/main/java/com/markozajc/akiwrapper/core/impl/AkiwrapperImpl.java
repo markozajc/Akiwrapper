@@ -137,7 +137,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@SuppressWarnings("null")
 	@Override
-	public Question answerCurrentQuestion(Answer answer) throws IOException {
+	public Question answerCurrentQuestion(Answer answer) {
 		Question currentQuestion2 = this.currentQuestion;
 		if (currentQuestion2 != null) {
 			JSONObject question = Route.ANSWER
@@ -161,7 +161,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@SuppressWarnings("null")
 	@Override
-	public Question undoAnswer() throws IOException {
+	public Question undoAnswer() {
 		Question current = getCurrentQuestion();
 		if (current == null)
 			return null;
@@ -186,7 +186,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@SuppressWarnings("null")
 	@Override
-	public List<Guess> getGuesses() throws IOException {
+	public List<Guess> getGuesses() {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + this.currentStep)
