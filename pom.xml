@@ -45,6 +45,12 @@
 
 	<dependencies>
 
+		<dependency>
+			<groupId>com.jcabi</groupId>
+			<artifactId>jcabi-xml</artifactId>
+			<version>0.22.2</version>
+		</dependency>
+
 		<!-- JSON parsing -->
 		<dependency>
 			<groupId>org.json</groupId>
@@ -58,6 +64,27 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.6.0</version>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- HTTP requests -->
+		<dependency>
+			<groupId>com.konghq</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>3.7.04</version>
+		</dependency>
+
+		<!-- Cache -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>29.0-jre</version>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.28</version>
 		</dependency>
 
 		<!-- Annotations -->

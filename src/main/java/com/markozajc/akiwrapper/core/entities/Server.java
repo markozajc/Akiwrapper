@@ -1,6 +1,7 @@
 package com.markozajc.akiwrapper.core.entities;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.utils.Servers;
 
@@ -45,6 +46,14 @@ public interface Server {
 		public String getId() {
 			return this.id;
 		}
+
+		@Nullable
+		public static Language getById(@Nonnull String id) {
+			for (Language language : Language.values())
+				if (id.equals(language.getId()))
+					return language;
+			return null;
+		}
 	}
 
 	/**
@@ -56,18 +65,26 @@ public interface Server {
 	@SuppressWarnings("javadoc")
 	public enum GuessType {
 
-		ANIMAL("animals new"),
-		CHARACTER("characters"),
-		OBJECT("objects");
+		ANIMAL(14),
+		CHARACTER(1),
+		OBJECT(2);
 
-		private final String label;
+		private final int id;
 
-		GuessType(String label) {
-			this.label = label;
+		GuessType(int id) {
+			this.id = id;
 		}
 
-		public String getLabel() {
-			return this.label;
+		public int getId() {
+			return this.id;
+		}
+
+		@Nullable
+		public static GuessType getById(int id) {
+			for (GuessType guessType : GuessType.values())
+				if (id == guessType.getId())
+					return guessType;
+			return null;
 		}
 
 	}
