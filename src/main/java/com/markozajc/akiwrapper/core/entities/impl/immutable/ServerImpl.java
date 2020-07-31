@@ -15,16 +15,41 @@ import com.markozajc.akiwrapper.core.entities.Server;
  */
 public class ServerImpl implements Server {
 
-	private static final String LANGUAGE_ID_XPATH = "//LANGUAGE/LANG_ID/text()";
-	private static final String SUBJECT_ID_XPATH = "//SUBJECT/SUBJ_ID/text()";
+	private static final String LANGUAGE_ID_XPATH = "//LANGUAGE/LANG_ID/text()"; // NOSONAR not a URL
+	private static final String SUBJECT_ID_XPATH = "//SUBJECT/SUBJ_ID/text()"; // NOSONAR not a URL
 	private static final String CANDIDATE_URLS_XPATH = "//CANDIDATS/*/text()"; // sic
 	@Nonnull
-	private final String host;
+	private final String url;
 	@Nonnull
 	private final Language localization;
 	@Nonnull
 	private final GuessType guessType;
 
+	/**
+	 * Constructs a new instance of {@link ServerImpl}.
+	 *
+	 * @param url
+	 *            server's URL (for example {@code https://srv3.akinator.com:9331/ws}).
+	 * @param localization
+	 *            server's language.
+	 * @param guessType
+	 *            server's guess type.
+	 */
+	public ServerImpl(@Nonnull String url, @Nonnull Language localization, @Nonnull GuessType guessType) {
+		this.url = url;
+		this.localization = localization;
+		this.guessType = guessType;
+	}
+
+	/**
+	 * Constructs a {@link ServerImpl} from an {@code <INSTANCE>} XML node provided by
+	 * the server-listing API endpoint.
+	 *
+	 * @param instance
+	 *            XML node.
+	 *
+	 * @return a {@link ServerImpl}.
+	 */
 	@SuppressWarnings("null")
 	@Nonnull
 	public static List<ServerImpl> fromXml(@Nonnull XML instance) {
@@ -44,22 +69,6 @@ public class ServerImpl implements Server {
 		    .collect(Collectors.toList());
 	}
 
-	/**
-	 * Creates a new instance of {@link ServerImpl}.
-	 *
-	 * @param host
-	 *            server's host (for example {@code https://srv3.akinator.com:9331/ws}).
-	 * @param localization
-	 *            localization language of this server
-	 * @param guessType
-	 *            guess type of this server
-	 */
-	public ServerImpl(@Nonnull String host, @Nonnull Language localization, @Nonnull GuessType guessType) {
-		this.host = host;
-		this.localization = localization;
-		this.guessType = guessType;
-	}
-
 	@Override
 	public Language getLanguage() {
 		return this.localization;
@@ -72,7 +81,7 @@ public class ServerImpl implements Server {
 
 	@Override
 	public String getUrl() {
-		return this.host;
+		return this.url;
 	}
 
 }
