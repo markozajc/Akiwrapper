@@ -44,8 +44,6 @@ public final class Servers {
 	 */
 	@Nonnull
 	public static Server findServer(@Nonnull Language localization, @Nonnull GuessType guessType) {
-		getServers().map(s -> s.getLanguage() + " - " + s.getGuessType() + " - " + s.getUrl())
-		    .forEach(System.out::println);
 		return getServers().filter(s -> s.getGuessType() == guessType)
 		    .filter(s -> s.getLanguage() == localization)
 		    .findAny()
