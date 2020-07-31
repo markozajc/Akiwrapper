@@ -5,7 +5,6 @@ import javax.annotation.Nonnull;
 
 import org.json.JSONObject;
 
-import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Status;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
@@ -31,7 +30,7 @@ public class QuestionImpl implements Question {
 	private final double progression;
 
 	/**
-	 * Creates a new {@link QuestionImpl} instance from raw parameters.
+	 * Constructs a new {@link QuestionImpl} instance from raw parameters.
 	 *
 	 * @param id
 	 * @param question
@@ -41,13 +40,11 @@ public class QuestionImpl implements Question {
 	 * @param status
 	 *
 	 * @throws MissingQuestionException
-	 *             if the message is missing (no more messages left to answer, get the
-	 *             final guesses)
+	 *             if there are no more questions left.
 	 */
 	public QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
 	                    @Nonnegative double progression, @Nonnull Status status) {
-		if (status.getLevel().equals(Level.WARNING) && status.getReason().equalsIgnoreCase("no question"))
-			throw new MissingQuestionException();
+		checkMissingQuestion(status);
 
 		this.id = id;
 		this.question = question;
@@ -57,28 +54,27 @@ public class QuestionImpl implements Question {
 	}
 
 	/**
-	 * Creates a new {@link QuestionImpl} instance.
+	 * Constructs a new {@link QuestionImpl} instance from a {@link JSONObject}.
 	 *
 	 * @param json
-	 *            JSON parameters to use (acquired with {@link Route#ANSWER} or
-	 *            {@link Route#NEW_SESSION} &gt; {@link JSONObject} parameters)
 	 * @param status
-	 *            call completion status
 	 *
 	 * @throws MissingQuestionException
-	 *             if the message is missing (no more messages left to answer, get the
-	 *             final guesses)
+	 *             if there are no more questions left.
 	 */
 	@SuppressWarnings("null")
 	public QuestionImpl(@Nonnull JSONObject json, @Nonnull Status status) {
-		if (status.getLevel().equals(Level.WARNING) && status.getReason().toLowerCase().equalsIgnoreCase("no question"))
-			throw new MissingQuestionException();
-
+		checkMissingQuestion(status);
 		this.id = json.getString("questionid");
 		this.question = json.getString("question");
 		this.step = JSONUtils.getInteger(json, "step").intValue();
 		this.gain = JSONUtils.getDouble(json, "infogain").doubleValue();
 		this.progression = JSONUtils.getDouble(json, "progression").doubleValue();
+	}
+
+	private static void checkMissingQuestion(@Nonnull Status status) {
+		if (status.getLevel() == Level.WARNING && "no question".equalsIgnoreCase(status.getReason()))
+			throw new MissingQuestionException();
 	}
 
 	@Override
