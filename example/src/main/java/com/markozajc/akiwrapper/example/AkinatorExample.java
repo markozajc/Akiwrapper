@@ -1,6 +1,5 @@
 package com.markozajc.akiwrapper.example;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -130,8 +129,7 @@ public class AkinatorExample {
 		}
 	}
 
-	private static void reviewGuesses(@Nonnull Scanner sc, @Nonnull Akiwrapper aw,
-	                                  @Nonnull List<Long> declined) throws IOException {
+	private static void reviewGuesses(@Nonnull Scanner sc, @Nonnull Akiwrapper aw, @Nonnull List<Long> declined) {
 		for (Guess guess : aw.getGuessesAboveProbability(PROBABILITY_THRESHOLD)) {
 			if (guess.getProbability() > 0.85d && !declined.contains(Long.valueOf(guess.getIdLong()))) {
 				// Checks if this guess complies with the conditions.
@@ -149,7 +147,7 @@ public class AkinatorExample {
 		}
 	}
 
-	private static void answerQuestion(@Nonnull Scanner sc, @Nonnull Akiwrapper aw) throws IOException {
+	private static void answerQuestion(@Nonnull Scanner sc, @Nonnull Akiwrapper aw) {
 		boolean answered = false;
 		while (!answered) {
 			// Iterates while the questions remains unanswered.
