@@ -66,7 +66,7 @@ public class ServerImpl implements Server {
 	}
 
 	@Override
-	public GuessType getSubject() {
+	public GuessType getGuessType() {
 		return this.guessType;
 	}
 

@@ -3,8 +3,6 @@ package com.markozajc.akiwrapper.core.entities;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.markozajc.akiwrapper.core.utils.Servers;
-
 /**
  * An interface representing an API server.
  *
@@ -90,23 +88,12 @@ public interface Server {
 	}
 
 	/**
-	 * @return The base (API's) URL for this server.
-	 *
-	 * @deprecated Changed for clarification. Use {@link #getApiUrl()} instead.
+	 * @return The base (API's) URL for this server. For example,
+	 *         {@code https://srv3.akinator.com:9331/ws}.
 	 */
-	@Deprecated
-	@Nonnull
-	default String getBaseUrl() {
-		return getApiUrl();
-	}
-
-	/**
-	 * @return The base (API's) URL for this server.
-	 */
-	@SuppressWarnings("null")
 	@Nonnull
 	default String getApiUrl() {
-		return String.format(Servers.BASE_URL_FORMAT, getHost());
+		return getHost();
 	}
 
 	/**
@@ -123,22 +110,10 @@ public interface Server {
 	Language getLocalization();
 
 	/**
-	 * @return This server's guess type. The server's guesses will be based on the
-	 *         subject type.
+	 * @return This server's guess type. The server will be returning guesses based on
+	 *         that type.
 	 */
 	@Nonnull
-	GuessType getSubject();
-
-	/**
-	 * Check if the current {@link Server} is still available. This is a shortcut for
-	 * {@link Servers#isUp(Server)}.
-	 *
-	 * @return True if that API server is available, false if not.
-	 *
-	 * @see Servers#isUp(Server)
-	 */
-	default boolean isUp() {
-		return Servers.isUp(this);
-	}
+	GuessType getGuessType();
 
 }
