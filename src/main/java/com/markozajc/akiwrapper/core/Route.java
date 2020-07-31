@@ -125,7 +125,8 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(1,
-	    "https://en.akinator.com/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}&_=%s&urlApiWs=%s",
+	    "https://en.akinator.com/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}"
+	        + "&soft_constraint={FILTER}&question_filter={FILTER}&_=%s&urlApiWs=%s",
 	    "ETAT=%%27EN%%27", "cat=1");
 
 	/**
@@ -135,7 +136,7 @@ public class Route {
 	 * <li>Answer's ID</li>
 	 * </ol>
 	 */
-	public static final Route ANSWER = new Route(2, "answer?step=%s&answer=%s", "&question_filter=cat=1");
+	public static final Route ANSWER = new Route(2, "/answer?step=%s&answer=%s", "&question_filter=cat=1");
 
 	/**
 	 * Cancels (undoes) an answer. Parameters:
@@ -143,7 +144,8 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route CANCEL_ANSWER = new Route(1, "cancel_answer?step=%s&answer=-1", "&question_filter=cat=1");
+	public static final Route CANCEL_ANSWER = new Route(1, "/cancel_answer?step=%s&answer=-1",
+	    "&question_filter=cat=1");
 
 	/**
 	 * Lists all available guesses. Parameters:
@@ -151,7 +153,7 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route LIST = new Route(1, "list?mode_question=0&step=%s");
+	public static final Route LIST = new Route(1, "/list?mode_question=0&step=%s");
 
 	/**
 	 * Tests whether a response is a successful or a failed one.
