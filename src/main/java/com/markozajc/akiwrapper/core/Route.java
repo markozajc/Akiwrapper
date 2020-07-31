@@ -1,6 +1,5 @@
 package com.markozajc.akiwrapper.core;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
@@ -224,13 +223,11 @@ public final class Route {
 	 *
 	 * @return a {@link Request}.
 	 *
-	 * @throws IOException
 	 * @throws IllegalArgumentException
 	 *             if you have passed too little parameters.s
 	 */
 	@Nonnull
-	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity,
-	                          @Nonnull String... parameters) throws IOException {
+	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nonnull String... parameters) {
 		return this.getRequest(baseUrl, filterProfanity, null, parameters);
 	}
 

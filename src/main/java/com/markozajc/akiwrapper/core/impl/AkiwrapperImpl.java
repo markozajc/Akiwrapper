@@ -1,6 +1,5 @@
 package com.markozajc.akiwrapper.core.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -101,23 +100,20 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 *             {@link AkiwrapperMetadata}.
 	 */
 	@SuppressWarnings("null")
-	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) throws ServerNotFoundException { // NOSONAR That's a false-positive
+	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) throws ServerNotFoundException { // NOSONAR That's a
+	                                                                                             // false-positive
 		this.server = getServer(metadata);
 		this.filterProfanity = metadata.doesFilterProfanity();
 		this.currentStep = 0;
 
-		try {
-			JSONObject question;
-			question = Route.NEW_SESSION
-			    .getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()), this.server.getUrl())
-			    .getJSON();
+		JSONObject question;
+		question = Route.NEW_SESSION
+		    .getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()), this.server.getUrl())
+		    .getJSON();
 
-			JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
-			this.token = getToken(parameters);
-			this.currentQuestion = new QuestionImpl(parameters.getJSONObject("step_information"), new StatusImpl("OK"));
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
+		JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
+		this.token = getToken(parameters);
+		this.currentQuestion = new QuestionImpl(parameters.getJSONObject("step_information"), new StatusImpl("OK"));
 	}
 
 	@Nonnull
