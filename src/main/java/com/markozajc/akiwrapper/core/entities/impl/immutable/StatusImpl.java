@@ -15,6 +15,8 @@ import com.markozajc.akiwrapper.core.entities.Status;
  */
 public class StatusImpl implements Status {
 
+	private static final long serialVersionUID = 1;
+
 	private static final String STATUS_FORMAT = "%s - %s";
 
 	@Nullable

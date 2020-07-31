@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities;
 
+import java.io.Serializable;
+
 import javax.annotation.Nullable;
 
 /**
@@ -7,7 +9,7 @@ import javax.annotation.Nullable;
  *
  * @author Marko Zajc
  */
-public interface Status {
+public interface Status extends Serializable {
 
 	/**
 	 * Indicates the severity of a response from the API server.
