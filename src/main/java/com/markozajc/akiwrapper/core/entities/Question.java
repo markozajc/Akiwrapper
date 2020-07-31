@@ -7,8 +7,9 @@ import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
 
 /**
- * A class used to represent Akinator's question that is to be answered with an
- * {@link Answer}.
+ * A representation of Akinator's question that is to be answered with an
+ * {@link Answer}. Each {@link Question} object has a localized string question, a
+ * step number, gain, and progression.
  *
  * @author Marko Zajc
  */
@@ -44,8 +45,8 @@ public interface Question extends Identifiable {
 	double getGain();
 
 	/**
-	 * Returns the actual question that the user must answer. This is provided in
-	 * the language that was specified using the {@link AkiwrapperBuilder}.
+	 * Returns the actual question that the user must answer. This is provided in the
+	 * language that was specified using the {@link AkiwrapperBuilder}.
 	 *
 	 * @return question.
 	 */
