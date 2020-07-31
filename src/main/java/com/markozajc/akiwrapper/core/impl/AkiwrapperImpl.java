@@ -13,7 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.Akiwrapper;
-import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Guess;
@@ -24,7 +23,7 @@ import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
-import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
+import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
@@ -37,10 +36,29 @@ import kong.unirest.Unirest;
  */
 public class AkiwrapperImpl implements Akiwrapper {
 
+	private static final String NO_MORE_QUESTIONS_STATUS = "elem list is empty";
 	private static final String PARAMETERS_KEY = "parameters";
 
+	static {
+		Unirest.config()
+		    .setDefaultHeader("Accept",
+		        "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
+		    .setDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
+		    .setDefaultHeader("X-Requested-With", "XMLHttpRequest")
+		    .setDefaultHeader("Sec-Fetch-Dest", "empty")
+		    .setDefaultHeader("Sec-Fetch-Mode", "cors")
+		    .setDefaultHeader("Sec-Fetch-Site", "same-origin")
+		    .setDefaultHeader("Connection", "keep-alive")
+		    .setDefaultHeader("User-Agent",
+		        "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36"
+		            + "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
+		    .setDefaultHeader("Referer", "https://en.akinator.com/game");
+		// Configures necessary headers
+		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
+	}
+
 	/**
-	 * A class used to define the temporary API token.
+	 * A class used to define the session token.
 	 *
 	 * @author Marko Zajc
 	 */
@@ -80,8 +98,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@Nonnull
-	private final String userAgent;
-	@Nonnull
 	private final Server server;
 	private final boolean filterProfanity;
 	@Nonnull
@@ -96,55 +112,48 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 * first question can be retrieved with {@link #getCurrentQuestion()}.
 	 *
 	 * @param metadata
-	 *            metadata to use. All {@code null} values will be replaced with the
-	 *            default values (you can see defaults at {@link AkiwrapperBuilder}'s
-	 *            getters)
+	 *            {@link AkiwrapperMetadata} to use. All {@code null} values will be
+	 *            replaced with the default values that are specified in
+	 *            {@link AkiwrapperMetadata} as constants.
 	 *
-	 * @throws ServerGroupUnavailableException
-	 *             if no API server is available
-	 * @throws IllegalArgumentException
-	 *             is {@code metadata} is null
+	 * @throws ServerNotFoundException
+	 *             if no {@link Server} is available for the given
+	 *             {@link AkiwrapperMetadata}.
 	 */
 	@SuppressWarnings("null")
 	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) {
-		Server serverCopy = metadata.getServer();
-		if (serverCopy == null)
-			serverCopy = Servers.getFirstAvailableServer(metadata.getLocalization());
-
-		this.server = serverCopy;
-		// Checks & sets the server
-
-		this.userAgent = metadata.getUserAgent();
-		// Checks & sets the user-agent
-
+		this.server = getServer(metadata);
 		this.filterProfanity = metadata.doesFilterProfanity();
-		// Sets the profanity filter
-
-		JSONObject question;
-		String name = metadata.getName();
+		this.currentStep = 0;
 
 		try {
-			question = Route.NEW_SESSION.getRequest(this.server.getApiUrl(), this.filterProfanity, name).getJSON();
+			JSONObject question;
+			question = Route.NEW_SESSION
+			    .getRequest("", this.filterProfanity, metadata.getName(), Long.toString(System.currentTimeMillis()),
+			        this.server.getApiUrl())
+			    .getJSON();
+
+			JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
+			this.token = getToken(parameters);
+			this.currentQuestion = new QuestionImpl(parameters.getJSONObject("step_information"), new StatusImpl("OK"));
 		} catch (IOException e) {
-			// Shouldn't happen, the server was requested before
 			throw new IllegalStateException(e);
 		}
-		// Checks & uses the name
+	}
 
-		JSONObject identification = question.getJSONObject(PARAMETERS_KEY).getJSONObject("identification");
-
-		this.token = new Token(Long.parseLong(identification.getString("signature")),
+	@Nonnull
+	private static Token getToken(@Nonnull JSONObject parameters) {
+		JSONObject identification = parameters.getJSONObject("identification");
+		return new Token(Long.parseLong(identification.getString("signature")),
 		    Integer.parseInt(identification.getString("session")));
+	}
 
-		this.currentQuestion = new QuestionImpl(
-		    question.getJSONObject(PARAMETERS_KEY).getJSONObject("step_information"), new StatusImpl("OK")
-		/*
-		 * We can assume that the completion is OK because if it wouldn't be, calling the
-		 * Route.NEW_SESSION would have thrown ServerUnavailableException
-		 */
-		);
-
-		this.currentStep = 0;
+	@Nonnull
+	private static Server getServer(@Nonnull AkiwrapperMetadata metadata) {
+		Server server = metadata.getServer();
+		if (server == null)
+			server = Servers.findServer(metadata.getLanguage(), metadata.getGuessType());
+		return server;
 	}
 
 	@SuppressWarnings("null")
@@ -201,12 +210,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 	public List<Guess> getGuesses() throws IOException {
 		JSONObject list = null;
 		try {
-			list = Route.LIST.setUserAgent(this.userAgent)
+			list = Route.LIST
 			    .getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
 			    .getJSON();
 		} catch (StatusException e) {
-			if (e.getStatus().getLevel().equals(Level.ERROR)
-			    && e.getStatus().getReason().equalsIgnoreCase("elem list is empty")) {
+			if (e.getStatus().getLevel() == Level.ERROR
+			    && NO_MORE_QUESTIONS_STATUS.equalsIgnoreCase(e.getStatus().getReason())) {
 				return Collections.unmodifiableList(new ArrayList<>());
 			}
 
@@ -227,13 +236,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Override
 	public Server getServer() {
 		return this.server;
-	}
-
-	/**
-	 * @return user-agent that is currently in use
-	 */
-	public String getUserAgent() {
-		return this.userAgent;
 	}
 
 }

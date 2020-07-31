@@ -37,7 +37,7 @@ public final class Servers {
 	public static Server findServer(@Nonnull Language localization, @Nonnull GuessType guessType) {
 		return StandaloneRoutes.getServers()
 		    .filter(s -> s.getGuessType() == guessType)
-		    .filter(s -> s.getLocalization() == localization)
+		    .filter(s -> s.getLanguage() == localization)
 		    .findAny()
 		    .orElseThrow(ServerNotFoundException::new);
 	}
