@@ -24,9 +24,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class Servers {
 
 	private static final String FOOTPRINT = "cd8e6509f3420878e18d75b9831b317f";
-	private static final String LIST_URL = "https://global3.akinator.com/ws/instances_v2.php?media_id=14&footprint="
-	    + FOOTPRINT
-	    + "&mode=https";
+	private static final String LIST_URL = "https://global3.akinator.com/ws/instances_v2.php?media_id=14&mode=https&footprint="
+	    + FOOTPRINT;
 
 	private Servers() {}
 
@@ -45,6 +44,8 @@ public final class Servers {
 	 */
 	@Nonnull
 	public static Server findServer(@Nonnull Language localization, @Nonnull GuessType guessType) {
+		getServers().map(s -> s.getLanguage() + " - " + s.getGuessType() + " - " + s.getUrl())
+		    .forEach(System.out::println);
 		return getServers().filter(s -> s.getGuessType() == guessType)
 		    .filter(s -> s.getLanguage() == localization)
 		    .findAny()
@@ -58,7 +59,7 @@ public final class Servers {
 	 * @return a {@link Stream} of all {@link Server}s.
 	 */
 	public static Stream<Server> getServers() {
-		return new XMLDocument(fetchListXml()).nodes("//RESULT/PARAMETERS")
+		return new XMLDocument(fetchListXml()).nodes("//RESULT/PARAMETERS/*")
 		    .stream()
 		    .flatMap(xml -> ServerImpl.fromXml(xml).stream());
 	}

@@ -60,7 +60,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * @return a new {@link Akiwrapper} instance that will use all set preferences
 	 *
 	 * @throws ServerNotFoundException
-	 *             if no servers with that {@link Language} and {@link GuessType} is
+	 *             if no server with that {@link Language} and {@link GuessType} is
 	 *             available.
 	 */
 	@Nonnull

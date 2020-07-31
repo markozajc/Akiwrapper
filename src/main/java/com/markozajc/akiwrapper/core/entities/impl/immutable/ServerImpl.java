@@ -15,9 +15,9 @@ import com.markozajc.akiwrapper.core.entities.Server;
  */
 public class ServerImpl implements Server {
 
-	private static final String LANGUAGE_ID_XPATH = "//LANGUAGE/LANG_ID/text()"; // NOSONAR not a URL
-	private static final String SUBJECT_ID_XPATH = "//SUBJECT/SUBJ_ID/text()"; // NOSONAR not a URL
-	private static final String CANDIDATE_URLS_XPATH = "//CANDIDATS/*/text()"; // sic
+	private static final String LANGUAGE_ID_XPATH = "LANGUAGE/LANG_ID/text()"; // NOSONAR not a URL
+	private static final String SUBJECT_ID_XPATH = "SUBJECT/SUBJ_ID/text()"; // NOSONAR not a URL
+	private static final String CANDIDATE_URLS_XPATH = "CANDIDATS/*/text()"; // sic
 	@Nonnull
 	private final String url;
 	@Nonnull

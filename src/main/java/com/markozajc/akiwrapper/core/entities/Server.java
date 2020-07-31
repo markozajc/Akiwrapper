@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.Route;
+import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
@@ -61,7 +62,11 @@ public interface Server {
 
 	/**
 	 * Server's guess type (referred to as the "subject" in the API). Decides what kind
-	 * of things server's guesses will represent.
+	 * of things server's guesses will represent.<br>
+	 * <b>Caution!</b> Not all {@link Language}s support all {@link GuessType}s. The
+	 * standard ones seem to be {@link #ANIMAL}, {@link #CHARACTER}, and {@link #OBJECT},
+	 * but you might still face {@link ServerNotFoundException}s using them or other
+	 * ones.
 	 *
 	 * @author Marko Zajc
 	 */
@@ -69,6 +74,8 @@ public interface Server {
 	public enum GuessType {
 
 		ANIMAL(14),
+		MOVIE_TV_SHOW(13),
+		PLACE(7),
 		CHARACTER(1),
 		OBJECT(2);
 
@@ -95,8 +102,8 @@ public interface Server {
 	/**
 	 * Server's host name. As the people behind Akinator tend to mix up their servers and
 	 * the API in general, this should only fetch values from the server-listing endpoint
-	 * (which is done in {@link Servers#getServers()}. The host is a valid URL,
-	 * complete with the path to the endpoint.<br>
+	 * (which is done in {@link Servers#getServers()}. The host is a valid URL, complete
+	 * with the path to the endpoint.<br>
 	 * Example: {@code https://srv3.akinator.com:9331/ws}
 	 *
 	 * @return server's host.
