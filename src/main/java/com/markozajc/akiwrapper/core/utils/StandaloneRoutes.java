@@ -6,10 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jcabi.xml.XMLDocument;
+import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
-
-import kong.unirest.Unirest;
 
 public class StandaloneRoutes {
 
@@ -28,7 +27,7 @@ public class StandaloneRoutes {
 	}
 
 	private static String fetchListXml() {
-		return Unirest.get(LIST_URL).asString().getBody();
+		return Route.UNIREST.get(LIST_URL).asString().getBody();
 	}
 
 }

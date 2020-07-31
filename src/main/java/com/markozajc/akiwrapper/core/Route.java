@@ -2,9 +2,7 @@ package com.markozajc.akiwrapper.core;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,10 +17,10 @@ import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Token;
-import com.markozajc.akiwrapper.core.utils.HTTPUtils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestInstance;
 
 /**
  * A class defining various API endpoints (routes).
@@ -30,6 +28,27 @@ import kong.unirest.Unirest;
  * @author Marko Zajc
  */
 public class Route {
+
+	public static final UnirestInstance UNIREST;
+
+	static {
+		UNIREST = Unirest.spawnInstance();
+		UNIREST.config()
+		    .setDefaultHeader("Accept",
+		        "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
+		    .setDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
+		    .setDefaultHeader("X-Requested-With", "XMLHttpRequest")
+		    .setDefaultHeader("Sec-Fetch-Dest", "empty")
+		    .setDefaultHeader("Sec-Fetch-Mode", "cors")
+		    .setDefaultHeader("Sec-Fetch-Site", "same-origin")
+		    .setDefaultHeader("Connection", "keep-alive")
+		    .setDefaultHeader("User-Agent",
+		        "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36"
+		            + "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
+		    .setDefaultHeader("Referer", "https://en.akinator.com/game");
+		// Configures necessary headers
+		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
+	}
 
 	private static final String SERVER_DOWN_STATUS_MESSAGE = "server down";
 
@@ -78,11 +97,10 @@ public class Route {
 	 */
 	@SuppressWarnings("null")
 	public static ApiKey accquireApiKey() throws IOException {
-		Matcher matcher = API_KEY_PATTERN.matcher(
-		    new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
+		Matcher matcher = API_KEY_PATTERN.matcher(UNIREST.get(BASE_AKINATOR_URL + "/game").asString().getBody());
 		if (!matcher.find())
 			throw new IOException(
-			    "Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+			    "Couldn't find the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
 
 		return new ApiKey(matcher.group(1), matcher.group(2));
 	}
@@ -102,14 +120,13 @@ public class Route {
 	 * {@link #getRequest(String, boolean, String...)} <br>
 	 * Parameters:
 	 * <ol>
-	 * <li>Player's name</li>
 	 * <li>Current time in milliseconds</li>
 	 * <li>API server's URL</li>
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(1,
-	    "https://en.akinator.com/new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}",
-	    "ETAT=%%27EN%%27&_=%s&urlApiWs=%s", "cat=1");
+	    "https://en.akinator.com/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}&_=%s&urlApiWs=%s",
+	    "ETAT=%%27EN%%27", "cat=1");
 
 	/**
 	 * Answers a question. Parameters:
@@ -307,8 +324,10 @@ public class Route {
 		 *
 		 */
 		public JSONObject getJSON(boolean runChecks) {
-			String response = Unirest.get(this.url).asString().getBody().replace(this.jQueryCallback, "");
+			String response = UNIREST.get(this.url).asString().getBody().replace(this.jQueryCallback, "");
 			response = response.substring(1, response.length() - 1);
+			System.out.println(this.url); // TODO remove
+			System.out.println(response); // TODO remove
 			JSONObject result = new JSONObject(response);
 
 			if (runChecks)
