@@ -23,7 +23,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	protected Server server;
 	protected boolean filterProfanity;
 	@Nonnull
-	protected Language localization;
+	protected Language language;
 	@Nonnull
 	protected GuessType guessType;
 
@@ -43,7 +43,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	                                 @Nonnull GuessType guessType) {
 		this.server = server;
 		this.filterProfanity = filterProfanity;
-		this.localization = language;
+		this.language = language;
 		this.guessType = guessType;
 	}
 
@@ -53,7 +53,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	}
 
 	/**
-	 * Sets the {@link Server}.
+	 * Sets the {@link Server}.<br>
+	 * <b>Caution!</b> Setting the server to a non-null value overwrites the
+	 * {@link Language} and the {@link GuessType} with the given {@link Server}'s values.
 	 *
 	 * @param server
 	 *
@@ -65,6 +67,10 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	@Nonnull
 	public MutableAkiwrapperMetadata setServer(@Nullable Server server) {
 		this.server = server;
+		if (server != null) {
+			this.language = server.getLanguage();
+			this.guessType = server.getGuessType();
+		}
 
 		return this;
 	}
@@ -92,11 +98,13 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
 	@Override
 	public Language getLanguage() {
-		return this.localization;
+		return this.language;
 	}
 
 	/**
-	 * Sets the {@link Language}.
+	 * Sets the {@link Language}.<br>
+	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
+	 * {@code null} (meaning it will be automatically selected).
 	 *
 	 * @param language
 	 *
@@ -106,7 +114,8 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 */
 	@Nonnull
 	public MutableAkiwrapperMetadata setLanguage(@Nonnull Language language) {
-		this.localization = language;
+		this.language = language;
+		this.server = null;
 
 		return this;
 	}
@@ -117,7 +126,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	}
 
 	/**
-	 * Sets the {@link GuessType}.
+	 * Sets the {@link GuessType}.<br>
+	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
+	 * {@code null} (meaning it will be automatically selected).
 	 *
 	 * @param guessType
 	 *
@@ -128,6 +139,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	@Nonnull
 	public MutableAkiwrapperMetadata setGuessType(@Nonnull GuessType guessType) {
 		this.guessType = guessType;
+		this.server = null;
 
 		return this;
 	}
