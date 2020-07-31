@@ -1,8 +1,11 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.json.JSONObject;
 
-import com.markozajc.akiwrapper.core.Route;
+import com.google.gson.JsonObject;
 import com.markozajc.akiwrapper.core.entities.Status;
 
 /**
@@ -14,43 +17,45 @@ public class StatusImpl implements Status {
 
 	private static final String STATUS_FORMAT = "%s - %s";
 
+	@Nullable
 	private final String reason;
+	@Nonnull
 	private final Level level;
 
 	/**
-	 * Creates a new {@link StatusImpl} instance from raw parameters.
+	 * Constructs a new {@link StatusImpl} instance from raw parameters.
 	 *
 	 * @param completion
 	 */
-	public StatusImpl(String completion) {
-		if (completion.toLowerCase().startsWith("ok")) {
-			this.level = Level.OK;
-			this.reason = null;
-
-		} else {
-			this.reason = completion.split(" - ", 2)[1];
-
-			if (completion.toLowerCase().startsWith("warn")) {
-				this.level = Level.WARNING;
-
-			} else if (completion.toLowerCase().startsWith("ko")) {
-				this.level = Level.ERROR;
-
-			} else {
-				this.level = Level.UNKNOWN;
-			}
-		}
+	public StatusImpl(@Nonnull String completion) {
+		this.level = determineLevel(completion);
+		this.reason = determineReason(completion);
 	}
 
 	/**
-	 * Creates a new {@link StatusImpl} instance.
+	 * Constructs a new {@link StatusImpl} instance from a {@link JsonObject}.
 	 *
 	 * @param json
-	 *            completion level (acquired with (Any {@link Route}) &gt;
-	 *            {@link JSONObject} completion)
 	 */
-	public StatusImpl(JSONObject json) {
+	@SuppressWarnings("null")
+	public StatusImpl(@Nonnull JSONObject json) {
 		this(json.getString("completion"));
+	}
+
+	@Nullable
+	private static String determineReason(@Nonnull String completion) {
+		int reasonSplitIndex = completion.indexOf(" - ");
+		if (reasonSplitIndex != -1)
+			return completion.substring(reasonSplitIndex);
+		return null;
+	}
+
+	@Nonnull
+	private static Level determineLevel(@Nonnull String completion) {
+		for (Level iteratedLevel : Level.values())
+			if (completion.toLowerCase().startsWith(iteratedLevel.toString().toLowerCase()))
+				return iteratedLevel;
+		return Level.UNKNOWN;
 	}
 
 	@Override
@@ -65,7 +70,10 @@ public class StatusImpl implements Status {
 
 	@Override
 	public String toString() {
-		return String.format(STATUS_FORMAT, this.level.toString(), this.reason);
+		if (getReason() == null)
+			return getLevel().toString();
+		else
+			return String.format(STATUS_FORMAT, getLevel().toString(), getReason());
 	}
 
 }
