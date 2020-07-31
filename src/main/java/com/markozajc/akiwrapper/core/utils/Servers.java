@@ -1,10 +1,15 @@
 package com.markozajc.akiwrapper.core.utils;
 
+import java.util.stream.Stream;
+
 import javax.annotation.Nonnull;
 
+import com.jcabi.xml.XMLDocument;
+import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -17,6 +22,11 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 @SuppressWarnings("null")
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 public final class Servers {
+
+	private static final String FOOTPRINT = "cd8e6509f3420878e18d75b9831b317f";
+	private static final String LIST_URL = "https://global3.akinator.com/ws/instances_v2.php?media_id=14&footprint="
+	    + FOOTPRINT
+	    + "&mode=https";
 
 	private Servers() {}
 
@@ -35,11 +45,21 @@ public final class Servers {
 	 */
 	@Nonnull
 	public static Server findServer(@Nonnull Language localization, @Nonnull GuessType guessType) {
-		return StandaloneRoutes.getServers()
-		    .filter(s -> s.getGuessType() == guessType)
+		return getServers().filter(s -> s.getGuessType() == guessType)
 		    .filter(s -> s.getLanguage() == localization)
 		    .findAny()
 		    .orElseThrow(ServerNotFoundException::new);
+	}
+
+	@SuppressWarnings("null")
+	public static Stream<Server> getServers() {
+		return new XMLDocument(fetchListXml()).nodes("//RESULT/PARAMETERS")
+		    .stream()
+		    .flatMap(xml -> ServerImpl.fromXml(xml).stream());
+	}
+
+	private static String fetchListXml() {
+		return Route.UNIREST.get(LIST_URL).asString().getBody();
 	}
 
 }
