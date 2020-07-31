@@ -19,8 +19,6 @@ import com.markozajc.akiwrapper.core.utils.Servers;
  */
 public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
-	@Nonnull
-	protected String name;
 	@Nullable
 	protected Server server;
 	protected boolean filterProfanity;
@@ -34,8 +32,6 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 *
 	 * @param server
 	 *            API server that the requests will be sent to.
-	 * @param name
-	 *            user's name, does not have any impact on gameplay.
 	 * @param filterProfanity
 	 *            whether to filter out NSFW {@link Question}s and {@link Guess}es.
 	 * @param language
@@ -43,33 +39,12 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @param guessType
 	 *            {@link GuessType} of {@link Guess}es.
 	 */
-	public MutableAkiwrapperMetadata(@Nonnull String name, @Nullable Server server, boolean filterProfanity,
-	                                 @Nonnull Language language, @Nonnull GuessType guessType) {
-		this.name = name;
+	public MutableAkiwrapperMetadata(@Nullable Server server, boolean filterProfanity, @Nonnull Language language,
+	                                 @Nonnull GuessType guessType) {
 		this.server = server;
 		this.filterProfanity = filterProfanity;
 		this.localization = language;
 		this.guessType = guessType;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
-	}
-
-	/**
-	 * Sets user's name.
-	 *
-	 * @param name
-	 *
-	 * @return current instance, used for chaining
-	 *
-	 * @see #getName()
-	 */
-	public MutableAkiwrapperMetadata setName(@Nonnull String name) {
-		this.name = name;
-
-		return this;
 	}
 
 	@Override

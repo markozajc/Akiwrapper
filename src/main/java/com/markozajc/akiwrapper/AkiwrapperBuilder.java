@@ -23,15 +23,8 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * {@link AkiwrapperMetadata} is used.
 	 */
 	public AkiwrapperBuilder() {
-		super(AkiwrapperMetadata.DEFAULT_NAME, null, AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
-		    AkiwrapperMetadata.DEFAULT_LOCALIZATION, AkiwrapperMetadata.DEFAULT_GUESS_TYPE);
-	}
-
-	@Override
-	public AkiwrapperBuilder setName(String name) {
-		super.setName(name);
-
-		return this;
+		super(null, AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION,
+		    AkiwrapperMetadata.DEFAULT_GUESS_TYPE);
 	}
 
 	@Override

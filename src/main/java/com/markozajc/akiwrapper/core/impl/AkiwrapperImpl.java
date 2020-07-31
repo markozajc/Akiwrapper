@@ -27,8 +27,6 @@ import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
-import kong.unirest.Unirest;
-
 /**
  * An implementation of {@link Akiwrapper}.
  *
@@ -38,24 +36,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	private static final String NO_MORE_QUESTIONS_STATUS = "elem list is empty";
 	private static final String PARAMETERS_KEY = "parameters";
-
-	static {
-		Unirest.config()
-		    .setDefaultHeader("Accept",
-		        "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
-		    .setDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
-		    .setDefaultHeader("X-Requested-With", "XMLHttpRequest")
-		    .setDefaultHeader("Sec-Fetch-Dest", "empty")
-		    .setDefaultHeader("Sec-Fetch-Mode", "cors")
-		    .setDefaultHeader("Sec-Fetch-Site", "same-origin")
-		    .setDefaultHeader("Connection", "keep-alive")
-		    .setDefaultHeader("User-Agent",
-		        "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36"
-		            + "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
-		    .setDefaultHeader("Referer", "https://en.akinator.com/game");
-		// Configures necessary headers
-		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
-	}
 
 	/**
 	 * A class used to define the session token.
@@ -129,7 +109,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		try {
 			JSONObject question;
 			question = Route.NEW_SESSION
-			    .getRequest("", this.filterProfanity, metadata.getName(), Long.toString(System.currentTimeMillis()),
+			    .getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()),
 			        this.server.getApiUrl())
 			    .getJSON();
 

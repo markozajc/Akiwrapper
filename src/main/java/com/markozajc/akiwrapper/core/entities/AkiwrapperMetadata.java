@@ -15,11 +15,6 @@ import com.markozajc.akiwrapper.core.entities.Server.Language;
 public abstract class AkiwrapperMetadata {
 
 	/**
-	 * Default name for new {@link Akiwrapper} instances.
-	 */
-	public static final String DEFAULT_NAME = "website-desktop";
-
-	/**
 	 * Default profanity filter preference for new {@link Akiwrapper} instances.
 	 */
 	public static final boolean DEFAULT_FILTER_PROFANITY = false;
@@ -35,12 +30,6 @@ public abstract class AkiwrapperMetadata {
 	 */
 	@Nonnull
 	public static final GuessType DEFAULT_GUESS_TYPE = GuessType.CHARACTER;
-
-	/**
-	 * @return user's name, does not have any impact on gameplay.
-	 */
-	@Nonnull
-	public abstract String getName();
 
 	/**
 	 * @return API server that the requests will be sent to.

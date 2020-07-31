@@ -1,6 +1,7 @@
 package com.markozajc.akiwrapper.example;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -9,11 +10,9 @@ import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
-import com.markozajc.akiwrapper.core.utils.Servers;
 
 @SuppressWarnings("javadoc")
 public class AkinatorExample {
@@ -68,16 +67,6 @@ public class AkinatorExample {
 
 	public static void main(String[] args) throws Exception {
 		try (Scanner sc = new Scanner(System.in)) {
-
-			System.out.println("What's your name? (" + AkiwrapperMetadata.DEFAULT_NAME + ")");
-			String name = sc.nextLine().trim();
-			if (name.equals(""))
-				name = "desktopPlayer";
-			// In case the user has just pressed <ENTER>, we'll use the default setting.
-
-			// Gets user's name (this won't be important in the future but is still done,
-			// for some reason).
-
 			Boolean filterProfanity = null;
 			{
 				System.out.println("What's your age? (18)");
@@ -102,44 +91,41 @@ public class AkinatorExample {
 			// Gets user's age. Like the Akinator's website, this will turn on the profanity
 			// filter if the age entered is below 16.
 
-			Language localization = null;
+			Language language = null;
 			{
-				List<Language> languages = new ArrayList<>(Servers.SERVER_GROUPS.keySet());
+				EnumSet<Language> languages = EnumSet.allOf(Language.class);
 				// Fetches all available languages.
 
 				String unsupportedLanguageMessage = "Sorry, that language isn't supported. Rather try with:"
-						+ languages.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
+				    + languages.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
 				// Does some Java 8 magic to pre-prepare an error message.
 
 				System.out.println("What's your language? (English)");
-				while (localization == null) {
-					String language = sc.nextLine().toLowerCase().trim();
+				while (language == null) {
+					String selectedLanguage = sc.nextLine().toLowerCase().trim();
 
-					if (language.equals("")) {
-						localization = Language.ENGLISH;
+					if (selectedLanguage.equals("")) {
+						language = Language.ENGLISH;
 						continue;
 					}
 
 					Language matching = languages.stream()
-							.filter(l -> l.toString().toLowerCase().equals(language))
-							.findAny()
-							.orElse(null);
+					    .filter(l -> l.toString().toLowerCase().equals(selectedLanguage))
+					    .findAny()
+					    .orElse(null);
 
 					if (matching == null) {
 						System.out.println(unsupportedLanguageMessage);
 						continue;
 					}
 
-					localization = matching;
+					language = matching;
 				}
 			}
 			// Gets user's language. Akinator will give the user localized questions and guesses
 			// depending on user's language.
 
-			Akiwrapper aw = new AkiwrapperBuilder().setName(name)
-					.setFilterProfanity(filterProfanity)
-					.setLocalization(localization)
-					.build();
+			Akiwrapper aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity).setLanguage(language).build();
 			// Builds the Akiwrapper instance, this is what we'll be using to perform
 			// operations such as answering questions, fetching guesses, etc.
 
@@ -161,7 +147,7 @@ public class AkinatorExample {
 
 				if (question.getStep() == 0)
 					System.out.println(
-						"\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
+					    "\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
 				// Displays the tip (only for the first time).
 
 				boolean answered = false;
@@ -192,16 +178,16 @@ public class AkinatorExample {
 						Route.accquireApiKey();
 
 					} else if (answer.equals("debug")) {
-						System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getApiUrl()
-								+ "\n\tCurrent guess count: " + aw.getGuesses().size()
-								+ "\n\tCurrent API server availability: "
-								+ (aw.getServer().isUp() ? "ONLINE" : "OFFILNE"));
+						System.out.println("Debug information:\n\tCurrent API server: "
+						    + aw.getServer().getApiUrl()
+						    + "\n\tCurrent guess count: "
+						    + aw.getGuesses().size());
 						continue;
 						// Displays some debug information.
 
 					} else {
 						System.out.println(
-							"Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
+						    "Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
 						continue;
 					}
 

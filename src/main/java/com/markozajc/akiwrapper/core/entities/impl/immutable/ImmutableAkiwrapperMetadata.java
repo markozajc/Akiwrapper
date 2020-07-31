@@ -17,8 +17,6 @@ import com.markozajc.akiwrapper.core.entities.Server.Language;
  */
 public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
-	@Nonnull
-	protected final String name;
 	@Nullable
 	protected final Server server;
 	protected final boolean filterProfanity;
@@ -32,8 +30,6 @@ public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 *
 	 * @param server
 	 *            API server that the requests will be sent to.
-	 * @param name
-	 *            user's name, does not have any impact on gameplay.
 	 * @param filterProfanity
 	 *            whether to filter out NSFW {@link Question}s and {@link Guess}es.
 	 * @param language
@@ -41,18 +37,12 @@ public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @param guessType
 	 *            {@link GuessType} of {@link Guess}es.
 	 */
-	public ImmutableAkiwrapperMetadata(@Nonnull String name, @Nullable Server server, boolean filterProfanity,
-	                                   @Nonnull Language language, @Nonnull GuessType guessType) {
-		this.name = name;
+	public ImmutableAkiwrapperMetadata(@Nullable Server server, boolean filterProfanity, @Nonnull Language language,
+	                                   @Nonnull GuessType guessType) {
 		this.server = server;
 		this.filterProfanity = filterProfanity;
 		this.localization = language;
 		this.guessType = guessType;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
 	}
 
 	@Override
