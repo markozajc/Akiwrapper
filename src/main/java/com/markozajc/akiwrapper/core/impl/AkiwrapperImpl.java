@@ -28,6 +28,8 @@ import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
+import kong.unirest.Unirest;
+
 /**
  * An implementation of {@link Akiwrapper}.
  *
@@ -90,8 +92,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private Question currentQuestion;
 
 	/**
-	 * Creates a new Akiwrapper and registers a new API session. The first question can
-	 * be retrieved with {@link #getCurrentQuestion()}.
+	 * Constructs a new {@link Akiwrapper} instance and creates a new API session. The
+	 * first question can be retrieved with {@link #getCurrentQuestion()}.
 	 *
 	 * @param metadata
 	 *            metadata to use. All {@code null} values will be replaced with the
@@ -228,7 +230,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	/**
-	 * @return the currently used user-agent
+	 * @return user-agent that is currently in use
 	 */
 	public String getUserAgent() {
 		return this.userAgent;

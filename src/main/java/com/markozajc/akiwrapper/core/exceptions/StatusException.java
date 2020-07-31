@@ -3,7 +3,7 @@ package com.markozajc.akiwrapper.core.exceptions;
 import com.markozajc.akiwrapper.core.entities.Status;
 
 /**
- * An exception signaling that the server returned an error code ("KO").
+ * An exception indicating that the server returned an error code ("KO").
  *
  * @author Marko Zajc
  */
@@ -12,7 +12,7 @@ public class StatusException extends RuntimeException {
 	private final Status status;
 
 	/**
-	 * Creates a new {@link StatusException}.
+	 * Constructs a new {@link StatusException}.
 	 *
 	 * @param status
 	 *            status to append
