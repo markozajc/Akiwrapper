@@ -3,30 +3,38 @@ package com.markozajc.akiwrapper.core.exceptions;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 
 /**
- * An exception representing that the currently used {@link Server} has gone offline.
+ * An exception indicating that the currently used {@link Server} has gone offline.
+ *
+ * @author Marko Zajc
  */
 public class ServerUnavailableException extends StatusException {
 
 	private final String serverUrl;
 
 	/**
-	 * Creates a new {@link ServerUnavailableException} instance for a single server.
+	 * Constructs a new {@link ServerUnavailableException} instance for a single
+	 * {@link Server}.
 	 *
 	 * @param server
+	 *            Unavailable {@link Server}
 	 */
-	public ServerUnavailableException(Server server) {
+	public ServerUnavailableException(@Nonnull Server server) {
 		super(new StatusImpl("KO - SERVER DOWN"));
 		this.serverUrl = server.getApiUrl();
 	}
 
 	/**
-	 * Creates a new {@link ServerUnavailableException} instance for multiple servers.
+	 * Constructs a new {@link ServerUnavailableException} instance for multiple
+	 * {@link Server}s.
 	 *
 	 * @param servers
+	 *            {@link Collection} of unavailable {@link Server}s
 	 */
 	public ServerUnavailableException(Collection<Server> servers) {
 		super(new StatusImpl("KO - SERVER DOWN"));
@@ -34,9 +42,11 @@ public class ServerUnavailableException extends StatusException {
 	}
 
 	/**
-	 * Returns the URL of the API server that went down
+	 * Returns the URL of the {@link Server} that went down. Will return a string of
+	 * multiple URLs delimited by commas in case the {@link Collection} of servers was
+	 * passed to the constructor.
 	 *
-	 * @return API server's URL
+	 * @return URL(s) of {@link Server}(s)
 	 */
 	public String getServerUrl() {
 		return this.serverUrl;

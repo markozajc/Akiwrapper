@@ -1,7 +1,6 @@
 package com.markozajc.akiwrapper.core.utils;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +21,10 @@ public class StandaloneRoutes {
 	    + "&mode=https";
 
 	@SuppressWarnings("null")
-	public static List<Server> getServers() {
+	public static Stream<Server> getServers() {
 		return new XMLDocument(fetchListXml()).nodes("//RESULT/PARAMETERS")
 		    .stream()
-		    .flatMap(xml -> ServerImpl.fromXml(xml).stream())
-		    .collect(Collectors.toList());
+		    .flatMap(xml -> ServerImpl.fromXml(xml).stream());
 	}
 
 	private static String fetchListXml() {
