@@ -67,9 +67,9 @@ public class QuestionImpl implements Question {
 		checkMissingQuestion(status);
 		this.id = json.getString("questionid");
 		this.question = json.getString("question");
-		this.step = JSONUtils.getInteger(json, "step").intValue();
-		this.gain = JSONUtils.getDouble(json, "infogain").doubleValue();
-		this.progression = JSONUtils.getDouble(json, "progression").doubleValue();
+		this.step = JSONUtils.getInteger(json, "step").get().intValue();
+		this.gain = JSONUtils.getDouble(json, "infogain").get().doubleValue();
+		this.progression = JSONUtils.getDouble(json, "progression").get().doubleValue();
 	}
 
 	private static void checkMissingQuestion(@Nonnull Status status) {

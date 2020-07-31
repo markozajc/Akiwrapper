@@ -32,22 +32,6 @@ public class GuessImpl implements Guess {
 	@Nonnegative
 	private final double probability;
 
-	@Nullable
-	private static URL getImage(@Nonnull JSONObject json) {
-		try {
-			return json.getString("picture_path").equals("none.jpg") ? null
-			    : new URL(json.getString("absolute_picture_path"));
-		} catch (MalformedURLException e) {
-			return null;
-		}
-	}
-
-	@Nullable
-	private static String getDescription(@Nonnull JSONObject json) {
-		String desc = json.getString("description");
-		return desc.equals("-") ? null : desc;
-	}
-
 	/**
 	 * Creates a new {@link GuessImpl} instance from raw parameters.
 	 *
@@ -77,7 +61,23 @@ public class GuessImpl implements Guess {
 	@SuppressWarnings("null")
 	public GuessImpl(@Nonnull JSONObject json) {
 		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
-		    JSONUtils.getDouble(json, "proba").doubleValue());
+		    JSONUtils.getDouble(json, "proba").get().doubleValue());
+	}
+
+	@Nullable
+	private static String getDescription(@Nonnull JSONObject json) {
+		String desc = json.getString("description");
+		return "-".equals(desc) ? null : desc;
+	}
+
+	@Nullable
+	private static URL getImage(@Nonnull JSONObject json) {
+		try {
+			return "none.jpg".equals(json.getString("picture_path")) ? null
+			    : new URL(json.getString("absolute_picture_path"));
+		} catch (MalformedURLException e) {
+			return null;
+		}
 	}
 
 	@Override

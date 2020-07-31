@@ -101,7 +101,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 *             {@link AkiwrapperMetadata}.
 	 */
 	@SuppressWarnings("null")
-	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) {
+	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) { // NOSONAR That's a false-positive
 		this.server = getServer(metadata);
 		this.filterProfanity = metadata.doesFilterProfanity();
 		this.currentStep = 0;
@@ -147,7 +147,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 			try {
 				this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY),
 				    new StatusImpl(question));
-			} catch (MissingQuestionException e) {
+			} catch (MissingQuestionException e) { // NOSONAR It does not need to be logged
 				this.currentQuestion = null;
 				return null;
 			}
