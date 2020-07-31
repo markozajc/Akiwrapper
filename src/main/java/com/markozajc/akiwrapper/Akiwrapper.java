@@ -20,7 +20,7 @@ import com.markozajc.akiwrapper.core.entities.Server;
 public interface Akiwrapper {
 
 	/**
-	 * An enum used to represent an answer to Akinator's question
+	 * An enum used to represent an answer to Akinator's question.
 	 */
 	public enum Answer {
 
@@ -73,7 +73,7 @@ public interface Akiwrapper {
 	 *            the answer
 	 *
 	 * @return the latest question or null if an answer was found
-	 * 
+	 *
 	 * @throws IOException
 	 *             if something goes wrong
 	 */
@@ -81,8 +81,7 @@ public interface Akiwrapper {
 	Question answerCurrentQuestion(Answer answer) throws IOException;
 
 	/**
-	 * Goes one step backwards (just like {@link #answerCurrentQuestion(Answer)}, except
-	 * it goes back instead of forward).<br>
+	 * Goes one question backwards.<br>
 	 * For example, if {@link #getCurrentQuestion()} returns a question on step
 	 * {@code 5}, calling this command will make {@link #getCurrentQuestion()} return the
 	 * question from step {@code 4}. You can call this as many times as you want.<br>
@@ -90,10 +89,10 @@ public interface Akiwrapper {
 	 * question on step {@code 0}, calling this will return {@code null} and nothing will
 	 * actually be changed!<br>
 	 * This will also return {@code null} if {@link #getCurrentQuestion()} returns
-	 * {@code null},</strong>
+	 * {@code null} as well.</strong>
 	 *
 	 * @return the past message
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Nullable
@@ -111,10 +110,10 @@ public interface Akiwrapper {
 
 	/**
 	 * @return an unmodifiable list of Akinator's guesses, empty if there are no guesses
-	 * 
+	 *
 	 * @throws IOException
 	 *             if API call isn't successful
-	 * 
+	 *
 	 * @see Akiwrapper#getGuessesAboveProbability(double)
 	 */
 	@Nonnull
@@ -129,12 +128,12 @@ public interface Akiwrapper {
 	/**
 	 * @param probability
 	 *            probability threshold
-	 * 
+	 *
 	 * @return a list of Akinator's guesses with probability above the specified
 	 *         probability threshold.
-	 * 
+	 *
 	 * @throws IOException
-	 * 
+	 *
 	 * @see Akiwrapper#getGuesses()
 	 */
 	@SuppressWarnings("null")

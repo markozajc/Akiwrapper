@@ -4,10 +4,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
+import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.ImmutableAkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
@@ -19,36 +21,35 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
 	@Nonnull
 	protected String name;
-	@Nonnull
-	protected String userAgent;
+	@Nullable
 	protected Server server;
 	protected boolean filterProfanity;
 	@Nonnull
 	protected Language localization;
+	@Nonnull
+	protected GuessType guessType;
 
 	/**
-	 * Creates a new {@link MutableAkiwrapperMetadata} instance.
+	 * Creates a new {@link ImmutableAkiwrapperMetadata} instance.
 	 *
 	 * @param server
-	 *            the API server to use
+	 *            API server that the requests will be sent to.
 	 * @param name
-	 *            player's name (won't have any huge impact but is still passed to the
-	 *            Akinator API for convenience)
-	 * @param userAgent
-	 *            the user-agent to use
+	 *            user's name, does not have any impact on gameplay.
 	 * @param filterProfanity
-	 *            whether to filter out all profanity elements
-	 * @param localization
-	 *            the localization language that will be passed to the API server. This
-	 *            affects textual elements such as {@link Question}-s
+	 *            whether to filter out NSFW {@link Question}s and {@link Guess}es.
+	 * @param language
+	 *            {@link Language} of {@link Question}s.
+	 * @param guessType
+	 *            {@link GuessType} of {@link Guess}es.
 	 */
-	public MutableAkiwrapperMetadata(@Nonnull String name, @Nonnull String userAgent, @Nullable Server server,
-	                                 boolean filterProfanity, @Nonnull Language localization) {
+	public MutableAkiwrapperMetadata(@Nonnull String name, @Nullable Server server, boolean filterProfanity,
+	                                 @Nonnull Language language, @Nonnull GuessType guessType) {
 		this.name = name;
-		this.userAgent = userAgent;
 		this.server = server;
 		this.filterProfanity = filterProfanity;
-		this.localization = localization;
+		this.localization = language;
+		this.guessType = guessType;
 	}
 
 	@Override
@@ -72,32 +73,12 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	}
 
 	@Override
-	public String getUserAgent() {
-		return this.userAgent;
-	}
-
-	/**
-	 * Sets the user-agent.
-	 *
-	 * @param userAgent
-	 *
-	 * @return current instance, used for chaining
-	 *
-	 * @see #getUserAgent()
-	 */
-	public MutableAkiwrapperMetadata setUserAgent(@Nonnull String userAgent) {
-		this.userAgent = userAgent;
-
-		return this;
-	}
-
-	@Override
 	public Server getServer() {
 		return this.server;
 	}
 
 	/**
-	 * Sets the API server.
+	 * Sets the {@link Server}.
 	 *
 	 * @param server
 	 *
@@ -135,22 +116,43 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	}
 
 	@Override
-	public Language getLocalization() {
+	public Language getLanguage() {
 		return this.localization;
 	}
 
 	/**
-	 * Sets the localization language.
+	 * Sets the {@link Language}.
 	 *
-	 * @param localization
+	 * @param language
 	 *
 	 * @return current instance, used for chaining
 	 *
-	 * @see #getLocalization()
+	 * @see #getLanguage()
 	 */
 	@Nonnull
-	public MutableAkiwrapperMetadata setLocalization(@Nonnull Language localization) {
-		this.localization = localization;
+	public MutableAkiwrapperMetadata setLanguage(@Nonnull Language language) {
+		this.localization = language;
+
+		return this;
+	}
+
+	@Override
+	public GuessType getGuessType() {
+		return this.guessType;
+	}
+
+	/**
+	 * Sets the {@link GuessType}.
+	 *
+	 * @param guessType
+	 *
+	 * @return current instance, used for chaining
+	 *
+	 * @see #getLanguage()
+	 */
+	@Nonnull
+	public MutableAkiwrapperMetadata setGuessType(@Nonnull GuessType guessType) {
+		this.guessType = guessType;
 
 		return this;
 	}
