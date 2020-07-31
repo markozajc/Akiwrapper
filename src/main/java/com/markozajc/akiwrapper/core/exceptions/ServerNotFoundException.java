@@ -7,7 +7,7 @@ import com.markozajc.akiwrapper.core.entities.Server;
  *
  * @author Marko Zajc
  */
-public class ServerNotFoundException extends Exception {
+public class ServerNotFoundException extends RuntimeException {
 
 	/**
 	 * Constructs a new {@link ServerNotFoundException}.
