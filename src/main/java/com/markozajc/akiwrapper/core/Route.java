@@ -1,7 +1,6 @@
 package com.markozajc.akiwrapper.core;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,10 +8,14 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.markozajc.akiwrapper.core.entities.Status;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
@@ -23,12 +26,16 @@ import kong.unirest.Unirest;
 import kong.unirest.UnirestInstance;
 
 /**
- * A class defining various API endpoints (routes).
+ * A class defining various API endpoints. It is capable of building such
+ * {@link Route}s into {@link Request}s, which can then easily be executed and read.
  *
  * @author Marko Zajc
  */
-public class Route {
+public final class Route {
 
+	/**
+	 * A public {@link UnirestInstance} with all required default headers set.
+	 */
 	public static final UnirestInstance UNIREST;
 
 	static {
@@ -50,60 +57,12 @@ public class Route {
 		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
 	}
 
-	private static final String SERVER_DOWN_STATUS_MESSAGE = "server down";
-
-	private static final Pattern FILTER_ARGUMENT_PATTERN = Pattern.compile("\\{FILTER\\}");
-
-	private static class ApiKey {
-
-		private static final String FORMAT = "frontaddr=%s&uid_ext_session=%s";
-
-		@Nonnull
-		private final String sessionUid;
-		@Nonnull
-		private final String frontAddress;
-
-		ApiKey(@Nonnull String sessionUid, @Nonnull String frontAddress) {
-			this.sessionUid = sessionUid;
-			this.frontAddress = frontAddress;
-		}
-
-		@SuppressWarnings("null")
-		@Nonnull
-		String compile() {
-			try {
-				return String.format(FORMAT, URLEncoder.encode(this.frontAddress, "UTF-8"), this.sessionUid);
-			} catch (UnsupportedEncodingException e) {
-				return ""; // never throws
-			}
-		}
-
-	}
-
-	private static final String BASE_AKINATOR_URL = "https://en.akinator.com";
-	// The base Akinator URL, used for scraping various elements (and not for the API
-	// calls)
-
-	private static final Pattern API_KEY_PATTERN = Pattern
-	    .compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
-
 	/**
-	 * Scraps the API key from Akinator's website and stores it for later use.
-	 *
-	 * @return the API key
-	 *
-	 * @throws IOException
-	 *             in case the API key can't be scraped
+	 * The base Akinator URL, used for scraping and some API calls.
 	 */
-	@SuppressWarnings("null")
-	public static ApiKey accquireApiKey() throws IOException {
-		Matcher matcher = API_KEY_PATTERN.matcher(UNIREST.get(BASE_AKINATOR_URL + "/game").asString().getBody());
-		if (!matcher.find())
-			throw new IOException(
-			    "Couldn't find the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
-
-		return new ApiKey(matcher.group(1), matcher.group(2));
-	}
+	public static final String BASE_AKINATOR_URL = "https://en.akinator.com";
+	private static final String SERVER_DOWN_STATUS_MESSAGE = "server down";
+	private static final Pattern FILTER_ARGUMENT_PATTERN = Pattern.compile("\\{FILTER\\}");
 
 	/**
 	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting this
@@ -125,7 +84,8 @@ public class Route {
 	 * </ol>
 	 */
 	public static final Route NEW_SESSION = new Route(1,
-	    "https://en.akinator.com/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}"
+	    BASE_AKINATOR_URL
+	        + "/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}"
 	        + "&soft_constraint={FILTER}&question_filter={FILTER}&_=%s&urlApiWs=%s",
 	    "ETAT=%%27EN%%27", "cat=1");
 
@@ -155,6 +115,23 @@ public class Route {
 	 */
 	public static final Route LIST = new Route(1, "/list?mode_question=0&step=%s");
 
+	@Nonnull
+	private final String path;
+	@Nonnull
+	private final String[] filterArguments;
+
+	private final int parametersQuantity;
+
+	private Route(int parameters, @Nonnull String path) {
+		this(parameters, path, new String[0]);
+	}
+
+	private Route(int parameters, @Nonnull String path, @Nonnull String... filterArguments) {
+		this.path = path;
+		this.filterArguments = filterArguments.clone();
+		this.parametersQuantity = parameters;
+	}
+
 	/**
 	 * Tests whether a response is a successful or a failed one.
 	 *
@@ -167,9 +144,9 @@ public class Route {
 	 * @throws StatusException
 	 *             thrown if the status is equal to {@link Level#ERROR}
 	 */
-	public static void testResponse(JSONObject response) {
+	public static void testResponse(@Nonnull JSONObject response) {
 		Status completion = new StatusImpl(response);
-		if (completion.getLevel() == Level.ERROR) {
+		if (completion.getLevel() == Status.Level.ERROR) {
 			if (SERVER_DOWN_STATUS_MESSAGE.equalsIgnoreCase(completion.getReason()))
 				throw new ServerUnavailableException(completion);
 
@@ -177,44 +154,24 @@ public class Route {
 		}
 	}
 
-	private final String path;
-	private final String[] filterArguments;
-
-	private final int parametersQuantity;
-
-	private Route(int parameters, String path) {
-		this(parameters, path, new String[0]);
-	}
-
-	private Route(int parameters, String path, String... filterArguments) {
-		this.path = path;
-		this.filterArguments = filterArguments.clone();
-		this.parametersQuantity = parameters;
-	}
-
 	/**
-	 * Creates a request for this route that can later be called and converted into a
-	 * {@link JSONObject}.
+	 * Constructs a {@link Request} for a route that can later be executed and converted
+	 * into a {@link JSONObject}.
 	 *
 	 * @param baseUrl
-	 *            base (API's) URL
 	 * @param filterProfanity
-	 *            whether to filter profanity. Akinator's website will automatically
-	 *            enable that if you choose an age below 16
 	 * @param token
-	 *            the token used for session authentication
 	 * @param parameters
-	 *            parameters to pass to the route (parameters are specified in that
-	 *            Route's JavaDoc)
 	 *
-	 * @return a {@link Request}
+	 * @return a {@link Request}.
 	 *
 	 * @throws IOException
 	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters
+	 *             if you have passed too little parameters.s
 	 */
-	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token,
-	                          String... parameters) throws IOException {
+	@Nonnull
+	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nullable Token token,
+	                          @Nonnull String... parameters) throws IOException {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException(
 			    "Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
@@ -233,7 +190,7 @@ public class Route {
 		matcher.appendTail(sb);
 		formattedPath = sb.toString();
 
-		formattedPath = formattedPath.replace("{API_KEY}", accquireApiKey().compile().replace("%", "%%"));
+		formattedPath = formattedPath.replace("{API_KEY}", ApiKey.accquireApiKey().compile().replace("%", "%%"));
 
 		formattedPath = String.format(formattedPath, (Object[]) encodedParams);
 
@@ -247,38 +204,44 @@ public class Route {
 	}
 
 	/**
-	 * Creates a request for this route that can later be called and converted into a
-	 * {@link JSONObject}.
+	 * Constructs a {@link Request} for a route that can later be executed and converted
+	 * into a {@link JSONObject}. The resulting {@link Request} does not perform any
+	 * session authentication with a {@link Token}.
 	 *
 	 * @param baseUrl
-	 *            base (API's) URL
 	 * @param filterProfanity
-	 *            whether to filter profanity. Akinator's website will automatically
-	 *            enable that if you choose an age below 16
 	 * @param parameters
-	 *            parameters to pass to the route (parameters are specified in that
-	 *            Route's JavaDoc)
 	 *
-	 * @return a callable request
+	 * @return a {@link Request}.
 	 *
 	 * @throws IOException
 	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters
+	 *             if you have passed too little parameters.s
 	 */
-	public Request getRequest(String baseUrl, boolean filterProfanity, String... parameters) throws IOException {
+	@Nonnull
+	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity,
+	                          @Nonnull String... parameters) throws IOException {
 		return this.getRequest(baseUrl, filterProfanity, null, parameters);
 	}
 
 	/**
-	 * @return route's path (unformatted)
+	 * Returns {@link Route}'s unformatted path.
+	 *
+	 * @return route's path.
 	 */
+	@Nonnull
 	public String getPath() {
 		return this.path;
 	}
 
 	/**
-	 * @return the minimal quantity of parameters you would have to pass to
-	 *         {@link #getRequest(String, boolean, String...)}
+	 * Returns the minimal quantity of parameters that must be passed to
+	 * {@link #getRequest(String, boolean, String...)} and
+	 * {@link #getRequest(String, boolean, Token, String...)}. If the amount of passed
+	 * parameters is lower than this number, an {@link IllegalArgumentException} is
+	 * thrown.
+	 *
+	 * @return minimal quantity of parameters.
 	 */
 	public int getParametersQuantity() {
 		return this.parametersQuantity;
@@ -291,10 +254,14 @@ public class Route {
 	 */
 	public static class Request {
 
+		private static final Logger LOG = LoggerFactory.getLogger(Route.Request.class);
+
+		@Nonnull
 		private final String url;
+		@Nonnull
 		private final String jQueryCallback;
 
-		Request(String url, String jQueryCallback) {
+		Request(@Nonnull String url, @Nonnull String jQueryCallback) {
 			this.jQueryCallback = jQueryCallback;
 			this.url = url;
 		}
@@ -306,7 +273,10 @@ public class Route {
 		 *
 		 * @throws ServerUnavailableException
 		 *             if the server has gone down
+		 * @throws StatusException
+		 *             if the server returns an error response.
 		 */
+		@Nonnull
 		public JSONObject getJSON() {
 			return getJSON(defaultRunChecks);
 		}
@@ -320,17 +290,24 @@ public class Route {
 		 * @return route's content
 		 *
 		 * @throws ServerUnavailableException
-		 *             if the server has gone down
+		 *             if the server has gone down.
 		 * @throws StatusException
-		 *             if the server returns an error response
+		 *             if the server returns an error response.
 		 *
 		 */
+		@Nonnull
 		public JSONObject getJSON(boolean runChecks) {
 			String response = UNIREST.get(this.url).asString().getBody().replace(this.jQueryCallback, "");
 			response = response.substring(1, response.length() - 1);
-			System.out.println(this.url); // TODO remove
-			System.out.println(response); // TODO remove
-			JSONObject result = new JSONObject(response);
+			LOG.trace("--> {}", this.url);
+			LOG.trace("<-- {}", response);
+			JSONObject result;
+			try {
+				result = new JSONObject(response);
+			} catch (JSONException e) {
+				LOG.error("Failed to parse JSON from the API server", e);
+				throw new StatusException(new StatusImpl("AW-KO - COULDN'T PARSE JSON"));
+			}
 
 			if (runChecks)
 				testResponse(result);

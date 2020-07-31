@@ -44,7 +44,7 @@ public interface Question extends Identifiable {
 	double getGain();
 
 	/**
-	 * Returns the actual question that the user must answer. The question is provided in
+	 * Returns the actual question that the user must answer. This is provided in
 	 * the language that was specified using the {@link AkiwrapperBuilder}.
 	 *
 	 * @return question.

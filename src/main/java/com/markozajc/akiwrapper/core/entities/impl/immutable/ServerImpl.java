@@ -71,7 +71,7 @@ public class ServerImpl implements Server {
 	}
 
 	@Override
-	public String getHost() {
+	public String getUrl() {
 		return this.host;
 	}
 

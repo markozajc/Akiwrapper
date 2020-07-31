@@ -3,8 +3,13 @@ package com.markozajc.akiwrapper.core.entities;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.markozajc.akiwrapper.core.Route;
+import com.markozajc.akiwrapper.core.utils.StandaloneRoutes;
+
 /**
- * An interface representing an API server.
+ * A representation of an API server. All requests (except for
+ * {@link Route#NEW_SESSION} are passed to an such server. Each server has a
+ * predefined {@link Language} and {@link GuessType}.
  *
  * @author Marko Zajc
  */
@@ -88,30 +93,31 @@ public interface Server {
 	}
 
 	/**
-	 * @return The base (API's) URL for this server. For example,
-	 *         {@code https://srv3.akinator.com:9331/ws}.
+	 * Server's host name. As the people behind Akinator tend to mix up their servers and
+	 * the API in general, this should only fetch values from the server-listing endpoint
+	 * (which is done in {@link StandaloneRoutes#getServers()}. The host is a valid URL,
+	 * complete with the path to the endpoint.<br>
+	 * Example: {@code https://srv3.akinator.com:9331/ws}
+	 *
+	 * @return server's host.
 	 */
 	@Nonnull
-	default String getApiUrl() {
-		return getHost();
-	}
+	String getUrl();
 
 	/**
-	 * @return The bare host for this server (in a {@code hostname:port} format).
-	 */
-	@Nonnull
-	String getHost();
-
-	/**
-	 * @return This server's {@link Language}. The server will return localized
-	 *         {@link Question}s and {@link Guess}es depending on its language.
+	 * Returns this {@link Server}'s {@link Language}. The server will return localized
+	 * {@link Question}s and {@link Guess}es depending on its {@link Language}.
+	 *
+	 * @return server's language.
 	 */
 	@Nonnull
 	Language getLanguage();
 
 	/**
-	 * @return This server's guess type. The server will be returning guesses based on
-	 *         that type.
+	 * Returns this server's {@link GuessType}. The server will be returning guesses
+	 * based on that type (also referred to as the subject).
+	 *
+	 * @return server's guess type.
 	 */
 	@Nonnull
 	GuessType getGuessType();

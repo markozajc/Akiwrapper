@@ -109,8 +109,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		try {
 			JSONObject question;
 			question = Route.NEW_SESSION
-			    .getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()),
-			        this.server.getApiUrl())
+			    .getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()), this.server.getUrl())
 			    .getJSON();
 
 			JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
@@ -142,7 +141,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		Question currentQuestion2 = this.currentQuestion;
 		if (currentQuestion2 != null) {
 			JSONObject question = Route.ANSWER
-			    .getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
+			    .getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
 			        "" + answer.getId())
 			    .getJSON();
 			try {
@@ -171,7 +170,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-		    .getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
+		    .getRequest(this.server.getUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
 		    .getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
@@ -190,8 +189,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	public List<Guess> getGuesses() throws IOException {
 		JSONObject list = null;
 		try {
-			list = Route.LIST
-			    .getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
+			list = Route.LIST.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + this.currentStep)
 			    .getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel() == Level.ERROR
