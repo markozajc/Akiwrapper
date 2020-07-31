@@ -61,7 +61,7 @@ public class ServerImpl implements Server {
 	}
 
 	@Override
-	public Language getLocalization() {
+	public Language getLanguage() {
 		return this.localization;
 	}
 

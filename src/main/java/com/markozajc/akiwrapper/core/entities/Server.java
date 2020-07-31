@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 public interface Server {
 
 	/**
-	 * A localization language specific to a {@link Server} (or a {@link ServerGroup}).
+	 * A language specific to a {@link Server}.
 	 *
 	 * @author Marko Zajc
 	 */
@@ -103,11 +103,11 @@ public interface Server {
 	String getHost();
 
 	/**
-	 * @return This server's localization language. The server will return localized
-	 *         elements (eg. questions) depending on its localization language.
+	 * @return This server's {@link Language}. The server will return localized
+	 *         {@link Question}s and {@link Guess}es depending on its language.
 	 */
 	@Nonnull
-	Language getLocalization();
+	Language getLanguage();
 
 	/**
 	 * @return This server's guess type. The server will be returning guesses based on

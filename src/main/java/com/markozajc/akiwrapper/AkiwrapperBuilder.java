@@ -4,9 +4,10 @@ import javax.annotation.Nonnull;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
+import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
 
 /**
@@ -22,20 +23,13 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * {@link AkiwrapperMetadata} is used.
 	 */
 	public AkiwrapperBuilder() {
-		super(AkiwrapperMetadata.DEFAULT_NAME, AkiwrapperMetadata.DEFAULT_USER_AGENT, null,
-		    AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION);
+		super(AkiwrapperMetadata.DEFAULT_NAME, null, AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY,
+		    AkiwrapperMetadata.DEFAULT_LOCALIZATION, AkiwrapperMetadata.DEFAULT_GUESS_TYPE);
 	}
 
 	@Override
 	public AkiwrapperBuilder setName(String name) {
 		super.setName(name);
-
-		return this;
-	}
-
-	@Override
-	public AkiwrapperBuilder setUserAgent(String userAgent) {
-		super.setUserAgent(userAgent);
 
 		return this;
 	}
@@ -55,8 +49,15 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	}
 
 	@Override
-	public AkiwrapperBuilder setLocalization(Language localization) {
-		super.setLocalization(localization);
+	public AkiwrapperBuilder setLanguage(Language localization) {
+		super.setLanguage(localization);
+
+		return this;
+	}
+
+	@Override
+	public AkiwrapperBuilder setGuessType(GuessType guessType) {
+		super.setGuessType(guessType);
 
 		return this;
 	}
@@ -64,8 +65,9 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	/**
 	 * @return a new {@link Akiwrapper} instance that will use all set preferences
 	 *
-	 * @throws ServerGroupUnavailableException
-	 *             in case no servers of that language are available
+	 * @throws ServerNotFoundException
+	 *             if no servers with that {@link Language} and {@link GuessType} is
+	 *             available.
 	 */
 	@Nonnull
 	public Akiwrapper build() {

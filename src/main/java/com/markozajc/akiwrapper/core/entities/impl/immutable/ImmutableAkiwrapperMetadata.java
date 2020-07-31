@@ -1,10 +1,13 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
+import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 
 /**
@@ -16,47 +19,40 @@ public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
 	@Nonnull
 	protected final String name;
-	@Nonnull
-	protected final String userAgent;
-	@Nonnull
+	@Nullable
 	protected final Server server;
 	protected final boolean filterProfanity;
 	@Nonnull
 	protected final Language localization;
+	@Nonnull
+	protected final GuessType guessType;
 
 	/**
 	 * Creates a new {@link ImmutableAkiwrapperMetadata} instance.
 	 *
 	 * @param server
-	 *            the API server to use
+	 *            API server that the requests will be sent to.
 	 * @param name
-	 *            player's name (won't have any huge impact but is still passed to the
-	 *            Akinator API for convenience)
-	 * @param userAgent
-	 *            the user-agent to use
+	 *            user's name, does not have any impact on gameplay.
 	 * @param filterProfanity
-	 *            whether to filter out all profanity elements
-	 * @param localization
-	 *            the localization language that will be passed to the API server. This
-	 *            affects textual elements such as {@link Question}-s
+	 *            whether to filter out NSFW {@link Question}s and {@link Guess}es.
+	 * @param language
+	 *            {@link Language} of {@link Question}s.
+	 * @param guessType
+	 *            {@link GuessType} of {@link Guess}es.
 	 */
-	public ImmutableAkiwrapperMetadata(@Nonnull String name, @Nonnull String userAgent, @Nonnull Server server,
-	                                   boolean filterProfanity, @Nonnull Language localization) {
+	public ImmutableAkiwrapperMetadata(@Nonnull String name, @Nullable Server server, boolean filterProfanity,
+	                                   @Nonnull Language language, @Nonnull GuessType guessType) {
 		this.name = name;
-		this.userAgent = userAgent;
 		this.server = server;
 		this.filterProfanity = filterProfanity;
-		this.localization = localization;
+		this.localization = language;
+		this.guessType = guessType;
 	}
 
 	@Override
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public String getUserAgent() {
-		return this.userAgent;
 	}
 
 	@Override
@@ -70,8 +66,13 @@ public abstract class ImmutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	}
 
 	@Override
-	public Language getLocalization() {
+	public Language getLanguage() {
 		return this.localization;
+	}
+
+	@Override
+	public GuessType getGuessType() {
+		return this.guessType;
 	}
 
 }

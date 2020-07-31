@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.markozajc.akiwrapper.Akiwrapper;
+import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 
 /**
@@ -14,55 +15,53 @@ import com.markozajc.akiwrapper.core.entities.Server.Language;
 public abstract class AkiwrapperMetadata {
 
 	/**
-	 * The default name for new {@link Akiwrapper} instances.
+	 * Default name for new {@link Akiwrapper} instances.
 	 */
 	public static final String DEFAULT_NAME = "website-desktop";
 
 	/**
-	 * The default user-agent for new {@link Akiwrapper} instances.
-	 */
-	public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
-	    + "Chrome/66.0.3359.181 Safari/537.36";
-
-	/**
-	 * The default profanity filter for new {@link Akiwrapper} instances.
+	 * Default profanity filter preference for new {@link Akiwrapper} instances.
 	 */
 	public static final boolean DEFAULT_FILTER_PROFANITY = false;
 
 	/**
-	 * The default localization language for new {@link Akiwrapper} instances.
+	 * Default localization {@link Language} for new {@link Akiwrapper} instances.
 	 */
 	@Nonnull
 	public static final Language DEFAULT_LOCALIZATION = Language.ENGLISH;
 
 	/**
-	 * @return user's name, does not have any impact on gameplay
+	 * Default {@link GuessType} for new {@link Akiwrapper} instances.
+	 */
+	@Nonnull
+	public static final GuessType DEFAULT_GUESS_TYPE = GuessType.CHARACTER;
+
+	/**
+	 * @return user's name, does not have any impact on gameplay.
 	 */
 	@Nonnull
 	public abstract String getName();
 
 	/**
-	 * @return user-agent used in HTTP requests
-	 */
-	@Nonnull
-	public abstract String getUserAgent();
-
-	/**
-	 * @return the API server used for all requests. All API servers have equal data and
-	 *         endpoints but some might be down so you should never hard-code usage of a
-	 *         specific API server
+	 * @return API server that the requests will be sent to.
 	 */
 	@Nullable
 	public abstract Server getServer();
 
 	/**
-	 * @return whether to tell Akinator's API to filter out NSFW information
+	 * @return whether to filter out NSFW {@link Question}s and {@link Guess}es.
 	 */
 	public abstract boolean doesFilterProfanity();
 
 	/**
-	 * @return the language all elements will be in (eg. questions)
+	 * @return {@link Language} of {@link Question}s.
 	 */
 	@Nonnull
-	public abstract Language getLocalization();
+	public abstract Language getLanguage();
+
+	/**
+	 * @return {@link GuessType} of {@link Guess}es.
+	 */
+	@Nonnull
+	public abstract GuessType getGuessType();
 }
