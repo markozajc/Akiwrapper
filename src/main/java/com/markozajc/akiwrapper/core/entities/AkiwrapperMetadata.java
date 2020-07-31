@@ -8,7 +8,7 @@ import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
 
 /**
- * A set of vital data used in API calls and such.
+ * A set of configurable data used in API calls and such.
  *
  * @author Marko Zajc
  */

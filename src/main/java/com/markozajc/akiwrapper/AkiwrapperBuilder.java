@@ -11,7 +11,8 @@ import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
 
 /**
- * A class used for building a new Akinator object.
+ * A class used to build an {@link Akiwrapper} object. It allows you to set various
+ * values before building it in a method chaining fashion.
  *
  * @author Marko Zajc
  */
