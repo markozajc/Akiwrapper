@@ -25,7 +25,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 */
 	public AkiwrapperBuilder() {
 		super(null, AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION,
-		    AkiwrapperMetadata.DEFAULT_GUESS_TYPE);
+			  AkiwrapperMetadata.DEFAULT_GUESS_TYPE);
 	}
 
 	@Override

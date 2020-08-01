@@ -35,8 +35,10 @@ public final class JSONUtils {
 			else if (object instanceof String)
 				value = Integer.valueOf((String) object);
 			else
-				throw new NumberFormatException(
-				    "Could not format \"" + object + "\" of type " + object.getClass().getName() + " into a Double.");
+				throw new NumberFormatException("Could not format \"" + object +
+					"\" of type " +
+					object.getClass().getName() +
+					" into a Double.");
 
 			return Optional.of(value);
 
@@ -64,8 +66,10 @@ public final class JSONUtils {
 			else if (object instanceof String)
 				value = Double.valueOf((String) object);
 			else
-				throw new NumberFormatException(
-				    "Could not format \"" + object + "\" of type " + object.getClass().getName() + " into a Double.");
+				throw new NumberFormatException("Could not format \"" + object +
+					"\" of type " +
+					object.getClass().getName() +
+					" into a Double.");
 
 			return Optional.of(value);
 

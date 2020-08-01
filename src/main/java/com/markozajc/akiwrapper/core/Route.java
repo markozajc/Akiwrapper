@@ -41,19 +41,19 @@ public final class Route {
 	static {
 		UNIREST = Unirest.spawnInstance();
 		UNIREST.config()
-		    .setDefaultHeader("Accept",
-		        "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
-		    .setDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
-		    .setDefaultHeader("X-Requested-With", "XMLHttpRequest")
-		    .setDefaultHeader("Sec-Fetch-Dest", "empty")
-		    .setDefaultHeader("Sec-Fetch-Mode", "cors")
-		    .setDefaultHeader("Sec-Fetch-Site", "same-origin")
-		    .setDefaultHeader("Connection", "keep-alive")
-		    .setDefaultHeader("User-Agent",
-		        "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36"
-		            + "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
-		    .setDefaultHeader("Referer", "https://en.akinator.com/game")
-		    .cookieSpec("ignore");
+			.setDefaultHeader("Accept",
+							  "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
+			.setDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
+			.setDefaultHeader("X-Requested-With", "XMLHttpRequest")
+			.setDefaultHeader("Sec-Fetch-Dest", "empty")
+			.setDefaultHeader("Sec-Fetch-Mode", "cors")
+			.setDefaultHeader("Sec-Fetch-Site", "same-origin")
+			.setDefaultHeader("Connection", "keep-alive")
+			.setDefaultHeader("User-Agent",
+							  "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36" +
+								  "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
+			.setDefaultHeader("Referer", "https://en.akinator.com/game")
+			.cookieSpec("ignore");
 		// Configures necessary headers
 		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
 		// Also disable cookies because they aren't necessary.
@@ -87,11 +87,12 @@ public final class Route {
 	 * <li>API server's URL</li>
 	 * </ol>
 	 */
-	public static final Route NEW_SESSION = new Route(1,
-	    BASE_AKINATOR_URL
-	        + "/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}"
-	        + "&soft_constraint={FILTER}&question_filter={FILTER}&_=%s&urlApiWs=%s",
-	    "ETAT=%%27EN%%27", "cat=1");
+	public static final Route NEW_SESSION =
+		new Route(1,
+				  BASE_AKINATOR_URL +
+					  "/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}" +
+					  "&soft_constraint={FILTER}&question_filter={FILTER}&_=%s&urlApiWs=%s",
+				  "ETAT=%%27EN%%27", "cat=1");
 
 	/**
 	 * Answers a question. Parameters:
@@ -108,8 +109,8 @@ public final class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route CANCEL_ANSWER = new Route(1, "/cancel_answer?step=%s&answer=-1",
-	    "&question_filter=cat=1");
+	public static final Route CANCEL_ANSWER =
+		new Route(1, "/cancel_answer?step=%s&answer=-1", "&question_filter=cat=1");
 
 	/**
 	 * Lists all available guesses. Parameters:
@@ -174,10 +175,11 @@ public final class Route {
 	 */
 	@Nonnull
 	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nullable Token token,
-	                          @Nonnull String... parameters) {
+							  @Nonnull String... parameters) {
 		if (parameters.length < this.parametersQuantity)
-			throw new IllegalArgumentException(
-			    "Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
+			throw new IllegalArgumentException("Insufficient parameters; Expected " + this.parametersQuantity +
+				", got " +
+				parameters.length);
 
 		String[] encodedParams = new String[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
