@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
@@ -25,7 +27,7 @@ public class ServerListImpl implements ServerList {
 	}
 
 	private ServerListImpl(@Nonnull Server first, @Nonnull Collection<Server> candidates) {
-		this.candidateServers = new ConcurrentLinkedQueue<>(candidates);
+		this.candidateServers = unwrapServersIntoQueue(candidates);
 		this.currentServer = first;
 	}
 
@@ -34,8 +36,20 @@ public class ServerListImpl implements ServerList {
 		if (servers.isEmpty())
 			throw new IllegalArgumentException("The collection of servers may not be empty");
 
-		this.candidateServers = new ConcurrentLinkedQueue<>(servers);
+		ConcurrentLinkedQueue<Server> queue = unwrapServersIntoQueue(servers);
+		this.candidateServers = queue;
 		this.currentServer = this.candidateServers.remove();
+	}
+
+	@SuppressWarnings("null")
+	@Nonnull
+	private static ConcurrentLinkedQueue<Server> unwrapServersIntoQueue(@Nonnull Collection<Server> servers) {
+		return servers.stream().flatMap(s -> {
+			if (s instanceof ServerList)
+				return ((ServerList) s).getServers().stream();
+			else
+				return Stream.of(s);
+		}).collect(Collectors.toCollection(ConcurrentLinkedQueue<Server>::new));
 	}
 
 	@Override

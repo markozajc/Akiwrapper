@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 
 /**
@@ -46,6 +48,7 @@ public interface ServerList extends Server {
 	 *
 	 * @return all servers.
 	 */
+	@Nonnull
 	List<Server> getServers();
 
 	/**
