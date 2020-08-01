@@ -101,15 +101,15 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 */
 	@SuppressWarnings("null")
 	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) throws ServerNotFoundException { // NOSONAR That's a
-	                                                                                             // false-positive
+																								 // false-positive
 		this.server = getServer(metadata);
 		this.filterProfanity = metadata.doesFilterProfanity();
 		this.currentStep = 0;
 
 		JSONObject question;
 		question = Route.NEW_SESSION
-		    .getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()), this.server.getUrl())
-		    .getJSON();
+			.getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()), this.server.getUrl())
+			.getJSON();
 
 		JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
 		this.token = getToken(parameters);
@@ -120,7 +120,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private static Token getToken(@Nonnull JSONObject parameters) {
 		JSONObject identification = parameters.getJSONObject("identification");
 		return new Token(Long.parseLong(identification.getString("signature")),
-		    Integer.parseInt(identification.getString("session")));
+						 Integer.parseInt(identification.getString("session")));
 	}
 
 	@Nonnull
@@ -137,12 +137,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 		Question currentQuestion2 = this.currentQuestion;
 		if (currentQuestion2 != null) {
 			JSONObject question = Route.ANSWER
-			    .getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
-			        "" + answer.getId())
-			    .getJSON();
+				.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
+							"" + answer.getId())
+				.getJSON();
 			try {
-				this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY),
-				    new StatusImpl(question));
+				this.currentQuestion =
+					new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
 			} catch (MissingQuestionException e) { // NOSONAR It does not need to be logged
 				this.currentQuestion = null;
 				return null;
@@ -166,8 +166,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-		    .getRequest(this.server.getUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
-		    .getJSON();
+			.getRequest(this.server.getUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
+			.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
 
@@ -186,10 +186,10 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject list = null;
 		try {
 			list = Route.LIST.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + this.currentStep)
-			    .getJSON();
+				.getJSON();
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel() == Level.ERROR
-			    && NO_MORE_QUESTIONS_STATUS.equalsIgnoreCase(e.getStatus().getReason())) {
+				&& NO_MORE_QUESTIONS_STATUS.equalsIgnoreCase(e.getStatus().getReason())) {
 				return Collections.unmodifiableList(new ArrayList<>());
 			}
 

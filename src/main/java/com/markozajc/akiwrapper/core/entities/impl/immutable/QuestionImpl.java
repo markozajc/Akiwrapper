@@ -43,7 +43,7 @@ public class QuestionImpl implements Question {
 	 *             if there are no more questions left.
 	 */
 	public QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
-	                    @Nonnegative double progression, @Nonnull Status status) {
+						@Nonnegative double progression, @Nonnull Status status) {
 		checkMissingQuestion(status);
 
 		this.id = id;

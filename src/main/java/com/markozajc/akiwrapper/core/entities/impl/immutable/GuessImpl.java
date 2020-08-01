@@ -42,7 +42,7 @@ public class GuessImpl implements Guess {
 	 * @param probability
 	 */
 	public GuessImpl(@Nonnull String id, @Nonnull String name, @Nullable String description, @Nullable URL image,
-	                 @Nonnegative double probability) {
+					 @Nonnegative double probability) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -61,7 +61,7 @@ public class GuessImpl implements Guess {
 	@SuppressWarnings("null")
 	public GuessImpl(@Nonnull JSONObject json) {
 		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
-		    JSONUtils.getDouble(json, "proba").get().doubleValue());
+			 JSONUtils.getDouble(json, "proba").get().doubleValue());
 	}
 
 	@Nullable
@@ -74,7 +74,7 @@ public class GuessImpl implements Guess {
 	private static URL getImage(@Nonnull JSONObject json) {
 		try {
 			return "none.jpg".equals(json.getString("picture_path")) ? null
-			    : new URL(json.getString("absolute_picture_path"));
+				: new URL(json.getString("absolute_picture_path"));
 		} catch (MalformedURLException e) {
 			return null;
 		}

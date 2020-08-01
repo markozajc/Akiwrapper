@@ -40,7 +40,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 *            {@link GuessType} of {@link Guess}es.
 	 */
 	public MutableAkiwrapperMetadata(@Nullable Server server, boolean filterProfanity, @Nonnull Language language,
-	                                 @Nonnull GuessType guessType) {
+									 @Nonnull GuessType guessType) {
 		this.server = server;
 		this.filterProfanity = filterProfanity;
 		this.language = language;

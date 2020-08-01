@@ -64,9 +64,9 @@ public class ServerImpl implements Server {
 			throw new IllegalStateException("'" + guessTypeId + "' is not a recognized guess type ID.");
 
 		return instance.xpath(CANDIDATE_URLS_XPATH)
-		    .stream()
-		    .map(host -> new ServerImpl(host, language, guessType))
-		    .collect(Collectors.toList());
+			.stream()
+			.map(host -> new ServerImpl(host, language, guessType))
+			.collect(Collectors.toList());
 	}
 
 	@Override

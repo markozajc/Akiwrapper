@@ -20,8 +20,8 @@ class StatusImplTest {
 
 	@ParameterizedTest
 	@EnumSource(
-	    value = Level.class,
-	    mode = Mode.EXCLUDE)
+		value = Level.class,
+		mode = Mode.EXCLUDE)
 	void testStringConstructorNoReason(@Nonnull Level level) {
 		@SuppressWarnings("null")
 		Status status = new StatusImpl(level.toString());

@@ -23,9 +23,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class Servers {
 
 	private static final String FOOTPRINT = "cd8e6509f3420878e18d75b9831b317f";
-	private static final String LIST_URL = "https://global3.akinator.com/ws/instances_v2.php?media_id=14"
-	    + "&mode=https&footprint="
-	    + FOOTPRINT;
+	private static final String LIST_URL =
+		"https://global3.akinator.com/ws/instances_v2.php?media_id=14" + "&mode=https&footprint=" + FOOTPRINT;
 
 	private Servers() {}
 
@@ -45,11 +44,11 @@ public final class Servers {
 	@SuppressWarnings("null")
 	@Nonnull
 	public static Server findServer(@Nonnull Language localization,
-	                                @Nonnull GuessType guessType) throws ServerNotFoundException {
+									@Nonnull GuessType guessType) throws ServerNotFoundException {
 		return getServers().filter(s -> s.getGuessType() == guessType)
-		    .filter(s -> s.getLanguage() == localization)
-		    .findAny()
-		    .orElseThrow(ServerNotFoundException::new);
+			.filter(s -> s.getLanguage() == localization)
+			.findAny()
+			.orElseThrow(ServerNotFoundException::new);
 	}
 
 	/**
@@ -61,8 +60,8 @@ public final class Servers {
 	@SuppressWarnings("null")
 	public static Stream<Server> getServers() {
 		return new XMLDocument(fetchListXml()).nodes("//RESULT/PARAMETERS/*")
-		    .stream()
-		    .flatMap(xml -> ServerImpl.fromXml(xml).stream());
+			.stream()
+			.flatMap(xml -> ServerImpl.fromXml(xml).stream());
 	}
 
 	private static String fetchListXml() {
