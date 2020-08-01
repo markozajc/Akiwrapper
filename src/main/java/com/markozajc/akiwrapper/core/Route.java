@@ -171,7 +171,7 @@ public final class Route {
 	 * @return a {@link Request}.
 	 *
 	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters.s
+	 *             if you have passed too little parameters.
 	 */
 	@Nonnull
 	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nullable Token token,
@@ -226,7 +226,7 @@ public final class Route {
 	 * @return a {@link Request}.
 	 *
 	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters.s
+	 *             if you have passed too little parameters.
 	 */
 	@Nonnull
 	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nonnull String... parameters) {
