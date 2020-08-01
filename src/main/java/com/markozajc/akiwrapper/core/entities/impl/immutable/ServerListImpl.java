@@ -22,11 +22,11 @@ public class ServerListImpl implements ServerList {
 	private final Queue<Server> candidateServers;
 
 	@SuppressWarnings("null")
-	private ServerListImpl(@Nonnull Server first, @Nonnull Server... candidates) {
+	public ServerListImpl(@Nonnull Server first, @Nonnull Server... candidates) {
 		this(first, Arrays.asList(candidates));
 	}
 
-	private ServerListImpl(@Nonnull Server first, @Nonnull Collection<Server> candidates) {
+	public ServerListImpl(@Nonnull Server first, @Nonnull Collection<Server> candidates) {
 		this.candidateServers = unwrapServersIntoQueue(candidates);
 		this.currentServer = first;
 	}
