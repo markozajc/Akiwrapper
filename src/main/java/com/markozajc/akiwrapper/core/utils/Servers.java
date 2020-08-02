@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.utils;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
@@ -9,7 +11,9 @@ import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.ServerList;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerListImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -29,26 +33,28 @@ public final class Servers {
 	private Servers() {}
 
 	/**
-	 * Filters the list of {@link Server}s using given parameters.
+	 * Finds correct {@link Server}s using given parameters and compiles a
+	 * {@link ServerList} out of them.
 	 *
 	 * @param localization
 	 *            language of the server to search for
 	 * @param guessType
 	 *            guessType of the server to search for
 	 *
-	 * @return a {@link Server} that suits the given parameters.
+	 * @return a {@link ServerList} with {@link Server}s that suit the given parameters.
 	 *
 	 * @throws ServerNotFoundException
 	 *             if there is no server that matches the query.
 	 */
-	@SuppressWarnings("null")
 	@Nonnull
-	public static Server findServer(@Nonnull Language localization,
-									@Nonnull GuessType guessType) throws ServerNotFoundException {
-		return getServers().filter(s -> s.getGuessType() == guessType)
+	public static ServerList findServers(@Nonnull Language localization,
+										 @Nonnull GuessType guessType) throws ServerNotFoundException {
+		List<Server> servers = getServers().filter(s -> s.getGuessType() == guessType)
 			.filter(s -> s.getLanguage() == localization)
-			.findAny()
-			.orElseThrow(ServerNotFoundException::new);
+			.collect(Collectors.toList());
+		if (servers.isEmpty())
+			throw new ServerNotFoundException();
+		return new ServerListImpl(servers);
 	}
 
 	/**

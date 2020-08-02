@@ -6,9 +6,12 @@ import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.ServerList;
 import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
+import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
+import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
  * A class used to build an {@link Akiwrapper} object. It allows you to set various
@@ -65,7 +68,27 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 */
 	@Nonnull
 	public Akiwrapper build() throws ServerNotFoundException {
-		return new AkiwrapperImpl(this);
+		Server server = findServer();
+		if (server instanceof ServerList) {
+			do {
+				try {
+					return new AkiwrapperImpl(server, this.filterProfanity);
+				} catch (RuntimeException e) {
+
+				}
+			} while (((ServerList) server).next());
+			throw new ServerUnavailableException("AW-KO MULTIPLE FAILS");
+		} else {
+			return new AkiwrapperImpl(server, this.filterProfanity);
+		}
+	}
+
+	@Nonnull
+	private Server findServer() throws ServerNotFoundException {
+		Server server = this.getServer();
+		if (server == null)
+			server = Servers.findServers(this.getLanguage(), this.getGuessType());
+		return server;
 	}
 
 }

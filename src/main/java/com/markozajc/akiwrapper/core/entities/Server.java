@@ -62,7 +62,10 @@ public interface Server {
 
 	/**
 	 * Server's guess type (referred to as the "subject" in the API). Decides what kind
-	 * of things server's guesses will represent.<br>
+	 * of things server's guesses will represent. While the name might suggest that this
+	 * affects only {@link Guess}es, it will also inevitably also impact
+	 * {@link Question}s (it wouldn't make sense to ask the "Is it still alive" question
+	 * for a place). <br>
 	 * <b>Caution!</b> Not all {@link Language}s support all {@link GuessType}s. The
 	 * standard ones seem to be {@link #ANIMAL}, {@link #CHARACTER}, and {@link #OBJECT},
 	 * but you might still face {@link ServerNotFoundException}s using them or other

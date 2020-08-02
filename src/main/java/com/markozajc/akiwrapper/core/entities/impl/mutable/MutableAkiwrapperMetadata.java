@@ -9,6 +9,7 @@ import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.ServerList;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ImmutableAkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
@@ -53,7 +54,10 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	}
 
 	/**
-	 * Sets the {@link Server}.<br>
+	 * Sets the {@link Server} or (recommended) a {@link ServerList}. It is not
+	 * recommended to set the {@link Server} manually (unless for debugging purposes or
+	 * as some kind of workaround where Akiwrapper's server finder fails) as Akiwrapper
+	 * already does its best to find the most suitable one. <br>
 	 * <b>Caution!</b> Setting the server to a non-null value overwrites the
 	 * {@link Language} and the {@link GuessType} with the given {@link Server}'s values.
 	 *
@@ -62,7 +66,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	 * @return current instance, used for chaining
 	 *
 	 * @see #getServer()
-	 * @see Servers#findServer(Language, GuessType)
+	 * @see Servers#findServers(Language, GuessType)
 	 */
 	@Nonnull
 	public MutableAkiwrapperMetadata setServer(@Nullable Server server) {
