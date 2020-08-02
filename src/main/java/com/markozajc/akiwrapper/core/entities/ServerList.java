@@ -58,4 +58,15 @@ public interface ServerList extends Server {
 	 */
 	int getRemainingSize();
 
+	/**
+	 * Checks whether or not this {@link ServerList} has another {@link Server} to
+	 * iterate to. This performs the same check as {@link #next()}, but doesn't change
+	 * the state and doesn't actually iterate to the next server.
+	 *
+	 * @return whether there is another server to iterate to.
+	 */
+	default boolean hasNext() {
+		return getRemainingSize() > 0;
+	}
+
 }

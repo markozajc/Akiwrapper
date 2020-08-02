@@ -67,13 +67,13 @@ public class ServerListImpl implements ServerList {
 		return this.currentServer.getGuessType();
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public boolean next() {
-		Server server = this.candidateServers.poll();
-		if (server == null)
+		if (!hasNext())
 			return false;
 
-		this.currentServer = server;
+		this.currentServer = this.candidateServers.remove();
 		return true;
 	}
 
