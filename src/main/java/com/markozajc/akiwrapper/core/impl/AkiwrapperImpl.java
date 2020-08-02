@@ -12,11 +12,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.Akiwrapper;
+import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.ServerList;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
@@ -88,10 +89,11 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 * Constructs a new {@link Akiwrapper} instance and creates a new API session. The
 	 * first question can be retrieved with {@link #getCurrentQuestion()}.
 	 *
-	 * @param metadata
-	 *            {@link AkiwrapperMetadata} to use. All {@code null} values will be
-	 *            replaced with the default values that are specified in
-	 *            {@link AkiwrapperMetadata} as constants.
+	 * @param server
+	 *            {@link Server} to use. Does not work with a {@link ServerList},
+	 *            {@link AkiwrapperBuilder} implements that functionality.
+	 * @param filterProfanity
+	 *            whether to tell API to filter profanity.
 	 */
 	@SuppressWarnings("null")
 	public AkiwrapperImpl(@Nonnull Server server, boolean filterProfanity) {
