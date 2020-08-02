@@ -21,6 +21,7 @@ import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class IntegrationTest {
@@ -77,6 +78,7 @@ class IntegrationTest {
 		}
 
 		log.info("Asserting the final state.");
+		assertNull(api.undoAnswer());
 		checkQuestion(api.getCurrentQuestion(), 0);
 		Question currentQuestion = api.getCurrentQuestion();
 		if (initialQuestion != null && currentQuestion != null) {
