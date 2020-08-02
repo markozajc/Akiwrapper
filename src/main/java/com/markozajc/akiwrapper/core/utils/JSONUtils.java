@@ -1,5 +1,10 @@
 package com.markozajc.akiwrapper.core.utils;
 
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -7,64 +12,88 @@ import org.json.JSONObject;
  *
  * @author Marko Zajc
  */
-public class JSONUtils {
+public final class JSONUtils {
 
 	private JSONUtils() {}
 
 	/**
+	 * Gets an {@link Integer} value from a {@link JSONObject}.
+	 *
 	 * @param json
 	 * @param key
-	 * @return value from that key as an integer
-	 * @throws NumberFormatException
-	 *             if the value could in no way be transferred to an integer
+	 *
+	 * @return {@link Optional} integer value
 	 */
-	public static Integer getInteger(JSONObject json, String key) {
-		Object object = json.get(key);
+	@SuppressWarnings("null")
+	@Nonnull
+	public static Optional<Integer> getInteger(@Nonnull JSONObject json, @Nonnull String key) {
+		try {
+			Object object = json.get(key);
+			Integer value;
+			if (object instanceof Number)
+				value = Integer.valueOf(((Number) object).intValue());
+			else if (object instanceof String)
+				value = Integer.valueOf((String) object);
+			else
+				throw new NumberFormatException("Could not format \"" + object +
+					"\" of type " +
+					object.getClass().getName() +
+					" into a Double.");
 
-		if (object == null)
-			return null;
+			return Optional.of(value);
 
-		if (object instanceof Number)
-			return Integer.valueOf(((Number) object).intValue());
-
-		if (object instanceof String)
-			return Integer.valueOf((String) object);
-
-		throw new NumberFormatException(
-				"Could not format \"" + object + "\" of type " + object.getClass().getName() + " into an Integer.");
+		} catch (JSONException e) { // NOSONAR It just means that the key wasn't found.
+			return Optional.empty();
+		}
 	}
 
 	/**
+	 * Gets a {@link Double} value from a {@link JSONObject}.
+	 *
 	 * @param json
 	 * @param key
-	 * @return value from that key as a double
-	 * @throws NumberFormatException
-	 *             if the value could in no way be transferred to a double
+	 *
+	 * @return {@link Optional} double value
 	 */
-	public static Double getDouble(JSONObject json, String key) {
-		Object object = json.get(key);
+	@SuppressWarnings("null")
+	@Nonnull
+	public static Optional<Double> getDouble(@Nonnull JSONObject json, @Nonnull String key) {
+		try {
+			Object object = json.get(key);
+			Double value;
+			if (object instanceof Number)
+				value = Double.valueOf(((Number) object).doubleValue());
+			else if (object instanceof String)
+				value = Double.valueOf((String) object);
+			else
+				throw new NumberFormatException("Could not format \"" + object +
+					"\" of type " +
+					object.getClass().getName() +
+					" into a Double.");
 
-		if (object == null)
-			return null;
+			return Optional.of(value);
 
-		if (object instanceof Number)
-			return Double.valueOf(((Number) object).doubleValue());
-
-		if (object instanceof String)
-			return Double.valueOf((String) object);
-
-		throw new NumberFormatException(
-				"Could not format \"" + object + "\" of type " + object.getClass().getName() + " into a Double.");
+		} catch (JSONException e) { // NOSONAR It just means that the key wasn't found.
+			return Optional.empty();
+		}
 	}
 
 	/**
+	 * Gets a {@link String} value from a {@link JSONObject}.
+	 *
 	 * @param json
 	 * @param key
-	 * @return value from that key as a string (calls {@link Object#toString()} on
-	 *         the object)
+	 *
+	 * @return {@link Optional} string value
 	 */
-	public static String getString(JSONObject json, String key) {
-		return json.get(key).toString();
+	@SuppressWarnings("null")
+	@Nonnull
+	public static Optional<String> getString(@Nonnull JSONObject json, @Nonnull String key) {
+		try {
+			return Optional.of(json.get(key).toString());
+		} catch (JSONException e) { // NOSONAR It just means that the key wasn't found.
+			return Optional.empty();
+		}
 	}
 
 }

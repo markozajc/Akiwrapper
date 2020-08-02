@@ -1,90 +1,72 @@
 package com.markozajc.akiwrapper.core;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.entities.Server;
 import com.markozajc.akiwrapper.core.entities.Status;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Token;
-import com.markozajc.akiwrapper.core.utils.HTTPUtils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestInstance;
 
 /**
- * A class defining various API endpoints (routes).
+ * A class defining various API endpoints. It is capable of building such
+ * {@link Route}s into {@link Request}s, which can then easily be executed and read.
  *
  * @author Marko Zajc
  */
-public class Route {
-
-	private static final Pattern FILTER_ARGUMENT_PATTERN = Pattern.compile("\\{FILTER\\}");
-
-	private static class ApiKey {
-
-		private static final String FORMAT = "frontaddr=%s&uid_ext_session=%s";
-
-		@Nonnull
-		private final String sessionUid;
-		@Nonnull
-		private final String frontAddress;
-
-		ApiKey(@Nonnull String sessionUid, @Nonnull String frontAddress) {
-			this.sessionUid = sessionUid;
-			this.frontAddress = frontAddress;
-		}
-
-		@SuppressWarnings("null")
-		@Nonnull
-		String compile() {
-			try {
-				return String.format(FORMAT, URLEncoder.encode(this.frontAddress, "UTF-8"), this.sessionUid);
-			} catch (UnsupportedEncodingException e) {
-				return ""; // never throws
-			}
-		}
-
-	}
-
-	private static final String BASE_AKINATOR_URL = "https://en.akinator.com";
-	// The base Akinator URL, used for scraping various elements (and not for the API
-	// calls)
-
-	private static final Pattern API_KEY_PATTERN = Pattern
-		.compile("var uid_ext_session = '(.*)'\\;\\n.*var frontaddr = '(.*)'\\;");
+public final class Route {
 
 	/**
-	 * Scraps the API key from Akinator's website and stores it for later use.
-	 *
-	 * @return the API key
-	 * @throws IOException
-	 *             in case the API key can't be scraped
+	 * A public {@link UnirestInstance} with all required default headers set.
 	 */
-	@SuppressWarnings("null")
-	public static ApiKey accquireApiKey() throws IOException {
-		Matcher matcher = API_KEY_PATTERN.matcher(
-			new String(HTTPUtils.read(new URL(BASE_AKINATOR_URL + "/game").openConnection()), StandardCharsets.UTF_8));
-		if (!matcher.find())
-			throw new IOException(
-				"Couldn't scrap the API key! Please consider opening a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+	public static final UnirestInstance UNIREST;
 
-		return new ApiKey(matcher.group(1), matcher.group(2));
+	static {
+		UNIREST = Unirest.spawnInstance();
+		UNIREST.config()
+			.setDefaultHeader("Accept",
+							  "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
+			.setDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
+			.setDefaultHeader("X-Requested-With", "XMLHttpRequest")
+			.setDefaultHeader("Sec-Fetch-Dest", "empty")
+			.setDefaultHeader("Sec-Fetch-Mode", "cors")
+			.setDefaultHeader("Sec-Fetch-Site", "same-origin")
+			.setDefaultHeader("Connection", "keep-alive")
+			.setDefaultHeader("User-Agent",
+							  "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36" +
+								  "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
+			.setDefaultHeader("Referer", "https://en.akinator.com/game")
+			.cookieSpec("ignore");
+		// Configures necessary headers
+		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
+		// Also disable cookies because they aren't necessary.
+		// NB: use "standard" if they become necessary. Default value causes log spam and
+		// probably doesn't even store cookies right.
 	}
+
+	/**
+	 * The base Akinator URL, used for scraping and some API calls.
+	 */
+	public static final String BASE_AKINATOR_URL = "https://en.akinator.com";
+	private static final String SERVER_DOWN_STATUS_MESSAGE = "server down";
+	private static final Pattern FILTER_ARGUMENT_PATTERN = Pattern.compile("\\{FILTER\\}");
 
 	/**
 	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting this
@@ -95,14 +77,22 @@ public class Route {
 	public static boolean defaultRunChecks = true; // NOSONAR
 
 	/**
-	 * Creates a new session for further gameplay. Parameters:
+	 * Creates a new session for further gameplay.<br>
+	 * <b>Caution!</b> Because this endpoint uses a static hostname, you <u>must</u> pass
+	 * an empty string to {@code baseUrl} of
+	 * {@link #getRequest(String, boolean, String...)} <br>
+	 * Parameters:
 	 * <ol>
-	 * <li>Player's name</li>
+	 * <li>Current time in milliseconds</li>
+	 * <li>API server's URL</li>
 	 * </ol>
 	 */
-	public static final Route NEW_SESSION = new Route(1,
-		"new_session?partner=1&player=%s&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}&soft_constraint={FILTER}&question_filter={FILTER}",
-		"ETAT=%%27EN%%27", "cat=1");
+	public static final Route NEW_SESSION =
+		new Route(1,
+				  BASE_AKINATOR_URL +
+					  "/new_session?partner=1&player=website-desktop&constraint=ETAT%%3C%%3E%%27AV%%27&{API_KEY}" +
+					  "&soft_constraint={FILTER}&question_filter={FILTER}&_=%s&urlApiWs=%s",
+				  "ETAT=%%27EN%%27", "cat=1");
 
 	/**
 	 * Answers a question. Parameters:
@@ -111,7 +101,7 @@ public class Route {
 	 * <li>Answer's ID</li>
 	 * </ol>
 	 */
-	public static final Route ANSWER = new Route(2, "answer?step=%s&answer=%s", "&question_filter=cat=1");
+	public static final Route ANSWER = new Route(2, "/answer?step=%s&answer=%s", "&question_filter=cat=1");
 
 	/**
 	 * Cancels (undoes) an answer. Parameters:
@@ -119,7 +109,8 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route CANCEL_ANSWER = new Route(1, "cancel_answer?step=%s&answer=-1", "&question_filter=cat=1");
+	public static final Route CANCEL_ANSWER =
+		new Route(1, "/cancel_answer?step=%s&answer=-1", "&question_filter=cat=1");
 
 	/**
 	 * Lists all available guesses. Parameters:
@@ -127,77 +118,78 @@ public class Route {
 	 * <li>Current step</li>
 	 * </ol>
 	 */
-	public static final Route LIST = new Route(1, "list?mode_question=0&step=%s");
+	public static final Route LIST = new Route(1, "/list?mode_question=0&step=%s");
 
-	/**
-	 * Tests whether a response is a successful or a failed one.
-	 *
-	 * @param response
-	 *            the response to test
-	 * @param server
-	 *            the {@link Server} to include in a {@link ServerUnavailableException},
-	 *            if it occurs
-	 * @throws ServerUnavailableException
-	 *             throws if the status is equal to {@link Level#ERROR} and the error
-	 *             message hints that the server is down
-	 * @throws StatusException
-	 *             thrown if the status is equal to {@link Level#ERROR}
-	 */
-	public static void testResponse(JSONObject response, Server server) {
-		Status compl = new StatusImpl(response);
-		if (compl.getLevel().equals(Level.ERROR)) {
-			if (compl.getReason().equalsIgnoreCase("server down")) {
-				throw new ServerUnavailableException(server);
-			}
-
-			throw new StatusException(compl);
-		}
-	}
-
+	@Nonnull
 	private final String path;
+	@Nonnull
 	private final String[] filterArguments;
-	private String userAgent = AkiwrapperMetadata.DEFAULT_USER_AGENT;
 
 	private final int parametersQuantity;
 
-	private Route(int parameters, String path) {
+	private Route(int parameters, @Nonnull String path) {
 		this(parameters, path, new String[0]);
 	}
 
-	private Route(int parameters, String path, String... filterArguments) {
+	private Route(int parameters, @Nonnull String path, @Nonnull String... filterArguments) {
 		this.path = path;
 		this.filterArguments = filterArguments.clone();
 		this.parametersQuantity = parameters;
 	}
 
 	/**
-	 * Creates a request for this route that can later be called and converted into a
-	 * {@link JSONObject}.
+	 * Tests whether a response is a successful or a failed one.
+	 *
+	 * @param response
+	 *            the response to test
+	 *
+	 * @throws ServerUnavailableException
+	 *             throws if the status is equal to {@link Level#ERROR} and the error
+	 *             message hints that the server is down
+	 * @throws StatusException
+	 *             thrown if the status is equal to {@link Level#ERROR}
+	 */
+	public static void testResponse(@Nonnull JSONObject response) {
+		Status completion = new StatusImpl(response);
+		if (completion.getLevel() == Status.Level.ERROR) {
+			if (SERVER_DOWN_STATUS_MESSAGE.equalsIgnoreCase(completion.getReason()))
+				throw new ServerUnavailableException(completion);
+
+			throw new StatusException(completion);
+		}
+	}
+
+	/**
+	 * Constructs a {@link Request} for a route that can later be executed and converted
+	 * into a {@link JSONObject}.
 	 *
 	 * @param baseUrl
-	 *            base (API's) URL
 	 * @param filterProfanity
-	 *            whether to filter profanity. Akinator's website will automatically
-	 *            enable that if you choose an age below 16
 	 * @param token
-	 *            the token used for session authentication
 	 * @param parameters
-	 *            parameters to pass to the route (parameters are specified in that
-	 *            Route's JavaDoc)
-	 * @return a callable request
-	 * @throws IOException
+	 *
+	 * @return a {@link Request}.
+	 *
 	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters
+	 *             if you have passed too little parameters.
 	 */
-	public Request getRequest(String baseUrl, boolean filterProfanity, @Nullable Token token, String... parameters)
-		throws IOException {
+	@Nonnull
+	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nullable Token token,
+							  @Nonnull String... parameters) {
 		if (parameters.length < this.parametersQuantity)
-			throw new IllegalArgumentException(
-				"Insufficient parameters; Expected " + this.parametersQuantity + ", got " + parameters.length);
+			throw new IllegalArgumentException("Insufficient parameters; Expected " + this.parametersQuantity +
+				", got " +
+				parameters.length);
 
 		String[] encodedParams = new String[parameters.length];
-		for (int i = 0; i < parameters.length; i++)
-			encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
+		for (int i = 0; i < parameters.length; i++) {
+			try {
+				encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// Can not occur
+				throw new RuntimeException(e);
+			}
+		}
 
 		String formattedPath = this.path;
 
@@ -209,7 +201,7 @@ public class Route {
 		matcher.appendTail(sb);
 		formattedPath = sb.toString();
 
-		formattedPath = formattedPath.replace("{API_KEY}", accquireApiKey().compile().replace("%", "%%"));
+		formattedPath = formattedPath.replace("{API_KEY}", ApiKey.accquireApiKey().compile().replace("%", "%%"));
 
 		formattedPath = String.format(formattedPath, (Object[]) encodedParams);
 
@@ -219,122 +211,82 @@ public class Route {
 		if (token != null)
 			formattedPath = formattedPath + token.compile();
 
-		return new Request(new URL(baseUrl + formattedPath), this.userAgent, jQueryCallback);
+		return new Request(baseUrl + formattedPath, jQueryCallback);
 	}
 
 	/**
-	 * Creates a request for this route that can later be called and converted into a
-	 * {@link JSONObject}.
+	 * Constructs a {@link Request} for a route that can later be executed and converted
+	 * into a {@link JSONObject}. The resulting {@link Request} does not perform any
+	 * session authentication with a {@link Token}.
 	 *
 	 * @param baseUrl
-	 *            base (API's) URL
 	 * @param filterProfanity
-	 *            whether to filter profanity. Akinator's website will automatically
-	 *            enable that if you choose an age below 16
 	 * @param parameters
-	 *            parameters to pass to the route (parameters are specified in that
-	 *            Route's JavaDoc)
-	 * @return a callable request
-	 * @throws IOException
+	 *
+	 * @return a {@link Request}.
+	 *
 	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters
+	 *             if you have passed too little parameters.
 	 */
-	public Request getRequest(String baseUrl, boolean filterProfanity, String... parameters) throws IOException {
+	@Nonnull
+	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nonnull String... parameters) {
 		return this.getRequest(baseUrl, filterProfanity, null, parameters);
 	}
 
 	/**
-	 * Sets the user-agent that will be used in requests for this route. If no user-agent
-	 * is specified, {@link AkiwrapperMetadata#DEFAULT_USER_AGENT} will be used.
+	 * Returns {@link Route}'s unformatted path.
 	 *
-	 * @param userAgent
-	 * @return self, useful for chaining
+	 * @return route's path.
 	 */
-	public Route setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
-
-		return this;
-	}
-
-	/**
-	 * @return route's path (unformatted)
-	 */
+	@Nonnull
 	public String getPath() {
 		return this.path;
 	}
 
 	/**
-	 * @return minimal quantity of parameters you would have to pass to
-	 *         {@link #getRequest(String, boolean, String...)}
+	 * Returns the minimal quantity of parameters that must be passed to
+	 * {@link #getRequest(String, boolean, String...)} and
+	 * {@link #getRequest(String, boolean, Token, String...)}. If the amount of passed
+	 * parameters is lower than this number, an {@link IllegalArgumentException} is
+	 * thrown.
+	 *
+	 * @return minimal quantity of parameters.
 	 */
 	public int getParametersQuantity() {
 		return this.parametersQuantity;
 	}
 
 	/**
-	 * @return user-agent for this route
-	 * @see #setUserAgent(String)
-	 */
-	public String getClientBuilder() {
-		return this.userAgent;
-	}
-
-	/**
-	 * A callable request.
+	 * An executable request.
 	 *
 	 * @author Marko Zajc
 	 */
 	public static class Request {
 
-		/**
-		 * The connection timeout in milliseconds. Set this to something lower if you're
-		 * going to send a lot of request to not-confirmed servers. Set this to {@code -1} to
-		 * use {@link URLConnection}'s default timeout setting. <b>You usually don't need to
-		 * alter this value</b>
-		 */
-		@SuppressFBWarnings({
-			"MS_CANNOT_BE_FINAL", "MS_SHOULD_BE_FINAL"
-		})
-		public static int connectionTimeout = 2500; // NOSONAR
+		private static final Logger LOG = LoggerFactory.getLogger(Route.Request.class);
 
-		URLConnection connection;
-		private byte[] bytes = null;
+		@Nonnull
+		private final String url;
+		@Nonnull
 		private final String jQueryCallback;
 
-		Request(URL url, String userAgent, String jQueryCallback) throws IOException {
+		Request(@Nonnull String url, @Nonnull String jQueryCallback) {
 			this.jQueryCallback = jQueryCallback;
-			this.connection = url.openConnection();
-			if (connectionTimeout != -1)
-				this.connection.setConnectTimeout(connectionTimeout);
-
-			this.connection.setRequestProperty("User-Agent", userAgent);
-		}
-
-		/**
-		 * Reads content of the request's URL into an array of bytes.
-		 *
-		 * @return content as a byte array
-		 * @throws IOException
-		 * @see String#String(byte[], String)
-		 */
-		public byte[] read() throws IOException {
-			if (this.bytes == null) {
-				byte[] newBytes = HTTPUtils.read(this.connection);
-				this.bytes = newBytes;
-			}
-
-			return this.bytes.clone();
+			this.url = url;
 		}
 
 		/**
 		 * Requests the server and returns the route's content as a {@link JSONObject}.
 		 *
 		 * @return route's content
-		 * @throws IOException
+		 *
 		 * @throws ServerUnavailableException
-		 *             in case the server has went down (very unlikely to ever happen)
+		 *             if the server has gone down
+		 * @throws StatusException
+		 *             if the server returns an error response.
 		 */
-		public JSONObject getJSON() throws IOException {
+		@Nonnull
+		public JSONObject getJSON() {
 			return getJSON(defaultRunChecks);
 		}
 
@@ -343,34 +295,31 @@ public class Route {
 		 *
 		 * @param runChecks
 		 *            whether to run checks for error status codes.
+		 *
 		 * @return route's content
-		 * @throws IOException
+		 *
 		 * @throws ServerUnavailableException
-		 *             thrown if the server has gone down
+		 *             if the server has gone down.
 		 * @throws StatusException
-		 *             thrown if the server returns an error response
+		 *             if the server returns an error response.
 		 *
 		 */
-		public JSONObject getJSON(boolean runChecks) throws IOException {
-			String response = new String(read(), StandardCharsets.UTF_8).replace(this.jQueryCallback, "");
+		@Nonnull
+		public JSONObject getJSON(boolean runChecks) {
+			String response = UNIREST.get(this.url).asString().getBody().replace(this.jQueryCallback, "");
 			response = response.substring(1, response.length() - 1);
-			JSONObject result = new JSONObject(response);
+			LOG.trace("--> {}", this.url);
+			LOG.trace("<-- {}", response);
+			JSONObject result;
+			try {
+				result = new JSONObject(response);
+			} catch (JSONException e) {
+				LOG.error("Failed to parse JSON from the API server", e);
+				throw new StatusException(new StatusImpl("AW-KO - COULDN'T PARSE JSON"));
+			}
 
 			if (runChecks)
-				testResponse(result, new Server() {
-
-					@Override
-					public Language getLocalization() {
-						throw new UnsupportedOperationException(); // testResponse() does not need to know the language
-					}
-
-					@Override
-					public String getHost() {
-						return Request.this.connection.getURL().getHost() + ":"
-							+ Request.this.connection.getURL().getPort();
-					}
-
-				});
+				testResponse(result);
 
 			return result;
 		}

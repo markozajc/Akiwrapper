@@ -1,19 +1,22 @@
 package com.markozajc.akiwrapper.example;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
-import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
+import com.markozajc.akiwrapper.core.entities.Server.GuessType;
 import com.markozajc.akiwrapper.core.entities.Server.Language;
-import com.markozajc.akiwrapper.core.utils.Servers;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey;
+import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 @SuppressWarnings("javadoc")
 public class AkinatorExample {
@@ -21,7 +24,7 @@ public class AkinatorExample {
 	public static final double PROBABILITY_THRESHOLD = 0.85;
 	// This will be our probability threshold.
 
-	private static boolean reviewGuess(Guess guess, Scanner sc) {
+	private static boolean reviewGuess(@Nonnull Guess guess, @Nonnull Scanner sc) {
 		System.out.println(guess.getName());
 		System.out.println("\t" + (guess.getDescription() == null ? "(no description)" : guess.getDescription()));
 		// Displays the guess.
@@ -66,80 +69,30 @@ public class AkinatorExample {
 		}
 	}
 
+	@SuppressWarnings("null")
 	public static void main(String[] args) throws Exception {
 		try (Scanner sc = new Scanner(System.in)) {
-
-			System.out.println("What's your name? (" + AkiwrapperMetadata.DEFAULT_NAME + ")");
-			String name = sc.nextLine().trim();
-			if (name.equals(""))
-				name = "desktopPlayer";
-			// In case the user has just pressed <ENTER>, we'll use the default setting.
-
-			// Gets user's name (this won't be important in the future but is still done,
-			// for some reason).
-
-			Boolean filterProfanity = null;
-			{
-				System.out.println("What's your age? (18)");
-				while (filterProfanity == null) {
-					String age = sc.nextLine();
-
-					if (age.equals("")) {
-						filterProfanity = false;
-						continue;
-					}
-
-					try {
-						filterProfanity = Integer.parseInt(age) < 16;
-						// Tries to format the given number.
-
-					} catch (NumberFormatException e) {
-						System.out.println("That's not a real age!");
-						// In case the given number is not formattable (too big or not a number).
-					}
-				}
-			}
+			Boolean filterProfanity = getProfanityFilter(sc);
 			// Gets user's age. Like the Akinator's website, this will turn on the profanity
 			// filter if the age entered is below 16.
 
-			Language localization = null;
-			{
-				List<Language> languages = new ArrayList<>(Servers.SERVER_GROUPS.keySet());
-				// Fetches all available languages.
-
-				String unsupportedLanguageMessage = "Sorry, that language isn't supported. Rather try with:"
-						+ languages.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
-				// Does some Java 8 magic to pre-prepare an error message.
-
-				System.out.println("What's your language? (English)");
-				while (localization == null) {
-					String language = sc.nextLine().toLowerCase().trim();
-
-					if (language.equals("")) {
-						localization = Language.ENGLISH;
-						continue;
-					}
-
-					Language matching = languages.stream()
-							.filter(l -> l.toString().toLowerCase().equals(language))
-							.findAny()
-							.orElse(null);
-
-					if (matching == null) {
-						System.out.println(unsupportedLanguageMessage);
-						continue;
-					}
-
-					localization = matching;
-				}
-			}
+			Language language = getLanguage(sc);
 			// Gets user's language. Akinator will give the user localized questions and guesses
 			// depending on user's language.
 
-			Akiwrapper aw = new AkiwrapperBuilder().setName(name)
-					.setFilterProfanity(filterProfanity)
-					.setLocalization(localization)
-					.build();
+			GuessType guessType = getGuessType(sc);
+			// Gets the guess type.
+
+			Akiwrapper aw;
+			try {
+				aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity)
+				    .setLanguage(language)
+				    .setGuessType(guessType)
+				    .build();
+			} catch (ServerNotFoundException e) {
+				System.err.println("Invalid combination of language and guess type. Try a different guess type.");
+				return;
+			}
 			// Builds the Akiwrapper instance, this is what we'll be using to perform
 			// operations such as answering questions, fetching guesses, etc.
 
@@ -161,69 +114,12 @@ public class AkinatorExample {
 
 				if (question.getStep() == 0)
 					System.out.println(
-						"\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
+					    "\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
 				// Displays the tip (only for the first time).
 
-				boolean answered = false;
-				while (!answered) {
-					// Iterates while the questions remains unanswered.
+				answerQuestion(sc, aw);
 
-					String answer = sc.nextLine().toLowerCase();
-
-					if (answer.equals("y")) {
-						aw.answerCurrentQuestion(Answer.YES);
-
-					} else if (answer.equals("n")) {
-						aw.answerCurrentQuestion(Answer.NO);
-
-					} else if (answer.equals("dk")) {
-						aw.answerCurrentQuestion(Answer.DONT_KNOW);
-
-					} else if (answer.equals("p")) {
-						aw.answerCurrentQuestion(Answer.PROBABLY);
-
-					} else if (answer.equals("pn")) {
-						aw.answerCurrentQuestion(Answer.PROBABLY_NOT);
-
-					} else if (answer.equals("b")) {
-						aw.undoAnswer();
-
-					} else if (answer.equals("resetkey")) {
-						Route.accquireApiKey();
-
-					} else if (answer.equals("debug")) {
-						System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getApiUrl()
-								+ "\n\tCurrent guess count: " + aw.getGuesses().size()
-								+ "\n\tCurrent API server availability: "
-								+ (aw.getServer().isUp() ? "ONLINE" : "OFFILNE"));
-						continue;
-						// Displays some debug information.
-
-					} else {
-						System.out.println(
-							"Please answer with either YES, NO, DONT KNOW, PROBABLY or PROBABLY NOT or go back one step with BACK.");
-						continue;
-					}
-
-					answered = true;
-					// Answers the question.
-				}
-
-				for (Guess guess : aw.getGuessesAboveProbability(PROBABILITY_THRESHOLD)) {
-					if (guess.getProbability() > 0.85d && !declined.contains(Long.valueOf(guess.getIdLong()))) {
-						// Checks if this guess complies with the conditions.
-
-						if (reviewGuess(guess, sc)) {
-							// If the user accepts this guess.
-							finish(true);
-							System.exit(0);
-						}
-
-						declined.add(Long.valueOf(guess.getIdLong()));
-						// Registers this guess as rejected.
-					}
-
-				}
+				reviewGuesses(sc, aw, declined);
 				// Iterates over any available guesses.
 			}
 
@@ -238,6 +134,162 @@ public class AkinatorExample {
 			finish(false);
 			// Loses if all guesses are rejected.
 		}
+	}
+
+	private static void reviewGuesses(@Nonnull Scanner sc, @Nonnull Akiwrapper aw, @Nonnull List<Long> declined) {
+		for (Guess guess : aw.getGuessesAboveProbability(PROBABILITY_THRESHOLD)) {
+			if (guess.getProbability() > 0.85d && !declined.contains(Long.valueOf(guess.getIdLong()))) {
+				// Checks if this guess complies with the conditions.
+
+				if (reviewGuess(guess, sc)) {
+					// If the user accepts this guess.
+					finish(true);
+					System.exit(0);
+				}
+
+				declined.add(Long.valueOf(guess.getIdLong()));
+				// Registers this guess as rejected.
+			}
+
+		}
+	}
+
+	private static void answerQuestion(@Nonnull Scanner sc, @Nonnull Akiwrapper aw) {
+		boolean answered = false;
+		while (!answered) {
+			// Iterates while the questions remains unanswered.
+
+			String answer = sc.nextLine().toLowerCase();
+
+			if (answer.equals("y")) {
+				aw.answerCurrentQuestion(Answer.YES);
+
+			} else if (answer.equals("n")) {
+				aw.answerCurrentQuestion(Answer.NO);
+
+			} else if (answer.equals("dk")) {
+				aw.answerCurrentQuestion(Answer.DONT_KNOW);
+
+			} else if (answer.equals("p")) {
+				aw.answerCurrentQuestion(Answer.PROBABLY);
+
+			} else if (answer.equals("pn")) {
+				aw.answerCurrentQuestion(Answer.PROBABLY_NOT);
+
+			} else if (answer.equals("b")) {
+				aw.undoAnswer();
+
+			} else if (answer.equals("resetkey")) {
+				ApiKey.accquireApiKey();
+
+			} else if (answer.equals("debug")) {
+				System.out.println("Debug information:\n\tCurrent API server: "
+				    + aw.getServer().getUrl()
+				    + "\n\tCurrent guess count: "
+				    + aw.getGuesses().size());
+				continue;
+				// Displays some debug information.
+
+			} else {
+				System.out.println(
+				    "Please answer with either [Y]ES, [N]O, [D|ONT |K]NOW, [P]ROBABLY or [P|ROBABLY |N]OT or go back one step with [B]ACK.");
+				continue;
+			}
+
+			answered = true;
+			// Answers the question.
+		}
+	}
+
+	private static boolean getProfanityFilter(@Nonnull Scanner sc) {
+		Boolean result = null;
+		System.out.println("What's your age? (18)");
+		while (result == null) {
+			String age = sc.nextLine();
+
+			if (age.equals("")) {
+				result = false;
+				continue;
+			}
+
+			try {
+				result = Integer.parseInt(age) < 16;
+				// Tries to format the given number.
+
+			} catch (NumberFormatException e) {
+				System.out.println("That's not a real age!");
+				// In case the given number is not formattable (too big or not a number).
+			}
+		}
+		return result;
+	}
+
+	@Nonnull
+	private static Language getLanguage(@Nonnull Scanner sc) {
+		Language result = null;
+		EnumSet<Language> languages = EnumSet.allOf(Language.class);
+		// Fetches all available languages.
+
+		String unsupportedLanguageMessage = "Sorry, that language isn't supported. Rather try with:"
+		    + languages.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
+		// Does some Java 8 magic to pre-prepare the error message.
+
+		System.out.println("What's your language? (English)");
+		while (result == null) {
+			String selectedLanguage = sc.nextLine().toLowerCase().trim();
+
+			if (selectedLanguage.equals("")) {
+				result = Language.ENGLISH;
+				continue;
+			}
+
+			Language matching = languages.stream()
+			    .filter(l -> l.toString().toLowerCase().equals(selectedLanguage))
+			    .findAny()
+			    .orElse(null);
+
+			if (matching == null) {
+				System.out.println(unsupportedLanguageMessage);
+				continue;
+			}
+
+			result = matching;
+		}
+		return result;
+	}
+
+	@Nonnull
+	private static GuessType getGuessType(@Nonnull Scanner sc) {
+		GuessType result = null;
+		EnumSet<GuessType> guessTypes = EnumSet.allOf(GuessType.class);
+		// Fetches all available guess types.
+
+		String unsupportedGuessTypeMessage = "Sorry, that guess type isn't supported. Rather try with:"
+		    + guessTypes.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
+		// Does some Java 8 magic to pre-prepare the error message.
+
+		System.out.println("What will you be guessing? (character)");
+		while (result == null) {
+			String selectedGuessType = sc.nextLine().toLowerCase().trim();
+
+			if (selectedGuessType.equals("")) {
+				result = GuessType.CHARACTER;
+				continue;
+			}
+
+			GuessType matching = guessTypes.stream()
+			    .filter(l -> l.toString().toLowerCase().equals(selectedGuessType))
+			    .findAny()
+			    .orElse(null);
+
+			if (matching == null) {
+				System.out.println(unsupportedGuessTypeMessage);
+				continue;
+			}
+
+			result = matching;
+		}
+		return result;
 	}
 
 }

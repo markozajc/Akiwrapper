@@ -1,6 +1,5 @@
 package com.markozajc.akiwrapper.core.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,18 +14,16 @@ import org.json.JSONObject;
 import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.entities.Question;
 import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.ServerList;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
-import com.markozajc.akiwrapper.core.exceptions.ServerGroupUnavailableException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
-import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
  * An implementation of {@link Akiwrapper}.
@@ -35,10 +32,11 @@ import com.markozajc.akiwrapper.core.utils.Servers;
  */
 public class AkiwrapperImpl implements Akiwrapper {
 
+	private static final String NO_MORE_QUESTIONS_STATUS = "elem list is empty";
 	private static final String PARAMETERS_KEY = "parameters";
 
 	/**
-	 * A class used to define the temporary API token.
+	 * A class used to define the session token.
 	 *
 	 * @author Marko Zajc
 	 */
@@ -78,8 +76,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@Nonnull
-	private final String userAgent;
-	@Nonnull
 	private final Server server;
 	private final boolean filterProfanity;
 	@Nonnull
@@ -90,74 +86,49 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private Question currentQuestion;
 
 	/**
-	 * Creates a new Akiwrapper and registers a new API session. The first question can
-	 * be retrieved with {@link #getCurrentQuestion()}.
+	 * Constructs a new {@link Akiwrapper} instance and creates a new API session. The
+	 * first question can be retrieved with {@link #getCurrentQuestion()}.
 	 *
-	 * @param metadata
-	 *            metadata to use. All {@code null} values will be replaced with the
-	 *            default values (you can see defaults at {@link AkiwrapperBuilder}'s
-	 *            getters)
-	 *
-	 * @throws ServerGroupUnavailableException
-	 *             if no API server is available
-	 * @throws IllegalArgumentException
-	 *             is {@code metadata} is null
+	 * @param server
+	 *            {@link Server} to use. Does not work with a {@link ServerList},
+	 *            {@link AkiwrapperBuilder} implements that functionality.
+	 * @param filterProfanity
+	 *            whether to tell API to filter profanity.
 	 */
 	@SuppressWarnings("null")
-	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) {
-		Server serverCopy = metadata.getServer();
-		if (serverCopy == null)
-			serverCopy = Servers.getFirstAvailableServer(metadata.getLocalization());
+	public AkiwrapperImpl(@Nonnull Server server, boolean filterProfanity) {
+		JSONObject question = Route.NEW_SESSION
+			.getRequest("", filterProfanity, Long.toString(System.currentTimeMillis()), server.getUrl())
+			.getJSON();
+		JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
 
-		this.server = serverCopy;
-		// Checks & sets the server
-
-		this.userAgent = metadata.getUserAgent();
-		// Checks & sets the user-agent
-
-		this.filterProfanity = metadata.doesFilterProfanity();
-		// Sets the profanity filter
-
-		JSONObject question;
-		String name = metadata.getName();
-
-		try {
-			question = Route.NEW_SESSION.getRequest(this.server.getApiUrl(), this.filterProfanity, name).getJSON();
-		} catch (IOException e) {
-			// Shouldn't happen, the server was requested before
-			throw new IllegalStateException(e);
-		}
-		// Checks & uses the name
-
-		JSONObject identification = question.getJSONObject(PARAMETERS_KEY).getJSONObject("identification");
-
-		this.token = new Token(Long.parseLong(identification.getString("signature")),
-			Integer.parseInt(identification.getString("session")));
-
-		this.currentQuestion = new QuestionImpl(
-			question.getJSONObject(PARAMETERS_KEY).getJSONObject("step_information"), new StatusImpl("OK")
-		/*
-		 * We can assume that the completion is OK because if it wouldn't be, calling the
-		 * Route.NEW_SESSION would have thrown ServerUnavailableException
-		 */
-		);
-
+		this.token = getToken(parameters);
+		this.currentQuestion = new QuestionImpl(parameters.getJSONObject("step_information"), new StatusImpl("OK"));
+		this.filterProfanity = filterProfanity;
+		this.server = server;
 		this.currentStep = 0;
+	}
+
+	@Nonnull
+	private static Token getToken(@Nonnull JSONObject parameters) {
+		JSONObject identification = parameters.getJSONObject("identification");
+		return new Token(Long.parseLong(identification.getString("signature")),
+						 Integer.parseInt(identification.getString("session")));
 	}
 
 	@SuppressWarnings("null")
 	@Override
-	public Question answerCurrentQuestion(Answer answer) throws IOException {
+	public Question answerCurrentQuestion(Answer answer) {
 		Question currentQuestion2 = this.currentQuestion;
 		if (currentQuestion2 != null) {
 			JSONObject question = Route.ANSWER
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
-					"" + answer.getId())
+				.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
+							"" + answer.getId())
 				.getJSON();
 			try {
-				this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY),
-					new StatusImpl(question));
-			} catch (MissingQuestionException e) {
+				this.currentQuestion =
+					new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
+			} catch (MissingQuestionException e) { // NOSONAR It does not need to be logged
 				this.currentQuestion = null;
 				return null;
 			}
@@ -171,7 +142,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@SuppressWarnings("null")
 	@Override
-	public Question undoAnswer() throws IOException {
+	public Question undoAnswer() {
 		Question current = getCurrentQuestion();
 		if (current == null)
 			return null;
@@ -180,7 +151,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return null;
 
 		JSONObject question = Route.CANCEL_ANSWER
-			.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
+			.getRequest(this.server.getUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
 			.getJSON();
 
 		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
@@ -196,15 +167,14 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@SuppressWarnings("null")
 	@Override
-	public List<Guess> getGuesses() throws IOException {
+	public List<Guess> getGuesses() {
 		JSONObject list = null;
 		try {
-			list = Route.LIST.setUserAgent(this.userAgent)
-				.getRequest(this.server.getApiUrl(), this.filterProfanity, this.token, "" + this.currentStep)
+			list = Route.LIST.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + this.currentStep)
 				.getJSON();
 		} catch (StatusException e) {
-			if (e.getStatus().getLevel().equals(Level.ERROR)
-				&& e.getStatus().getReason().equalsIgnoreCase("elem list is empty")) {
+			if (e.getStatus().getLevel() == Level.ERROR
+				&& NO_MORE_QUESTIONS_STATUS.equalsIgnoreCase(e.getStatus().getReason())) {
 				return Collections.unmodifiableList(new ArrayList<>());
 			}
 
@@ -225,13 +195,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Override
 	public Server getServer() {
 		return this.server;
-	}
-
-	/**
-	 * @return the currently used user-agent
-	 */
-	public String getUserAgent() {
-		return this.userAgent;
 	}
 
 }

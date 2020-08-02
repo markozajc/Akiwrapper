@@ -4,8 +4,8 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
 /**
- * An interface used to represent an identifiable object (if the object has an
- * appended ID set by Akinator's servers).
+ * A representation of an object with a numeric identifier. Some objects in the API
+ * have an ID appended to them.
  *
  * @author Marko Zajc
  */
