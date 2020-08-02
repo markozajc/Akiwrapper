@@ -22,9 +22,7 @@ import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
-import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.markozajc.akiwrapper.core.exceptions.StatusException;
-import com.markozajc.akiwrapper.core.utils.Servers;
 
 /**
  * An implementation of {@link Akiwrapper}.
@@ -94,26 +92,19 @@ public class AkiwrapperImpl implements Akiwrapper {
 	 *            {@link AkiwrapperMetadata} to use. All {@code null} values will be
 	 *            replaced with the default values that are specified in
 	 *            {@link AkiwrapperMetadata} as constants.
-	 *
-	 * @throws ServerNotFoundException
-	 *             if no {@link Server} is available for the given
-	 *             {@link AkiwrapperMetadata}.
 	 */
 	@SuppressWarnings("null")
-	public AkiwrapperImpl(@Nonnull AkiwrapperMetadata metadata) throws ServerNotFoundException { // NOSONAR That's a
-																								 // false-positive
-		this.server = getServer(metadata);
-		this.filterProfanity = metadata.doesFilterProfanity();
-		this.currentStep = 0;
-
-		JSONObject question;
-		question = Route.NEW_SESSION
-			.getRequest("", this.filterProfanity, Long.toString(System.currentTimeMillis()), this.server.getUrl())
+	public AkiwrapperImpl(@Nonnull Server server, boolean filterProfanity) {
+		JSONObject question = Route.NEW_SESSION
+			.getRequest("", filterProfanity, Long.toString(System.currentTimeMillis()), server.getUrl())
 			.getJSON();
-
 		JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
+
 		this.token = getToken(parameters);
 		this.currentQuestion = new QuestionImpl(parameters.getJSONObject("step_information"), new StatusImpl("OK"));
+		this.filterProfanity = filterProfanity;
+		this.server = server;
+		this.currentStep = 0;
 	}
 
 	@Nonnull
@@ -121,14 +112,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 		JSONObject identification = parameters.getJSONObject("identification");
 		return new Token(Long.parseLong(identification.getString("signature")),
 						 Integer.parseInt(identification.getString("session")));
-	}
-
-	@Nonnull
-	private static Server getServer(@Nonnull AkiwrapperMetadata metadata) throws ServerNotFoundException {
-		Server server = metadata.getServer();
-		if (server == null)
-			server = Servers.findServer(metadata.getLanguage(), metadata.getGuessType());
-		return server;
 	}
 
 	@SuppressWarnings("null")
