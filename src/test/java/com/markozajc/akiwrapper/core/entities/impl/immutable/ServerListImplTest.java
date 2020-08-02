@@ -36,8 +36,10 @@ class ServerListImplTest {
 		assertEquals(serversList.size() - 1, serverList.getRemainingSize());
 		assertEquals(serversList, serverList.getServers());
 		assertEquals(Language.ARABIC, serverList.getLanguage());
+		assertTrue(serverList.hasNext());
 		assertTrue(serverList.next());
 		assertEquals(Language.FRENCH, serverList.getLanguage());
+		assertFalse(serverList.hasNext());
 		assertFalse(serverList.next());
 	}
 
@@ -50,8 +52,10 @@ class ServerListImplTest {
 		assertEquals(serversList.size() - 1, serverList.getRemainingSize());
 		assertEquals(serversList, serverList.getServers());
 		assertEquals(Language.ARABIC, serverList.getLanguage());
+		assertTrue(serverList.hasNext());
 		assertTrue(serverList.next());
 		assertEquals(Language.FRENCH, serverList.getLanguage());
+		assertFalse(serverList.hasNext());
 		assertFalse(serverList.next());
 	}
 
@@ -62,8 +66,10 @@ class ServerListImplTest {
 							   new ServerListImpl(new ServerImpl("x", Language.FRENCH, GuessType.ANIMAL)));
 		assertEquals(2 /* amount of servers */ - 1, serverList.getRemainingSize());
 		assertEquals(Language.ARABIC, serverList.getLanguage());
+		assertTrue(serverList.hasNext());
 		assertTrue(serverList.next());
 		assertEquals(Language.FRENCH, serverList.getLanguage());
+		assertFalse(serverList.hasNext());
 		assertFalse(serverList.next());
 	}
 
