@@ -5,7 +5,7 @@
 
 	<groupId>com.github.markozajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.4.3.2</version>
+	<version>1.5</version>
 
 	<name>Akiwrapper</name>
 	<description>A Java API wrapper for Akinator</description>
