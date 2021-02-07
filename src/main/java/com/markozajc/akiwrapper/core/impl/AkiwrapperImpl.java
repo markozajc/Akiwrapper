@@ -1,29 +1,17 @@
 package com.markozajc.akiwrapper.core.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.*;
 
-import com.markozajc.akiwrapper.Akiwrapper;
-import com.markozajc.akiwrapper.AkiwrapperBuilder;
+import com.markozajc.akiwrapper.*;
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.Guess;
-import com.markozajc.akiwrapper.core.entities.Question;
-import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.ServerList;
+import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.GuessImpl;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.QuestionImpl;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
-import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
-import com.markozajc.akiwrapper.core.exceptions.StatusException;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
+import com.markozajc.akiwrapper.core.exceptions.*;
 
 /**
  * An implementation of {@link Akiwrapper}.
@@ -175,7 +163,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		} catch (StatusException e) {
 			if (e.getStatus().getLevel() == Level.ERROR
 				&& NO_MORE_QUESTIONS_STATUS.equalsIgnoreCase(e.getStatus().getReason())) {
-				return Collections.unmodifiableList(new ArrayList<>());
+				return Collections.emptyList();
 			}
 
 			throw e;
