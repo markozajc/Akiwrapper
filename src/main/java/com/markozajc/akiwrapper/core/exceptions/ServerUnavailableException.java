@@ -2,8 +2,7 @@ package com.markozajc.akiwrapper.core.exceptions;
 
 import javax.annotation.Nonnull;
 
-import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.Status;
+import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 
 /**

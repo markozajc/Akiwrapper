@@ -1,18 +1,12 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 import javax.annotation.Nonnull;
 
-import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.ServerList;
+import com.markozajc.akiwrapper.core.entities.*;
 
 public class ServerListImpl implements ServerList {
 

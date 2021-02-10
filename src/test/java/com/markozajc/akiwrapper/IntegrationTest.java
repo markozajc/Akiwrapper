@@ -3,26 +3,18 @@ package com.markozajc.akiwrapper;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.params.provider.*;
+import org.slf4j.*;
 
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
-import com.markozajc.akiwrapper.core.entities.Guess;
-import com.markozajc.akiwrapper.core.entities.Question;
-import com.markozajc.akiwrapper.core.entities.Server.GuessType;
-import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.*;
+import com.markozajc.akiwrapper.core.entities.Server.*;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 class IntegrationTest {
 

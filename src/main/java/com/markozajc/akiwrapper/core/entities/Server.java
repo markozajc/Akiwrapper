@@ -1,7 +1,6 @@
 package com.markozajc.akiwrapper.core.entities;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;

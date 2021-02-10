@@ -1,20 +1,14 @@
 package com.markozajc.akiwrapper.example;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import com.markozajc.akiwrapper.Akiwrapper;
+import com.markozajc.akiwrapper.*;
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
-import com.markozajc.akiwrapper.AkiwrapperBuilder;
-import com.markozajc.akiwrapper.core.entities.Guess;
-import com.markozajc.akiwrapper.core.entities.Question;
-import com.markozajc.akiwrapper.core.entities.Server.GuessType;
-import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.*;
+import com.markozajc.akiwrapper.core.entities.Server.*;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 

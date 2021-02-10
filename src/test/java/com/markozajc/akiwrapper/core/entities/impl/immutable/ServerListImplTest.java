@@ -2,21 +2,14 @@ package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
 import static java.util.Arrays.asList;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.Server.GuessType;
-import com.markozajc.akiwrapper.core.entities.Server.Language;
-import com.markozajc.akiwrapper.core.entities.ServerList;
+import com.markozajc.akiwrapper.core.entities.*;
+import com.markozajc.akiwrapper.core.entities.Server.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ServerListImplTest {
 
