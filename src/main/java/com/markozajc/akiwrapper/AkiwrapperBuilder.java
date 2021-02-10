@@ -2,17 +2,12 @@ package com.markozajc.akiwrapper;
 
 import javax.annotation.Nonnull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
-import com.markozajc.akiwrapper.core.entities.AkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.Server.GuessType;
-import com.markozajc.akiwrapper.core.entities.Server.Language;
-import com.markozajc.akiwrapper.core.entities.ServerList;
+import com.markozajc.akiwrapper.core.entities.*;
+import com.markozajc.akiwrapper.core.entities.Server.*;
 import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
-import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
+import com.markozajc.akiwrapper.core.exceptions.*;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
@@ -88,7 +83,7 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 					LOG.warn("Failed to construct an instance, trying the next available server", e);
 				}
 			} while (serverList.next());
-			throw new ServerUnavailableException("AW-KO MULTIPLE FAILS");
+			throw new ServerUnavailableException("KO - NO SERVER AVAILABLE");
 		} else {
 			LOG.debug("Given Server is not a ServerList, only attempting to build once.");
 			return new AkiwrapperImpl(server, this.filterProfanity);
