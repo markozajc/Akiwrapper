@@ -1,7 +1,6 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
 import org.json.JSONObject;
 

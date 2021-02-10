@@ -1,19 +1,15 @@
 package com.markozajc.akiwrapper.core.utils;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 import javax.annotation.Nonnull;
 
 import com.jcabi.xml.XMLDocument;
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.entities.Server;
-import com.markozajc.akiwrapper.core.entities.Server.GuessType;
-import com.markozajc.akiwrapper.core.entities.Server.Language;
-import com.markozajc.akiwrapper.core.entities.ServerList;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.ServerListImpl;
+import com.markozajc.akiwrapper.core.entities.*;
+import com.markozajc.akiwrapper.core.entities.Server.*;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

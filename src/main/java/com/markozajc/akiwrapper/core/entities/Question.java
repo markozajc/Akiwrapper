@@ -1,7 +1,6 @@
 package com.markozajc.akiwrapper.core.entities;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.AkiwrapperBuilder;

@@ -1,12 +1,10 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 import org.json.JSONObject;
 
-import com.markozajc.akiwrapper.core.entities.Question;
-import com.markozajc.akiwrapper.core.entities.Status;
+import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
 import com.markozajc.akiwrapper.core.utils.JSONUtils;
@@ -67,9 +65,9 @@ public class QuestionImpl implements Question {
 		checkMissingQuestion(status);
 		this.id = json.getString("questionid");
 		this.question = json.getString("question");
-		this.step = JSONUtils.getInteger(json, "step").get().intValue();
-		this.gain = JSONUtils.getDouble(json, "infogain").get().doubleValue();
-		this.progression = JSONUtils.getDouble(json, "progression").get().doubleValue();
+		this.step = JSONUtils.getInteger(json, "step").get();
+		this.gain = JSONUtils.getDouble(json, "infogain").get();
+		this.progression = JSONUtils.getDouble(json, "progression").get();
 	}
 
 	private static void checkMissingQuestion(@Nonnull Status status) {

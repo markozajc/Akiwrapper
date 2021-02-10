@@ -1,14 +1,10 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.*;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.*;
 
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Guess;
@@ -61,7 +57,7 @@ public class GuessImpl implements Guess {
 	@SuppressWarnings("null")
 	public GuessImpl(@Nonnull JSONObject json) {
 		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
-			 JSONUtils.getDouble(json, "proba").get().doubleValue());
+			 JSONUtils.getDouble(json, "proba").get());
 	}
 
 	@Nullable

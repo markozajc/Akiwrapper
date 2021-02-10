@@ -1,11 +1,9 @@
 package com.markozajc.akiwrapper.core.entities;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
 import com.markozajc.akiwrapper.Akiwrapper;
-import com.markozajc.akiwrapper.core.entities.Server.GuessType;
-import com.markozajc.akiwrapper.core.entities.Server.Language;
+import com.markozajc.akiwrapper.core.entities.Server.*;
 
 /**
  * A class holding configuration for an {@link Akiwrapper} instance. Note that

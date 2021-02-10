@@ -1,7 +1,6 @@
 package com.markozajc.akiwrapper.core.entities;
 
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 /**
  * A representation of an object with a numeric identifier. Some objects in the API

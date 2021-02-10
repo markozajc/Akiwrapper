@@ -3,11 +3,9 @@ package com.markozajc.akiwrapper.core;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
-import com.markozajc.akiwrapper.core.exceptions.StatusException;
+import com.markozajc.akiwrapper.core.exceptions.*;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class RouteTest {
 

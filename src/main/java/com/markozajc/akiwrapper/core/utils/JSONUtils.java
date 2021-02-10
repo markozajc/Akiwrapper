@@ -4,8 +4,7 @@ import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.*;
 
 /**
  * A set of utilities for JSON that prevent type errors.
@@ -31,7 +30,7 @@ public final class JSONUtils {
 			Object object = json.get(key);
 			Integer value;
 			if (object instanceof Number)
-				value = Integer.valueOf(((Number) object).intValue());
+				value = ((Number) object).intValue();
 			else if (object instanceof String)
 				value = Integer.valueOf((String) object);
 			else
@@ -62,7 +61,7 @@ public final class JSONUtils {
 			Object object = json.get(key);
 			Double value;
 			if (object instanceof Number)
-				value = Double.valueOf(((Number) object).doubleValue());
+				value = ((Number) object).doubleValue();
 			else if (object instanceof String)
 				value = Double.valueOf((String) object);
 			else

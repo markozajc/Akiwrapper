@@ -2,8 +2,7 @@ package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 import javax.annotation.Nonnull;
 

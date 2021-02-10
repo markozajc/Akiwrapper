@@ -2,28 +2,21 @@ package com.markozajc.akiwrapper.core;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.json.*;
+import org.slf4j.*;
 
 import com.markozajc.akiwrapper.core.entities.Status;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
-import com.markozajc.akiwrapper.core.exceptions.ServerUnavailableException;
-import com.markozajc.akiwrapper.core.exceptions.StatusException;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
+import com.markozajc.akiwrapper.core.exceptions.*;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Token;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import kong.unirest.Unirest;
-import kong.unirest.UnirestInstance;
+import kong.unirest.*;
 
 /**
  * A class defining various API endpoints. It is capable of building such

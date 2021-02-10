@@ -3,12 +3,9 @@ package com.markozajc.akiwrapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
-import com.markozajc.akiwrapper.core.entities.Guess;
-import com.markozajc.akiwrapper.core.entities.Question;
-import com.markozajc.akiwrapper.core.entities.Server;
+import com.markozajc.akiwrapper.core.entities.*;
 
 /**
  * The "core" of interaction with the Akinator's API. Contains all methods required

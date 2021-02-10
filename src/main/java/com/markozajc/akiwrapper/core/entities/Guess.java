@@ -2,8 +2,7 @@ package com.markozajc.akiwrapper.core.entities;
 
 import java.net.URL;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
 import com.markozajc.akiwrapper.AkiwrapperBuilder;
 import com.markozajc.akiwrapper.core.entities.Server.GuessType;
