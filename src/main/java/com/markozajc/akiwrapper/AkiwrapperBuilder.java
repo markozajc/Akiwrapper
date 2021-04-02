@@ -31,6 +31,21 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 			  AkiwrapperMetadata.DEFAULT_GUESS_TYPE);
 	}
 
+	/**
+	 * Sets the {@link Server} or (recommended) a {@link ServerList}. It is not
+	 * recommended to set the {@link Server} manually (unless for debugging purposes or
+	 * as some kind of workaround where Akiwrapper's server finder fails) as Akiwrapper
+	 * already does its best to find the most suitable one. <br>
+	 * <b>Caution!</b> Setting the server to a non-null value overwrites the
+	 * {@link Language} and the {@link GuessType} with the given {@link Server}'s values.
+	 *
+	 * @param server
+	 *
+	 * @return current instance, used for chaining
+	 *
+	 * @see #getServer()
+	 * @see Servers#findServers(Language, GuessType)
+	 */
 	@Override
 	public AkiwrapperBuilder setServer(Server server) {
 		super.setServer(server);
@@ -38,6 +53,15 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 		return this;
 	}
 
+	/**
+	 * Sets the "filter profanity" mode.
+	 *
+	 * @param filterProfanity
+	 *
+	 * @return current instance, used for chaining
+	 *
+	 * @see #doesFilterProfanity()
+	 */
 	@Override
 	public AkiwrapperBuilder setFilterProfanity(boolean filterProfanity) {
 		super.setFilterProfanity(filterProfanity);
@@ -45,13 +69,35 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 		return this;
 	}
 
+	/**
+	 * Sets the {@link Language}.<br>
+	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
+	 * {@code null} (meaning it will be automatically selected).
+	 *
+	 * @param language
+	 *
+	 * @return current instance, used for chaining
+	 *
+	 * @see #getLanguage()
+	 */
 	@Override
-	public AkiwrapperBuilder setLanguage(Language localization) {
-		super.setLanguage(localization);
+	public AkiwrapperBuilder setLanguage(Language language) {
+		super.setLanguage(language);
 
 		return this;
 	}
 
+	/**
+	 * Sets the {@link GuessType}.<br>
+	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
+	 * {@code null} (meaning it will be automatically selected).
+	 *
+	 * @param guessType
+	 *
+	 * @return current instance, used for chaining
+	 *
+	 * @see #getLanguage()
+	 */
 	@Override
 	public AkiwrapperBuilder setGuessType(GuessType guessType) {
 		super.setGuessType(guessType);

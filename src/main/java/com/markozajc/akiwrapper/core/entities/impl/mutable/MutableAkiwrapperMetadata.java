@@ -4,14 +4,7 @@ import javax.annotation.*;
 
 import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Server.*;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.ImmutableAkiwrapperMetadata;
-import com.markozajc.akiwrapper.core.utils.Servers;
 
-/**
- * A mutable implementation of {@link AkiwrapperMetadata}.
- *
- * @author Marko Zajc
- */
 public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 
 	@Nullable
@@ -22,19 +15,7 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 	@Nonnull
 	protected GuessType guessType;
 
-	/**
-	 * Creates a new {@link ImmutableAkiwrapperMetadata} instance.
-	 *
-	 * @param server
-	 *            API server that the requests will be sent to.
-	 * @param filterProfanity
-	 *            whether to filter out NSFW {@link Question}s and {@link Guess}es.
-	 * @param language
-	 *            {@link Language} of {@link Question}s.
-	 * @param guessType
-	 *            {@link GuessType} of {@link Guess}es.
-	 */
-	public MutableAkiwrapperMetadata(@Nullable Server server, boolean filterProfanity, @Nonnull Language language,
+	protected MutableAkiwrapperMetadata(@Nullable Server server, boolean filterProfanity, @Nonnull Language language,
 									 @Nonnull GuessType guessType) {
 		this.server = server;
 		this.filterProfanity = filterProfanity;
@@ -47,21 +28,6 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 		return this.server;
 	}
 
-	/**
-	 * Sets the {@link Server} or (recommended) a {@link ServerList}. It is not
-	 * recommended to set the {@link Server} manually (unless for debugging purposes or
-	 * as some kind of workaround where Akiwrapper's server finder fails) as Akiwrapper
-	 * already does its best to find the most suitable one. <br>
-	 * <b>Caution!</b> Setting the server to a non-null value overwrites the
-	 * {@link Language} and the {@link GuessType} with the given {@link Server}'s values.
-	 *
-	 * @param server
-	 *
-	 * @return current instance, used for chaining
-	 *
-	 * @see #getServer()
-	 * @see Servers#findServers(Language, GuessType)
-	 */
 	@Nonnull
 	public MutableAkiwrapperMetadata setServer(@Nullable Server server) {
 		this.server = server;
@@ -69,7 +35,6 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 			this.language = server.getLanguage();
 			this.guessType = server.getGuessType();
 		}
-
 		return this;
 	}
 
@@ -78,19 +43,9 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 		return this.filterProfanity;
 	}
 
-	/**
-	 * Sets the "filter profanity" mode.
-	 *
-	 * @param filterProfanity
-	 *
-	 * @return current instance, used for chaining
-	 *
-	 * @see #doesFilterProfanity()
-	 */
 	@Nonnull
 	public MutableAkiwrapperMetadata setFilterProfanity(boolean filterProfanity) {
 		this.filterProfanity = filterProfanity;
-
 		return this;
 	}
 
@@ -99,22 +54,10 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 		return this.language;
 	}
 
-	/**
-	 * Sets the {@link Language}.<br>
-	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
-	 * {@code null} (meaning it will be automatically selected).
-	 *
-	 * @param language
-	 *
-	 * @return current instance, used for chaining
-	 *
-	 * @see #getLanguage()
-	 */
 	@Nonnull
 	public MutableAkiwrapperMetadata setLanguage(@Nonnull Language language) {
 		this.language = language;
 		this.server = null;
-
 		return this;
 	}
 
@@ -123,17 +66,6 @@ public abstract class MutableAkiwrapperMetadata extends AkiwrapperMetadata {
 		return this.guessType;
 	}
 
-	/**
-	 * Sets the {@link GuessType}.<br>
-	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
-	 * {@code null} (meaning it will be automatically selected).
-	 *
-	 * @param guessType
-	 *
-	 * @return current instance, used for chaining
-	 *
-	 * @see #getLanguage()
-	 */
 	@Nonnull
 	public MutableAkiwrapperMetadata setGuessType(@Nonnull GuessType guessType) {
 		this.guessType = guessType;

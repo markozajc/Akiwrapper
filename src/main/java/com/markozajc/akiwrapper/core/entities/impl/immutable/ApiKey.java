@@ -7,16 +7,7 @@ import java.util.regex.*;
 import javax.annotation.Nonnull;
 
 import com.markozajc.akiwrapper.core.Route;
-import com.markozajc.akiwrapper.core.exceptions.StatusException;
 
-/**
- * A class defining the session key that has to be passed to the
- * {@link Route#NEW_SESSION} endpoint. It is scraped from the website as it is
- * single-use and triggers a KO if reused.
- *
- * @author Marko Zajc
- *
- */
 public class ApiKey {
 
 	private static final Pattern API_KEY_PATTERN =
@@ -34,11 +25,6 @@ public class ApiKey {
 		this.frontAddress = frontAddress;
 	}
 
-	/**
-	 * Compiles this {@link ApiKey} into querystring that can be appended to an endpoint.
-	 *
-	 * @return compiled querystring.
-	 */
 	@SuppressWarnings("null")
 	@Nonnull
 	public String compile() {
@@ -49,17 +35,6 @@ public class ApiKey {
 		}
 	}
 
-	/**
-	 * Finds and scrapes the API key from Akinator's website and constructs an
-	 * {@link ApiKey} instance from it. <br>
-	 * <b>Caution!</b>Each {@link ApiKey} is single-use! Reusing it will trigger a
-	 * {@link StatusException} from the API server.
-	 *
-	 * @return an {@link ApiKey}.
-	 *
-	 * @throws IllegalStateException
-	 *             if the API key can't be scraped
-	 */
 	@SuppressWarnings("null")
 	public static ApiKey accquireApiKey() {
 		Matcher matcher =

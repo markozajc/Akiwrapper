@@ -9,11 +9,6 @@ import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
 import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
-/**
- * An implementation of {@link Question}.
- *
- * @author Marko Zajc
- */
 public class QuestionImpl implements Question {
 
 	@Nonnull
@@ -27,19 +22,6 @@ public class QuestionImpl implements Question {
 	@Nonnegative
 	private final double progression;
 
-	/**
-	 * Constructs a new {@link QuestionImpl} instance from raw parameters.
-	 *
-	 * @param id
-	 * @param question
-	 * @param step
-	 * @param gain
-	 * @param progression
-	 * @param status
-	 *
-	 * @throws MissingQuestionException
-	 *             if there are no more questions left.
-	 */
 	public QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
 						@Nonnegative double progression, @Nonnull Status status) {
 		checkMissingQuestion(status);
@@ -51,15 +33,6 @@ public class QuestionImpl implements Question {
 		this.progression = progression;
 	}
 
-	/**
-	 * Constructs a new {@link QuestionImpl} instance from a {@link JSONObject}.
-	 *
-	 * @param json
-	 * @param status
-	 *
-	 * @throws MissingQuestionException
-	 *             if there are no more questions left.
-	 */
 	@SuppressWarnings("null")
 	public QuestionImpl(@Nonnull JSONObject json, @Nonnull Status status) {
 		checkMissingQuestion(status);
