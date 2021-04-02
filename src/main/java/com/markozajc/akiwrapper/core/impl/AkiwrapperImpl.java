@@ -6,28 +6,18 @@ import javax.annotation.*;
 
 import org.json.*;
 
-import com.markozajc.akiwrapper.*;
+import com.markozajc.akiwrapper.Akiwrapper;
 import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
 import com.markozajc.akiwrapper.core.exceptions.*;
 
-/**
- * An implementation of {@link Akiwrapper}.
- *
- * @author Marko Zajc
- */
 public class AkiwrapperImpl implements Akiwrapper {
 
 	private static final String NO_MORE_QUESTIONS_STATUS = "elem list is empty";
 	private static final String PARAMETERS_KEY = "parameters";
 
-	/**
-	 * A class used to define the session token.
-	 *
-	 * @author Marko Zajc
-	 */
 	public static class Token {
 
 		private static final String AUTH_QUERYSTRING = "&session=%s&signature=%s";
@@ -35,12 +25,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 		private final long signature;
 		private final int session;
 
-		/**
-		 * Creates a new {@link Token}.
-		 *
-		 * @param signature
-		 * @param session
-		 */
 		public Token(long signature, int session) {
 			this.signature = signature;
 			this.session = session;
@@ -54,9 +38,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return this.session;
 		}
 
-		/**
-		 * @return the compiled token
-		 */
 		public String compile() {
 			return String.format(AUTH_QUERYSTRING, "" + this.getSession(), "" + this.getSignature());
 		}
@@ -73,16 +54,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Nullable
 	private Question currentQuestion;
 
-	/**
-	 * Constructs a new {@link Akiwrapper} instance and creates a new API session. The
-	 * first question can be retrieved with {@link #getCurrentQuestion()}.
-	 *
-	 * @param server
-	 *            {@link Server} to use. Does not work with a {@link ServerList},
-	 *            {@link AkiwrapperBuilder} implements that functionality.
-	 * @param filterProfanity
-	 *            whether to tell API to filter profanity.
-	 */
 	@SuppressWarnings("null")
 	public AkiwrapperImpl(@Nonnull Server server, boolean filterProfanity) {
 		JSONObject question = Route.NEW_SESSION

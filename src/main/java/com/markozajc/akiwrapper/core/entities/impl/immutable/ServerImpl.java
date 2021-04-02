@@ -8,11 +8,6 @@ import javax.annotation.Nonnull;
 import com.jcabi.xml.XML;
 import com.markozajc.akiwrapper.core.entities.Server;
 
-/**
- * An implementation of {@link Server}.
- *
- * @author Marko Zajc
- */
 public class ServerImpl implements Server {
 
 	private static final String LANGUAGE_ID_XPATH = "LANGUAGE/LANG_ID/text()"; // NOSONAR not a URL
@@ -25,31 +20,12 @@ public class ServerImpl implements Server {
 	@Nonnull
 	private final GuessType guessType;
 
-	/**
-	 * Constructs a new instance of {@link ServerImpl}.
-	 *
-	 * @param url
-	 *            server's URL (for example {@code https://srv3.akinator.com:9331/ws}).
-	 * @param localization
-	 *            server's language.
-	 * @param guessType
-	 *            server's guess type.
-	 */
 	public ServerImpl(@Nonnull String url, @Nonnull Language localization, @Nonnull GuessType guessType) {
 		this.url = url;
 		this.localization = localization;
 		this.guessType = guessType;
 	}
 
-	/**
-	 * Constructs a {@link ServerImpl} from an {@code <INSTANCE>} XML node provided by
-	 * the server-listing API endpoint.
-	 *
-	 * @param instance
-	 *            XML node.
-	 *
-	 * @return a {@link ServerImpl}.
-	 */
 	@SuppressWarnings("null")
 	@Nonnull
 	public static List<ServerImpl> fromXml(@Nonnull XML instance) {

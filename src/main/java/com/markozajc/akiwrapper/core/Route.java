@@ -10,7 +10,6 @@ import org.json.*;
 import org.slf4j.*;
 
 import com.markozajc.akiwrapper.core.entities.Status;
-import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
 import com.markozajc.akiwrapper.core.exceptions.*;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Token;
@@ -18,17 +17,8 @@ import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Token;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import kong.unirest.*;
 
-/**
- * A class defining various API endpoints. It is capable of building such
- * {@link Route}s into {@link Request}s, which can then easily be executed and read.
- *
- * @author Marko Zajc
- */
 public final class Route {
 
-	/**
-	 * A public {@link UnirestInstance} with all required default headers set.
-	 */
 	public static final UnirestInstance UNIREST;
 
 	static {
@@ -54,9 +44,6 @@ public final class Route {
 		// probably doesn't even store cookies right.
 	}
 
-	/**
-	 * The base Akinator URL, used for scraping and some API calls.
-	 */
 	public static final String BASE_AKINATOR_URL = "https://en.akinator.com";
 	private static final String SERVER_DOWN_STATUS_MESSAGE = "server down";
 	private static final Pattern FILTER_ARGUMENT_PATTERN = Pattern.compile("\\{FILTER\\}");
@@ -130,18 +117,6 @@ public final class Route {
 		this.parametersQuantity = parameters;
 	}
 
-	/**
-	 * Tests whether a response is a successful or a failed one.
-	 *
-	 * @param response
-	 *            the response to test
-	 *
-	 * @throws ServerUnavailableException
-	 *             throws if the status is equal to {@link Level#ERROR} and the error
-	 *             message hints that the server is down
-	 * @throws StatusException
-	 *             thrown if the status is equal to {@link Level#ERROR}
-	 */
 	public static void testResponse(@Nonnull JSONObject response) {
 		Status completion = new StatusImpl(response);
 		if (completion.getLevel() == Status.Level.ERROR) {
@@ -152,20 +127,6 @@ public final class Route {
 		}
 	}
 
-	/**
-	 * Constructs a {@link Request} for a route that can later be executed and converted
-	 * into a {@link JSONObject}.
-	 *
-	 * @param baseUrl
-	 * @param filterProfanity
-	 * @param token
-	 * @param parameters
-	 *
-	 * @return a {@link Request}.
-	 *
-	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters.
-	 */
 	@Nonnull
 	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nullable Token token,
 							  @Nonnull String... parameters) {
@@ -207,53 +168,20 @@ public final class Route {
 		return new Request(baseUrl + formattedPath, jQueryCallback);
 	}
 
-	/**
-	 * Constructs a {@link Request} for a route that can later be executed and converted
-	 * into a {@link JSONObject}. The resulting {@link Request} does not perform any
-	 * session authentication with a {@link Token}.
-	 *
-	 * @param baseUrl
-	 * @param filterProfanity
-	 * @param parameters
-	 *
-	 * @return a {@link Request}.
-	 *
-	 * @throws IllegalArgumentException
-	 *             if you have passed too little parameters.
-	 */
 	@Nonnull
 	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nonnull String... parameters) {
 		return this.getRequest(baseUrl, filterProfanity, null, parameters);
 	}
 
-	/**
-	 * Returns {@link Route}'s unformatted path.
-	 *
-	 * @return route's path.
-	 */
 	@Nonnull
 	public String getPath() {
 		return this.path;
 	}
 
-	/**
-	 * Returns the minimal quantity of parameters that must be passed to
-	 * {@link #getRequest(String, boolean, String...)} and
-	 * {@link #getRequest(String, boolean, Token, String...)}. If the amount of passed
-	 * parameters is lower than this number, an {@link IllegalArgumentException} is
-	 * thrown.
-	 *
-	 * @return minimal quantity of parameters.
-	 */
 	public int getParametersQuantity() {
 		return this.parametersQuantity;
 	}
 
-	/**
-	 * An executable request.
-	 *
-	 * @author Marko Zajc
-	 */
 	public static class Request {
 
 		private static final Logger LOG = LoggerFactory.getLogger(Route.Request.class);
@@ -268,35 +196,11 @@ public final class Route {
 			this.url = url;
 		}
 
-		/**
-		 * Requests the server and returns the route's content as a {@link JSONObject}.
-		 *
-		 * @return route's content
-		 *
-		 * @throws ServerUnavailableException
-		 *             if the server has gone down
-		 * @throws StatusException
-		 *             if the server returns an error response.
-		 */
 		@Nonnull
 		public JSONObject getJSON() {
 			return getJSON(defaultRunChecks);
 		}
 
-		/**
-		 * Requests the server and returns the route's content as a {@link JSONObject}.
-		 *
-		 * @param runChecks
-		 *            whether to run checks for error status codes.
-		 *
-		 * @return route's content
-		 *
-		 * @throws ServerUnavailableException
-		 *             if the server has gone down.
-		 * @throws StatusException
-		 *             if the server returns an error response.
-		 *
-		 */
 		@Nonnull
 		public JSONObject getJSON(boolean runChecks) {
 			String response = UNIREST.get(this.url).asString().getBody().replace(this.jQueryCallback, "");

@@ -4,14 +4,8 @@ import javax.annotation.*;
 
 import org.json.JSONObject;
 
-import com.google.gson.JsonObject;
 import com.markozajc.akiwrapper.core.entities.Status;
 
-/**
- * An implementation of {@link Status}.
- *
- * @author Marko Zajc
- */
 public class StatusImpl implements Status {
 
 	private static final long serialVersionUID = 1;
@@ -24,21 +18,11 @@ public class StatusImpl implements Status {
 	@Nonnull
 	private final Level level;
 
-	/**
-	 * Constructs a new {@link StatusImpl} instance from raw parameters.
-	 *
-	 * @param completion
-	 */
 	public StatusImpl(@Nonnull String completion) {
 		this.level = determineLevel(completion);
 		this.reason = determineReason(completion);
 	}
 
-	/**
-	 * Constructs a new {@link StatusImpl} instance from a {@link JsonObject}.
-	 *
-	 * @param json
-	 */
 	@SuppressWarnings("null")
 	public StatusImpl(@Nonnull JSONObject json) {
 		this(json.getString("completion"));

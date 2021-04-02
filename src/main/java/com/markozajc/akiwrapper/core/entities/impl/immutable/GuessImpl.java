@@ -4,17 +4,11 @@ import java.net.*;
 
 import javax.annotation.*;
 
-import org.json.*;
+import org.json.JSONObject;
 
-import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.Guess;
 import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
-/**
- * An implementation of {@link Guess}.
- *
- * @author Marko Zajc
- */
 public class GuessImpl implements Guess {
 
 	@Nonnull
@@ -28,15 +22,6 @@ public class GuessImpl implements Guess {
 	@Nonnegative
 	private final double probability;
 
-	/**
-	 * Creates a new {@link GuessImpl} instance from raw parameters.
-	 *
-	 * @param id
-	 * @param name
-	 * @param description
-	 * @param image
-	 * @param probability
-	 */
 	public GuessImpl(@Nonnull String id, @Nonnull String name, @Nullable String description, @Nullable URL image,
 					 @Nonnegative double probability) {
 		this.id = id;
@@ -46,14 +31,6 @@ public class GuessImpl implements Guess {
 		this.probability = probability;
 	}
 
-	/**
-	 * Creates a new {@link GuessImpl} instance.
-	 *
-	 * @param json
-	 *            JSON parameters to use (acquired with {@link Route#LIST} &gt;
-	 *            {@link JSONArray} elements &gt; {@link JSONObject} (an index) &gt;
-	 *            {@link JSONObject} element)
-	 */
 	@SuppressWarnings("null")
 	public GuessImpl(@Nonnull JSONObject json) {
 		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
