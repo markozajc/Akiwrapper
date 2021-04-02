@@ -18,13 +18,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IntegrationTest {
 
-	private static final String SERVER_GUESSTYPE_NO_MATCH = "The wanted and actual guess type of the server don't match.";
+	private static final String SERVER_GUESSTYPE_NO_MATCH =
+		"The wanted and actual guess type of the server don't match.";
 	private static final String SERVER_LANGUAGE_NO_MATCH = "The wanted and actual language of the server don't match.";
-	private static final String QUESTION_CURRENT_NO_MATCH = "Current question does not match the one just returned by the API.";
+	private static final String QUESTION_CURRENT_NO_MATCH =
+		"Current question does not match the one just returned by the API.";
 	private static final String QUESTION_WRONG_STEP = "Question was on an unexpected step.";
 	private static final String QUESTION_EMPTY = "Question mustn't be empty.";
 	private static final String QUESTION_NULL = "Question was null";
-	private static final String QUESTION_INITIAL_NO_MATCH = "Initial question does not match the one after an equal amount of answers and undoes.";
+	private static final String QUESTION_INITIAL_NO_MATCH =
+		"Initial question does not match the one after an equal amount of answers and undoes.";
 
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")

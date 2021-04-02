@@ -80,9 +80,9 @@ public class AkinatorExample {
 			Akiwrapper aw;
 			try {
 				aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity)
-				    .setLanguage(language)
-				    .setGuessType(guessType)
-				    .build();
+					.setLanguage(language)
+					.setGuessType(guessType)
+					.build();
 			} catch (ServerNotFoundException e) {
 				System.err.println("Invalid combination of language and guess type. Try a different guess type.");
 				return;
@@ -107,8 +107,8 @@ public class AkinatorExample {
 				// Displays the question.
 
 				if (question.getStep() == 0)
-					System.out.println(
-					    "\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
+					System.out
+						.println("\nAnswer with Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) or go back in time with B (back).");
 				// Displays the tip (only for the first time).
 
 				answerQuestion(sc, aw);
@@ -141,7 +141,7 @@ public class AkinatorExample {
 					System.exit(0);
 				}
 
-				declined.add(Long.valueOf(guess.getIdLong()));
+				declined.add(guess.getIdLong());
 				// Registers this guess as rejected.
 			}
 
@@ -177,16 +177,15 @@ public class AkinatorExample {
 				ApiKey.accquireApiKey();
 
 			} else if (answer.equals("debug")) {
-				System.out.println("Debug information:\n\tCurrent API server: "
-				    + aw.getServer().getUrl()
-				    + "\n\tCurrent guess count: "
-				    + aw.getGuesses().size());
+				System.out.println("Debug information:\n\tCurrent API server: " + aw.getServer().getUrl() +
+					"\n\tCurrent guess count: " +
+					aw.getGuesses().size());
 				continue;
 				// Displays some debug information.
 
 			} else {
-				System.out.println(
-				    "Please answer with either [Y]ES, [N]O, [D|ONT |K]NOW, [P]ROBABLY or [P|ROBABLY |N]OT or go back one step with [B]ACK.");
+				System.out
+					.println("Please answer with either [Y]ES, [N]O, [D|ONT |K]NOW, [P]ROBABLY or [P|ROBABLY |N]OT or go back one step with [B]ACK.");
 				continue;
 			}
 
@@ -224,8 +223,8 @@ public class AkinatorExample {
 		EnumSet<Language> languages = EnumSet.allOf(Language.class);
 		// Fetches all available languages.
 
-		String unsupportedLanguageMessage = "Sorry, that language isn't supported. Rather try with:"
-		    + languages.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
+		String unsupportedLanguageMessage = "Sorry, that language isn't supported. Rather try with:" +
+			languages.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
 		// Does some Java 8 magic to pre-prepare the error message.
 
 		System.out.println("What's your language? (English)");
@@ -238,9 +237,9 @@ public class AkinatorExample {
 			}
 
 			Language matching = languages.stream()
-			    .filter(l -> l.toString().toLowerCase().equals(selectedLanguage))
-			    .findAny()
-			    .orElse(null);
+				.filter(l -> l.toString().toLowerCase().equals(selectedLanguage))
+				.findAny()
+				.orElse(null);
 
 			if (matching == null) {
 				System.out.println(unsupportedLanguageMessage);
@@ -258,8 +257,8 @@ public class AkinatorExample {
 		EnumSet<GuessType> guessTypes = EnumSet.allOf(GuessType.class);
 		// Fetches all available guess types.
 
-		String unsupportedGuessTypeMessage = "Sorry, that guess type isn't supported. Rather try with:"
-		    + guessTypes.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
+		String unsupportedGuessTypeMessage = "Sorry, that guess type isn't supported. Rather try with:" +
+			guessTypes.stream().map(Enum::toString).collect(Collectors.joining("\n-", "\n-", ""));
 		// Does some Java 8 magic to pre-prepare the error message.
 
 		System.out.println("What will you be guessing? (character)");
@@ -272,9 +271,9 @@ public class AkinatorExample {
 			}
 
 			GuessType matching = guessTypes.stream()
-			    .filter(l -> l.toString().toLowerCase().equals(selectedGuessType))
-			    .findAny()
-			    .orElse(null);
+				.filter(l -> l.toString().toLowerCase().equals(selectedGuessType))
+				.findAny()
+				.orElse(null);
 
 			if (matching == null) {
 				System.out.println(unsupportedGuessTypeMessage);

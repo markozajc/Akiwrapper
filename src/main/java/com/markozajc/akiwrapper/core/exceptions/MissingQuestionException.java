@@ -10,7 +10,6 @@ public class MissingQuestionException extends RuntimeException {
 	/**
 	 * Constructs a new {@link MissingQuestionException} instance.
 	 */
-	public MissingQuestionException() {
-	}
+	public MissingQuestionException() {}
 
 }

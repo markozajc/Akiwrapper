@@ -14,7 +14,6 @@ public class ServerNotFoundException extends Exception {
 	/**
 	 * Constructs a new {@link ServerNotFoundException}.
 	 */
-	public ServerNotFoundException() {
-	}
+	public ServerNotFoundException() {}
 
 }
