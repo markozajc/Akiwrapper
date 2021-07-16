@@ -6,7 +6,7 @@ arch:
   - arm64
   - ppc64le
   - s390x
-script: mvn clean verify
+script: mvn clean verify -Dmaven.javadoc.skip=true
 dist: xenial
 cache:
   directories:
