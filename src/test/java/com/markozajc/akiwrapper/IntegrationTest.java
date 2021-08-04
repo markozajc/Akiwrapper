@@ -1,10 +1,12 @@
 package com.markozajc.akiwrapper;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import javax.annotation.*;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.slf4j.*;
@@ -15,6 +17,8 @@ import com.markozajc.akiwrapper.core.entities.Server.*;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import kong.unirest.Unirest;
 
 class IntegrationTest {
 
@@ -28,6 +32,12 @@ class IntegrationTest {
 	private static final String QUESTION_NULL = "Question was null";
 	private static final String QUESTION_INITIAL_NO_MATCH =
 		"Initial question does not match the one after an equal amount of answers and undoes.";
+
+	@BeforeAll
+	void setTimeout() {
+		Unirest.config().socketTimeout((int) TimeUnit.MINUTES.toMillis(10));
+		// For our dear friend travis ci
+	}
 
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")
