@@ -41,7 +41,7 @@ public class ApiKey {
 			API_KEY_PATTERN.matcher(Route.UNIREST.get(Route.BASE_AKINATOR_URL + "/game").asString().getBody());
 		if (!matcher.find())
 			throw new IllegalStateException("Couldn't find the API key! Please consider opening" +
-				"a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
+				" a new ticket at https://github.com/markozajc/Akiwrapper/issues.");
 
 		return new ApiKey(matcher.group(1), matcher.group(2));
 	}
