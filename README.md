@@ -1,63 +1,72 @@
-[central]: https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central
-[travis]: https://travis-ci.com/markozajc/Akiwrapper.svg?branch=master
-[![travis]](https://travis-ci.com/markozajc/Akiwrapper)
-![central]
-
-
-# Akiwrapper
-Akiwrapper is a fully-documented and easy-to-use Java API wrapper for Akinator.
+# Akiwrapper [![central](https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/com.github.markozajc/akiwrapper)
+Akiwrapper is a Java API wrapper for [Akinator](https://en.akinator.com/), the popular online
+[20Q-type](https://en.wikipedia.org/wiki/Twenty_questions) game.
 
 ## Installation
 #### Maven
-Put this: into your pom.xml (replace LATEST_VERSION with ![central]:
+Add the following dependency to your pom.xml:
 ```xml
 <dependency>
 	<groupId>com.github.markozajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>LATEST_VERSION</version>
+	<version>1.5.1.1</version>
 </dependency>
+
+#### Gradle
+Add the following dependency to your build.gradle:
+```gradle
+implementation group: 'com.github.markozajc', name: 'akiwrapper', version: '1.5.1.1'
 ```
-You can find an example POM [here](https://github.com/markozajc/Akiwrapper/blob/master/example/pom.xml).
 
 ## Usage
-It's really easy to get started with Akiwrapper. First off, we'll need to create a new Akinator API session:
+To access the Akinator API, you'll need an Akiwrapper object. One can be created like so:
 ```java
 Akiwrapper aw = new AkiwrapperBuilder().build();
 ```
 
-Now, it's time to retrieve Akinator's first question:
+If you, for example, wish to use a different language that the default English, or if you wish Akinator to guess
+something other than characters, you may use the following setup:
 ```java
-Question q = aw.getCurrentQuestion();
+Akiwrapper aw = new AkiwrapperBuilder()
+	.setLanguage(Language.GERMAN)
+	.setGuessType(GuessType.PLACE)
+	.build();
+```
+(keep in mind that not all language-guesstype combinations are supported, though all languages support `CHARACTER`)
+
+You'll likely want to set up a question-answer loop afterwards. Fetch questions with
+```java
+Question question = aw.getCurrentQuestion();
 ```
 
-Let's answer it with "YES":
+Display the question to the user, collect their answer, and feed it to Akinator with
 ```java
 aw.answerCurrentQuestion(Answer.YES);
-```
-This will also return the next question
+``` 
 
----
-
-After repeating this process for some time (with different answers, of course), the probability of Akinator's guesses will rise to the point where it's almost certain (usually 85% is enough). You can check if there are any guesses with that probability & retrieve them with
+If the player wishes to undo their previous answer, you can let Akinator know with
 ```java
-for (Guess guess : aw.getGuessesAboveProbability(0.85 /* you can specify your threshold between 0 and 1 */)) {
-	// Do something with those guesses
-}
+aw.undoAnswer();
 ```
 
----
-
-There is a high chance Akinator will get at least one guess one but let's imagine the user has rejected all guesses. In this case, Akinator will run out of questions after a certain amount of answered questions. We need to watch out for this:
-``` java
-if (aw.answerCurrentQuestion(someAnswer) == null || aw.getCurrentQuestion() == null) {
-	// Watch out! Akinator has ran out of questions! 
-	// In this case,
-	// - Akiwrapper#answerCurrentQuestion() will not throw an exception but rather return null no matter what
-	// - Akiwrapper#getCurrentQuestion() will also keep returning null
-}
+Akinator will propose a list of guesses after each answer, coupled with their determined probabilities. You can get all
+guesses above a certain probability with
+```java
+aw.getGuessesAboveProbability(0.85f); // 85% seems to be the sweet spot, though you're free to use anything you want
 ```
-If this happens, the best way to handle it is to let user see all guesses (no matter their probability) with iterating over `aw.getGuesses()` and asking user if this is their character on each. If they reject them all, make them feel good by telling them that they have finally defeated Akinator.
+Let the player review each guess, but keep track of the declined ones, as Akinator will send you the same guesses over
+and over if he feels like it.
+ 
+At some point Akinator will run out of questions to ask. This is indicated by `aw.getCurrentQuestion()` equalling null.
+If and when this happens, fetch and propose all remaining guesses (this time without a probability filter) with
+```java
+aw.getGuesses()
+```
+and propose each one to the player. This also marks the absolute end of the game. 
 
+That's it! If you need more help, be sure to check the bundled example
+[here](https://github.com/markozajc/Akiwrapper/tree/master/example) for an out-of-the-box working implementation.
 
----
-That's it! If you need more help, be sure to check an example [here](https://github.com/markozajc/Akiwrapper/tree/master/example) for an out-of-the-box working example.
+## Available on:
+* https://git.zajc.eu.org/akiwrapper.git/
+* https://github.com/markozajc/gogarchiver/
