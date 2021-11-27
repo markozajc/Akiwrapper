@@ -11,8 +11,7 @@ Add the following dependency to your pom.xml:
 	<artifactId>akiwrapper</artifactId>
 	<version>1.5.1.1</version>
 </dependency>
-
-
+```
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
