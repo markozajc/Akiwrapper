@@ -1,4 +1,4 @@
-# Akiwrapper [![central](https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/com.github.markozajc/akiwrapper)
+# Akiwrapper [![Maven central emblem](https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/com.github.markozajc/akiwrapper)
 Akiwrapper is a Java API wrapper for [Akinator](https://en.akinator.com/), the popular online
 [20Q-type](https://en.wikipedia.org/wiki/Twenty_questions) game.
 
@@ -11,6 +11,7 @@ Add the following dependency to your pom.xml:
 	<artifactId>akiwrapper</artifactId>
 	<version>1.5.1.1</version>
 </dependency>
+
 
 #### Gradle
 Add the following dependency to your build.gradle:
