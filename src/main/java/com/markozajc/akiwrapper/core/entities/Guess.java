@@ -13,11 +13,13 @@ import com.markozajc.akiwrapper.core.entities.Server.GuessType;
  * {@link AkiwrapperBuilder} (default is {@link GuessType#CHARACTER}). A guess
  * consists of four parts - subject name, description (both localized), a URL to the
  * image of the subject, and the probability that the guess is correct. Note that
- * image URL and description are optional, and may be {@code null}.
+ * image URL and description are optional, and may be {@code null}. {@link Guess}es
+ * implement {@link Comparable} and are by default sorted by probability - the lower
+ * the index, the higher the probability.
  *
  * @author Marko Zajc
  */
-public interface Guess extends Identifiable {
+public interface Guess extends Identifiable, Comparable<Guess> {
 
 	/**
 	 * Returns the name of the guessed subject. This is provided in the language that was

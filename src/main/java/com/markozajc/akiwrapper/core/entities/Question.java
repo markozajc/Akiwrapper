@@ -16,8 +16,8 @@ public interface Question extends Identifiable {
 
 	/**
 	 * Current completion percentage (as a double). Higher means that Akinator is closer
-	 * to the correct answer. Not sure if that's the case, but I believe this can go down
-	 * as well.
+	 * to the correct answer (or the game is close to the end?). Not sure if that's the
+	 * case, but I believe this can go down as well.
 	 *
 	 * @return completion percentage.
 	 */
@@ -39,9 +39,24 @@ public interface Question extends Identifiable {
 	 * Akinator can pinpoint the answer after a question was with the answered question.
 	 *
 	 * @return accuracy gain.
+	 *
+	 * @deprecated Use {@link #getInfogain()} instead
 	 */
 	@Nonnegative
-	double getGain();
+	@Deprecated(since = "1.5.2", forRemoval = true)
+	default double getGain() {
+		return getInfogain();
+	}
+
+	/**
+	 * Returns the gained accuracy from the last question (as a double). I'm not exactly
+	 * sure what this does, but I'm pretty sure that it's meant to describe how well
+	 * Akinator can pinpoint the answer after a question was with the answered question.
+	 *
+	 * @return accuracy gain.
+	 */
+	@Nonnegative
+	double getInfogain();
 
 	/**
 	 * Returns the actual question that the user must answer. This is provided in the

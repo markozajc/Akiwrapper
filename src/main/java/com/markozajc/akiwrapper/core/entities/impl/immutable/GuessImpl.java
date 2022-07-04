@@ -1,5 +1,8 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import static com.markozajc.akiwrapper.core.utils.JSONUtils.getDouble;
+import static java.lang.Double.compare;
+
 import java.net.*;
 
 import javax.annotation.*;
@@ -7,7 +10,6 @@ import javax.annotation.*;
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.core.entities.Guess;
-import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
 public class GuessImpl implements Guess {
 
@@ -32,14 +34,14 @@ public class GuessImpl implements Guess {
 	}
 
 	@SuppressWarnings("null")
-	public GuessImpl(@Nonnull JSONObject json) {
-		this(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
-			 JSONUtils.getDouble(json, "proba").get());
+	public static GuessImpl from(@Nonnull JSONObject json) {
+		return new GuessImpl(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
+							 getDouble(json, "proba").orElseThrow());
 	}
 
 	@Nullable
 	private static String getDescription(@Nonnull JSONObject json) {
-		String desc = json.getString("description");
+		var desc = json.getString("description");
 		return "-".equals(desc) ? null : desc;
 	}
 
@@ -48,6 +50,7 @@ public class GuessImpl implements Guess {
 		try {
 			return "none.jpg".equals(json.getString("picture_path")) ? null
 				: new URL(json.getString("absolute_picture_path"));
+
 		} catch (MalformedURLException e) {
 			return null;
 		}
@@ -76,6 +79,11 @@ public class GuessImpl implements Guess {
 	@Override
 	public String getId() {
 		return this.id;
+	}
+
+	@Override
+	public int compareTo(Guess o) {
+		return compare(o.getProbability(), this.probability);
 	}
 
 }

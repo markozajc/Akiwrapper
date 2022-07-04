@@ -2,7 +2,7 @@ package com.markozajc.akiwrapper.core.entities;
 
 import java.io.Serializable;
 
-import javax.annotation.Nullable;
+import javax.annotation.*;
 
 /**
  * An interface used to represent API call's completion status.
@@ -57,6 +57,15 @@ public interface Status extends Serializable {
 		 */
 		public String toString() {
 			return this.name;
+		}
+
+		@Nonnull
+		public static Level fromString(@Nonnull String completion) {
+			for (Level iteratedLevel : Level.values())
+				if (completion.toUpperCase().startsWith(iteratedLevel.toString()))
+					return iteratedLevel;
+
+			return UNKNOWN;
 		}
 
 	}

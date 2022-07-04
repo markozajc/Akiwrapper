@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import static java.lang.String.format;
+
 import javax.annotation.*;
 
 import org.json.JSONObject;
@@ -8,19 +10,23 @@ import com.markozajc.akiwrapper.core.entities.Status;
 
 public class StatusImpl implements Status {
 
-	private static final long serialVersionUID = 1;
-
 	private static final String DIVIDER = " - ";
 	private static final String STATUS_FORMAT = "%s" + DIVIDER + "%s";
+
+	public static final StatusImpl STATUS_OK = new StatusImpl(Level.OK, null);
 
 	@Nullable
 	private final String reason;
 	@Nonnull
 	private final Level level;
 
+	private StatusImpl(@Nonnull Level level, @Nullable String reason) {
+		this.level = level;
+		this.reason = reason;
+	}
+
 	public StatusImpl(@Nonnull String completion) {
-		this.level = determineLevel(completion);
-		this.reason = determineReason(completion);
+		this(Level.fromString(completion), determineReason(completion));
 	}
 
 	@SuppressWarnings("null")
@@ -34,14 +40,6 @@ public class StatusImpl implements Status {
 		if (reasonSplitIndex != -1)
 			return completion.substring(reasonSplitIndex + DIVIDER.length());
 		return null;
-	}
-
-	@Nonnull
-	private static Level determineLevel(@Nonnull String completion) {
-		for (Level iteratedLevel : Level.values())
-			if (completion.toLowerCase().startsWith(iteratedLevel.toString().toLowerCase()))
-				return iteratedLevel;
-		return Level.UNKNOWN;
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class StatusImpl implements Status {
 		if (getReason() == null)
 			return getLevel().toString();
 		else
-			return String.format(STATUS_FORMAT, getLevel().toString(), getReason());
+			return format(STATUS_FORMAT, getLevel().toString(), getReason());
 	}
 
 }

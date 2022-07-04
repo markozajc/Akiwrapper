@@ -1,15 +1,18 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import static com.markozajc.akiwrapper.core.entities.Status.Level.WARNING;
+import static com.markozajc.akiwrapper.core.utils.JSONUtils.*;
+
 import javax.annotation.*;
 
 import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.core.entities.*;
-import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
-import com.markozajc.akiwrapper.core.utils.JSONUtils;
 
 public class QuestionImpl implements Question {
+
+	private static final String REASON_OUT_OF_QUESTIONS = "no question";
 
 	@Nonnull
 	private final String id;
@@ -34,17 +37,14 @@ public class QuestionImpl implements Question {
 	}
 
 	@SuppressWarnings("null")
-	public QuestionImpl(@Nonnull JSONObject json, @Nonnull Status status) {
-		checkMissingQuestion(status);
-		this.id = json.getString("questionid");
-		this.question = json.getString("question");
-		this.step = JSONUtils.getInteger(json, "step").get();
-		this.gain = JSONUtils.getDouble(json, "infogain").get();
-		this.progression = JSONUtils.getDouble(json, "progression").get();
+	public static QuestionImpl from(@Nonnull JSONObject json, @Nonnull Status status) {
+		return new QuestionImpl(json.getString("questionid"), json.getString("question"),
+								getInteger(json, "step").orElseThrow(), getDouble(json, "infogain").orElseThrow(),
+								getDouble(json, "progression").orElseThrow(), status);
 	}
 
 	private static void checkMissingQuestion(@Nonnull Status status) {
-		if (status.getLevel() == Level.WARNING && "no question".equalsIgnoreCase(status.getReason()))
+		if (status.getLevel() == WARNING && REASON_OUT_OF_QUESTIONS.equalsIgnoreCase(status.getReason()))
 			throw new MissingQuestionException();
 	}
 
@@ -59,7 +59,7 @@ public class QuestionImpl implements Question {
 	}
 
 	@Override
-	public double getGain() {
+	public double getInfogain() {
 		return this.gain;
 	}
 
