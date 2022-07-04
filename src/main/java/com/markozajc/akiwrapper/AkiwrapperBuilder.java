@@ -1,25 +1,65 @@
 package com.markozajc.akiwrapper;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 import org.slf4j.*;
 
 import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Server.*;
-import com.markozajc.akiwrapper.core.entities.impl.mutable.MutableAkiwrapperMetadata;
 import com.markozajc.akiwrapper.core.exceptions.*;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
 import com.markozajc.akiwrapper.core.utils.Servers;
 
+import kong.unirest.UnirestInstance;
+
 /**
  * A class used to build an {@link Akiwrapper} object. It allows you to set various
- * values before building it in a method chaining fashion.
+ * values before building it in a method chaining fashion. Note that
+ * {@link Language}, {@link GuessType}, and {@link Server} configuration are
+ * connected - {@link Language} and {@link GuessType} are used to find a suitable
+ * {@link Server}, but they will only be used if a {@link Server} is not manually
+ * set. It is not recommended to set the {@link Server} manually (unless for
+ * debugging purposes or as some kind of workaround where Akiwrapper's server finder
+ * fails) as Akiwrapper already does its best to find the most suitable one.
  *
  * @author Marko Zajc
  */
-public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
+public class AkiwrapperBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AkiwrapperBuilder.class);
+
+	@Nullable
+	protected Server server;
+	protected boolean filterProfanity;
+	@Nonnull
+	protected Language language;
+	@Nonnull
+	protected GuessType guessType;
+
+	/**
+	 * The default profanity filter preference for new {@link Akiwrapper} instances.
+	 */
+	public static final boolean DEFAULT_FILTER_PROFANITY = false;
+
+	/**
+	 * The default {@link Language} for new {@link Akiwrapper} instances.
+	 */
+	@Nonnull
+	public static final Language DEFAULT_LOCALIZATION = Language.ENGLISH;
+
+	/**
+	 * The default {@link GuessType} for new {@link Akiwrapper} instances.
+	 */
+	@Nonnull
+	public static final GuessType DEFAULT_GUESS_TYPE = GuessType.CHARACTER;
+
+	private AkiwrapperBuilder(@Nullable Server server, boolean filterProfanity, @Nonnull Language language,
+							  @Nonnull GuessType guessType) {
+		this.server = server;
+		this.filterProfanity = filterProfanity;
+		this.language = language;
+		this.guessType = guessType;
+	}
 
 	/**
 	 * Creates a new AkiwrapperBuilder object. The default server used is the first
@@ -27,8 +67,8 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * {@link AkiwrapperMetadata} is used.
 	 */
 	public AkiwrapperBuilder() {
-		super(null, AkiwrapperMetadata.DEFAULT_FILTER_PROFANITY, AkiwrapperMetadata.DEFAULT_LOCALIZATION,
-			  AkiwrapperMetadata.DEFAULT_GUESS_TYPE);
+		super(null, AkiwrapperBuilder.DEFAULT_FILTER_PROFANITY, AkiwrapperBuilder.DEFAULT_LOCALIZATION,
+			  AkiwrapperBuilder.DEFAULT_GUESS_TYPE);
 	}
 
 	/**
@@ -44,13 +84,27 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 * @return current instance, used for chaining
 	 *
 	 * @see #getServer()
-	 * @see Servers#findServers(Language, GuessType)
+	 * @see Servers#findServers(UnirestInstance, Language, GuessType)
 	 */
-	@Override
-	public AkiwrapperBuilder setServer(Server server) {
-		super.setServer(server);
-
+	@Nonnull
+	public AkiwrapperBuilder setServer(@Nullable Server server) {
+		this.server = server;
+		if (server != null) {
+			this.language = server.getLanguage();
+			this.guessType = server.getGuessType();
+		}
 		return this;
+	}
+
+	/**
+	 * Returns the {@link Server} that requests will be sent to. Might also return a
+	 * {@link ServerList} (which extends {@link Server}).
+	 *
+	 * @return server.
+	 */
+	@Nullable
+	public Server getServer() {
+		return this.server;
 	}
 
 	/**
@@ -62,11 +116,20 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 *
 	 * @see #doesFilterProfanity()
 	 */
-	@Override
+	@Nonnull
 	public AkiwrapperBuilder setFilterProfanity(boolean filterProfanity) {
-		super.setFilterProfanity(filterProfanity);
-
+		this.filterProfanity = filterProfanity;
 		return this;
+	}
+
+	/**
+	 * Returns the profanity filter preference. Profanity filtering is done by Akinator
+	 * and not by Akiwrapper.
+	 *
+	 * @return profanity filter preference.
+	 */
+	public boolean doesFilterProfanity() {
+		return this.filterProfanity;
 	}
 
 	/**
@@ -80,11 +143,24 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 *
 	 * @see #getLanguage()
 	 */
-	@Override
-	public AkiwrapperBuilder setLanguage(Language language) {
-		super.setLanguage(language);
-
+	@Nonnull
+	public AkiwrapperBuilder setLanguage(@Nonnull Language language) {
+		this.language = language;
+		this.server = null;
 		return this;
+	}
+
+	/**
+	 * Returns the {@link Language} preference. {@link Language} impacts what language
+	 * {@link Question}s and {@link Guess}es are in.<br>
+	 * {@link #getGuessType()} and {@link #getLanguage()} decide what {@link Server} will
+	 * be used if it's not set manually.
+	 *
+	 * @return language preference.
+	 */
+	@Nonnull
+	public Language getLanguage() {
+		return this.language;
 	}
 
 	/**
@@ -98,11 +174,24 @@ public class AkiwrapperBuilder extends MutableAkiwrapperMetadata {
 	 *
 	 * @see #getLanguage()
 	 */
-	@Override
-	public AkiwrapperBuilder setGuessType(GuessType guessType) {
-		super.setGuessType(guessType);
-
+	@Nonnull
+	public AkiwrapperBuilder setGuessType(@Nonnull GuessType guessType) {
+		this.guessType = guessType;
+		this.server = null;
 		return this;
+	}
+
+	/**
+	 * Returns the {@link GuessType} preference. {@link GuessType} impacts what kind of
+	 * subject {@link Question}s and {@link Guess}es are about.<br>
+	 * {@link #getGuessType()} and {@link #getLanguage()} decide what {@link Server} will
+	 * be used if it's not set manually.
+	 *
+	 * @return guess type preference.
+	 */
+	@Nonnull
+	public GuessType getGuessType() {
+		return this.guessType;
 	}
 
 	/**
