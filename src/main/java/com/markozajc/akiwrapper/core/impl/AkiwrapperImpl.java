@@ -1,154 +1,175 @@
 package com.markozajc.akiwrapper.core.impl;
 
-import java.util.*;
+import static com.markozajc.akiwrapper.core.Route.*;
+import static com.markozajc.akiwrapper.core.entities.Status.Level.ERROR;
+import static com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl.STATUS_OK;
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
+import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toUnmodifiableList;
+import static java.util.stream.StreamSupport.stream;
+
+import java.util.List;
 
 import javax.annotation.*;
 
-import org.json.*;
+import org.json.JSONObject;
 
 import com.markozajc.akiwrapper.Akiwrapper;
-import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.*;
-import com.markozajc.akiwrapper.core.entities.Status.Level;
 import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
 import com.markozajc.akiwrapper.core.exceptions.*;
+
+import kong.unirest.UnirestInstance;
 
 public class AkiwrapperImpl implements Akiwrapper {
 
 	private static final String NO_MORE_QUESTIONS_STATUS = "elem list is empty";
 	private static final String PARAMETERS_KEY = "parameters";
 
-	public static class Token {
+	public static class Session {
 
-		private static final String AUTH_QUERYSTRING = "&session=%s&signature=%s";
+		private static final String FORMAT_QUERYSTRING = "&session=%s&signature=%s";
 
 		private final long signature;
 		private final int session;
 
-		public Token(long signature, int session) {
+		public Session(long signature, int session) {
 			this.signature = signature;
 			this.session = session;
 		}
 
-		private long getSignature() {
+		public long getSignature() {
 			return this.signature;
 		}
 
-		private int getSession() {
+		public int getSession() {
 			return this.session;
 		}
 
-		public String compile() {
-			return String.format(AUTH_QUERYSTRING, "" + this.getSession(), "" + this.getSignature());
+		public String querystring() {
+			return format(FORMAT_QUERYSTRING, this.getSession(), this.getSignature());
 		}
-
 	}
 
 	@Nonnull
 	private final Server server;
+	@Nonnull
+	private final UnirestInstance unirest;
 	private final boolean filterProfanity;
 	@Nonnull
-	private final Token token;
+	private final Session session;
 	@Nonnegative
 	private int currentStep;
 	@Nullable
-	private Question currentQuestion;
+	private Question question;
+	private List<Guess> guessCache;
 
 	@SuppressWarnings("null")
-	public AkiwrapperImpl(@Nonnull Server server, boolean filterProfanity) {
-		JSONObject question = Route.NEW_SESSION
-			.getRequest("", filterProfanity, Long.toString(System.currentTimeMillis()), server.getUrl())
-			.getJSON();
-		JSONObject parameters = question.getJSONObject(PARAMETERS_KEY);
+	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull Server server, boolean filterProfanity) {
+		var questionJson =
+			NEW_SESSION.createRequest(unirest, "", filterProfanity, currentTimeMillis(), server.getUrl()).getJSON();
 
-		this.token = getToken(parameters);
-		this.currentQuestion = new QuestionImpl(parameters.getJSONObject("step_information"), new StatusImpl("OK"));
+		var parameters = questionJson.getJSONObject(PARAMETERS_KEY);
+
+		this.session = getSession(parameters);
+		this.question = QuestionImpl.from(parameters.getJSONObject("step_information"), STATUS_OK);
 		this.filterProfanity = filterProfanity;
 		this.server = server;
+		this.unirest = unirest;
 		this.currentStep = 0;
 	}
 
 	@Nonnull
-	private static Token getToken(@Nonnull JSONObject parameters) {
-		JSONObject identification = parameters.getJSONObject("identification");
-		return new Token(Long.parseLong(identification.getString("signature")),
-						 Integer.parseInt(identification.getString("session")));
+	private static Session getSession(@Nonnull JSONObject parameters) {
+		var session = parameters.getJSONObject("identification");
+		return new Session(parseLong(session.getString("signature")), parseInt(session.getString("session")));
 	}
 
 	@SuppressWarnings("null")
 	@Override
-	public Question answerCurrentQuestion(Answer answer) {
-		Question currentQuestion2 = this.currentQuestion;
-		if (currentQuestion2 != null) {
-			JSONObject question = Route.ANSWER
-				.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + currentQuestion2.getStep(),
-							"" + answer.getId())
+	public Question answer(Answer answer) {
+		this.guessCache = null;
+		var oldQuestion = this.question;
+		if (oldQuestion != null) {
+			var newQuestionJson = ANSWER
+				.createRequest(this.unirest, this.server.getUrl(), this.filterProfanity, this.session,
+							   oldQuestion.getStep(), answer.getId())
 				.getJSON();
+
 			try {
-				this.currentQuestion =
-					new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
+				this.question =
+					QuestionImpl.from(newQuestionJson.getJSONObject(PARAMETERS_KEY), new StatusImpl(newQuestionJson));
+
 			} catch (MissingQuestionException e) { // NOSONAR It does not need to be logged
-				this.currentQuestion = null;
+				this.question = null;
 				return null;
 			}
 
 			this.currentStep += 1;
-			return this.currentQuestion;
+			return this.question;
 		}
 
 		return null;
 	}
 
-	@SuppressWarnings("null")
 	@Override
+	@SuppressWarnings("null")
 	public Question undoAnswer() {
-		Question current = getCurrentQuestion();
+		this.guessCache = null;
+
+		Question current = getQuestion();
 		if (current == null)
 			return null;
 
 		if (current.getStep() < 1)
 			return null;
 
-		JSONObject question = Route.CANCEL_ANSWER
-			.getRequest(this.server.getUrl(), this.filterProfanity, this.token, Integer.toString(current.getStep()))
+		var questionJson = CANCEL_ANSWER
+			.createRequest(this.unirest, this.server.getUrl(), this.filterProfanity, this.session, current.getStep())
 			.getJSON();
 
-		this.currentQuestion = new QuestionImpl(question.getJSONObject(PARAMETERS_KEY), new StatusImpl(question));
+		this.question = QuestionImpl.from(questionJson.getJSONObject(PARAMETERS_KEY), new StatusImpl(questionJson));
 
 		this.currentStep -= 1;
-		return this.currentQuestion;
+
+		return this.question;
 	}
 
 	@Override
-	public Question getCurrentQuestion() {
-		return this.currentQuestion;
+	public Question getQuestion() {
+		return this.question;
 	}
 
 	@SuppressWarnings("null")
 	@Override
 	public List<Guess> getGuesses() {
-		JSONObject list = null;
 		try {
-			list = Route.LIST.getRequest(this.server.getUrl(), this.filterProfanity, this.token, "" + this.currentStep)
-				.getJSON();
+			if (this.guessCache == null)
+				this.guessCache = stream(LIST
+					.createRequest(this.unirest, this.server.getUrl(), this.filterProfanity, this.session,
+								   this.currentStep)
+					.getJSON()
+					.getJSONObject(PARAMETERS_KEY)
+					.getJSONArray("elements")
+					.spliterator(), false).map(JSONObject.class::cast)
+						.map(j -> j.getJSONObject("element"))
+						.map(GuessImpl::from)
+						.sorted()
+						.collect(toUnmodifiableList());
+
+			return this.guessCache;
+
 		} catch (StatusException e) {
-			if (e.getStatus().getLevel() == Level.ERROR
+			if (e.getStatus().getLevel() == ERROR
 				&& NO_MORE_QUESTIONS_STATUS.equalsIgnoreCase(e.getStatus().getReason())) {
-				return Collections.emptyList();
+				return emptyList();
 			}
 
 			throw e;
 		}
-
-		JSONArray elements = list.getJSONObject(PARAMETERS_KEY).getJSONArray("elements");
-		List<Guess> guesses = new ArrayList<>();
-		for (int i = 0; i < elements.length(); i++)
-			guesses.add(new GuessImpl(elements.getJSONObject(i).getJSONObject("element")));
-		// Currently the only way to (cleanly) extract JSONObjects from a JSONArray
-		// without having to box and unbox it a million times is to use this old (and
-		// ugly) but gold, condition-based for loop :P
-
-		return Collections.unmodifiableList(guesses);
 	}
 
 	@Override
