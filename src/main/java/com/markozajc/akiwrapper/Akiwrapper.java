@@ -1,7 +1,8 @@
 package com.markozajc.akiwrapper;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.*;
 
@@ -161,6 +162,6 @@ public interface Akiwrapper {
 	@SuppressWarnings("null")
 	@Nonnull
 	default List<Guess> getGuessesAboveProbability(double probability) {
-		return getGuesses().stream().filter(g -> g.getProbability() > probability).collect(Collectors.toList());
+		return getGuesses().stream().filter(g -> g.getProbability() > probability).collect(toList());
 	}
 }
