@@ -1,18 +1,15 @@
 package com.markozajc.akiwrapper;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import javax.annotation.*;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.slf4j.*;
 
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
-import com.markozajc.akiwrapper.core.Route;
 import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Server.*;
 import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
@@ -32,12 +29,6 @@ class IntegrationTest {
 	private static final String QUESTION_INITIAL_NO_MATCH =
 		"Initial question does not match the one after an equal amount of answers and undoes.";
 
-	@BeforeAll
-	static void setTimeout() {
-		Route.UNIREST.config().socketTimeout((int) TimeUnit.MINUTES.toMillis(10));
-		// For our dear friend travis ci
-	}
-
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")
 	void testAkiwrapper(@Nonnull Language language, @Nonnull GuessType guessType) {
@@ -53,7 +44,7 @@ class IntegrationTest {
 		}
 
 		log.info("Asserting the current state.");
-		Question initialQuestion = api.getCurrentQuestion();
+		Question initialQuestion = api.getQuestion();
 		int expectedState = 0;
 		checkQuestion(initialQuestion, expectedState);
 		assertEquals(language, api.getServer().getLanguage(), SERVER_LANGUAGE_NO_MATCH);
@@ -63,10 +54,10 @@ class IntegrationTest {
 		log.info("Advancing {} steps (one time for each possible answer).", Answer.values().length);
 		for (Answer answer : Answer.values()) {
 			log.debug("Answering with {} and checking the question.", answer.name());
-			Question newQuestion = api.answerCurrentQuestion(answer);
-			assertEquals(newQuestion, api.getCurrentQuestion(), QUESTION_CURRENT_NO_MATCH);
+			Question newQuestion = api.answer(answer);
+			assertEquals(newQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
 			expectedState++;
-			checkQuestion(api.getCurrentQuestion(), expectedState);
+			checkQuestion(api.getQuestion(), expectedState);
 		}
 
 		log.info("Fetching guesses.", Answer.values().length);
@@ -76,15 +67,15 @@ class IntegrationTest {
 		log.info("Advancing -{} steps (using undo).", Answer.values().length);
 		for (int i = 0; i < Answer.values().length; i++) {
 			Question undoneQuestion = api.undoAnswer();
-			assertEquals(undoneQuestion, api.getCurrentQuestion(), QUESTION_CURRENT_NO_MATCH);
+			assertEquals(undoneQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
 			expectedState--;
-			checkQuestion(api.getCurrentQuestion(), expectedState);
+			checkQuestion(api.getQuestion(), expectedState);
 		}
 
 		log.info("Asserting the final state.");
 		assertNull(api.undoAnswer());
-		checkQuestion(api.getCurrentQuestion(), 0);
-		Question currentQuestion = api.getCurrentQuestion();
+		checkQuestion(api.getQuestion(), 0);
+		Question currentQuestion = api.getQuestion();
 		if (initialQuestion != null && currentQuestion != null) {
 			assertEquals(initialQuestion.getQuestion(), currentQuestion.getQuestion(), QUESTION_INITIAL_NO_MATCH);
 		}
