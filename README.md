@@ -64,6 +64,12 @@ aw.getGuesses()
 ```
 and propose each one to the player. This also marks the absolute end of the game. 
 
+Unless you provide your own UnirestInstance to AkiwrapperBuilder, you should make sure to shut down the singleton 
+instance that Akiwrapper uses by default after you're done with Akiwrapper:
+```java
+UnirestUtils.shutdownInstance();
+```
+
 That's it! If you need more help, be sure to check the bundled example
 [here](https://github.com/markozajc/Akiwrapper/tree/master/example) for an out-of-the-box working implementation.
 

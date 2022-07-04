@@ -1,5 +1,9 @@
 package com.markozajc.akiwrapper;
 
+import static com.markozajc.akiwrapper.core.entities.Server.GuessType.CHARACTER;
+import static com.markozajc.akiwrapper.core.entities.Server.Language.ENGLISH;
+import static com.markozajc.akiwrapper.core.utils.Servers.findServers;
+
 import javax.annotation.*;
 
 import org.slf4j.*;
@@ -8,7 +12,7 @@ import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Server.*;
 import com.markozajc.akiwrapper.core.exceptions.*;
 import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
-import com.markozajc.akiwrapper.core.utils.Servers;
+import com.markozajc.akiwrapper.core.utils.*;
 
 import kong.unirest.UnirestInstance;
 
@@ -29,12 +33,14 @@ public class AkiwrapperBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(AkiwrapperBuilder.class);
 
 	@Nullable
-	protected Server server;
-	protected boolean filterProfanity;
+	private UnirestInstance unirest;
+	@Nullable
+	private Server server;
+	private boolean filterProfanity;
 	@Nonnull
-	protected Language language;
+	private Language language;
 	@Nonnull
-	protected GuessType guessType;
+	private GuessType guessType;
 
 	/**
 	 * The default profanity filter preference for new {@link Akiwrapper} instances.
@@ -45,16 +51,17 @@ public class AkiwrapperBuilder {
 	 * The default {@link Language} for new {@link Akiwrapper} instances.
 	 */
 	@Nonnull
-	public static final Language DEFAULT_LOCALIZATION = Language.ENGLISH;
+	public static final Language DEFAULT_LOCALIZATION = ENGLISH;
 
 	/**
 	 * The default {@link GuessType} for new {@link Akiwrapper} instances.
 	 */
 	@Nonnull
-	public static final GuessType DEFAULT_GUESS_TYPE = GuessType.CHARACTER;
+	public static final GuessType DEFAULT_GUESS_TYPE = CHARACTER;
 
-	private AkiwrapperBuilder(@Nullable Server server, boolean filterProfanity, @Nonnull Language language,
-							  @Nonnull GuessType guessType) {
+	private AkiwrapperBuilder(@Nullable UnirestInstance unirest, @Nullable Server server, boolean filterProfanity,
+							  @Nonnull Language language, @Nonnull GuessType guessType) {
+		this.unirest = unirest;
 		this.server = server;
 		this.filterProfanity = filterProfanity;
 		this.language = language;
@@ -62,13 +69,23 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Creates a new AkiwrapperBuilder object. The default server used is the first
-	 * available server. If a value is not changed, a constant default from
-	 * {@link AkiwrapperMetadata} is used.
+	 * Creates a new AkiwrapperBuilder object.
 	 */
 	public AkiwrapperBuilder() {
-		super(null, AkiwrapperBuilder.DEFAULT_FILTER_PROFANITY, AkiwrapperBuilder.DEFAULT_LOCALIZATION,
-			  AkiwrapperBuilder.DEFAULT_GUESS_TYPE);
+		this(null, null, DEFAULT_FILTER_PROFANITY, DEFAULT_LOCALIZATION, DEFAULT_GUESS_TYPE);
+	}
+
+	// TODO javadoc
+	@Nonnull
+	public AkiwrapperBuilder setUnirestInstance(@Nullable UnirestInstance unirest) {
+		this.unirest = unirest;
+		return this;
+	}
+
+	// TODO javadoc
+	@Nullable
+	public UnirestInstance getUnirestInstance() {
+		return this.unirest;
 	}
 
 	/**
@@ -195,6 +212,14 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
+	 * Creates a new {@link Akiwrapper} instance from your preferences. If no
+	 * {@link UnirestInstance} was set (with
+	 * {@link #setUnirestInstance(UnirestInstance)}), a singleton instance will be
+	 * acquired from {@link UnirestUtils#getInstance()}. This instance must be shut down
+	 * after you're done using Akiwrapper with {@link UnirestUtils#shutdownInstance()}.
+	 * If no server was set (with {@link #setServer(Server)}), Akiwrapper will find one
+	 * based on {@link #getLanguage()} and {@link #getGuessType()} for you.
+	 *
 	 * @return a new {@link Akiwrapper} instance that will use all set preferences
 	 *
 	 * @throws ServerNotFoundException
@@ -202,18 +227,22 @@ public class AkiwrapperBuilder {
 	 *             available.
 	 */
 	@Nonnull
+	@SuppressWarnings("resource")
 	public Akiwrapper build() throws ServerNotFoundException {
-		Server server = findServer();
+		UnirestInstance unirest = this.unirest != null ? this.unirest : UnirestUtils.getInstance();
+
+		var server = this.server != null ? this.server : findServers(unirest, this.getLanguage(), this.getGuessType());
 		if (server instanceof ServerList) {
 			ServerList serverList = (ServerList) server;
 			int count = serverList.getRemainingSize() + 1;
 			do {
 				LOG.debug("Using server {} out of {} from the list.", count - serverList.getRemainingSize(), count);
 				try {
-					return new AkiwrapperImpl(server, this.filterProfanity);
-				} catch (ServerUnavailableException e) { // NOSONAR v
+					return new AkiwrapperImpl(unirest, server, this.filterProfanity);
+
+				} catch (ServerUnavailableException e) {
 					LOG.debug("Server seems to be down.");
-					// We can safely ignore this, let's just iterate to the next instance.
+
 				} catch (RuntimeException e) {
 					LOG.warn("Failed to construct an instance, trying the next available server", e);
 				}
@@ -221,16 +250,8 @@ public class AkiwrapperBuilder {
 			throw new ServerUnavailableException("KO - NO SERVER AVAILABLE");
 		} else {
 			LOG.debug("Given Server is not a ServerList, only attempting to build once.");
-			return new AkiwrapperImpl(server, this.filterProfanity);
+			return new AkiwrapperImpl(unirest, server, this.filterProfanity);
 		}
-	}
-
-	@Nonnull
-	private Server findServer() throws ServerNotFoundException {
-		Server server = this.getServer();
-		if (server == null)
-			server = Servers.findServers(this.getLanguage(), this.getGuessType());
-		return server;
 	}
 
 }
