@@ -1,10 +1,14 @@
 package com.markozajc.akiwrapper.core.utils;
 
-import java.util.Optional;
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
+
+import java.util.*;
 
 import javax.annotation.Nonnull;
 
-import org.json.*;
+import org.json.JSONObject;
 
 /**
  * A set of utilities for JSON that prevent type errors.
@@ -23,26 +27,22 @@ public final class JSONUtils {
 	 *
 	 * @return {@link Optional} integer value
 	 */
-	@SuppressWarnings("null")
 	@Nonnull
-	public static Optional<Integer> getInteger(@Nonnull JSONObject json, @Nonnull String key) {
-		try {
-			Object object = json.get(key);
-			Integer value;
-			if (object instanceof Number)
-				value = ((Number) object).intValue();
-			else if (object instanceof String)
-				value = Integer.valueOf((String) object);
-			else
-				throw new NumberFormatException("Could not format \"" + object +
-					"\" of type " +
-					object.getClass().getName() +
-					" into a Double.");
+	@SuppressWarnings("null")
+	public static OptionalInt getInteger(@Nonnull JSONObject json, @Nonnull String key) {
+		if (!json.has(key))
+			return OptionalInt.empty();
 
-			return Optional.of(value);
+		var value = json.get(key);
+		if (value instanceof Number) {
+			return OptionalInt.of(((Number) value).intValue());
 
-		} catch (JSONException e) { // NOSONAR It just means that the key wasn't found.
-			return Optional.empty();
+		} else if (value instanceof String) {
+			return OptionalInt.of(parseInt((String) value));
+
+		} else {
+			throw new NumberFormatException(format("Could not format \"%s\" of type %s into an int", value,
+												   value.getClass().getName()));
 		}
 	}
 
@@ -54,26 +54,22 @@ public final class JSONUtils {
 	 *
 	 * @return {@link Optional} double value
 	 */
-	@SuppressWarnings("null")
 	@Nonnull
-	public static Optional<Double> getDouble(@Nonnull JSONObject json, @Nonnull String key) {
-		try {
-			Object object = json.get(key);
-			Double value;
-			if (object instanceof Number)
-				value = ((Number) object).doubleValue();
-			else if (object instanceof String)
-				value = Double.valueOf((String) object);
-			else
-				throw new NumberFormatException("Could not format \"" + object +
-					"\" of type " +
-					object.getClass().getName() +
-					" into a Double.");
+	@SuppressWarnings("null")
+	public static OptionalDouble getDouble(@Nonnull JSONObject json, @Nonnull String key) {
+		if (!json.has(key))
+			return OptionalDouble.empty();
 
-			return Optional.of(value);
+		var value = json.get(key);
+		if (value instanceof Number) {
+			return OptionalDouble.of(((Number) value).doubleValue());
 
-		} catch (JSONException e) { // NOSONAR It just means that the key wasn't found.
-			return Optional.empty();
+		} else if (value instanceof String) {
+			return OptionalDouble.of(parseDouble((String) value));
+
+		} else {
+			throw new NumberFormatException(format("Could not format \"%s\" of type %s into a double", value,
+												   value.getClass().getName()));
 		}
 	}
 
@@ -85,14 +81,13 @@ public final class JSONUtils {
 	 *
 	 * @return {@link Optional} string value
 	 */
-	@SuppressWarnings("null")
 	@Nonnull
+	@SuppressWarnings("null")
 	public static Optional<String> getString(@Nonnull JSONObject json, @Nonnull String key) {
-		try {
-			return Optional.of(json.get(key).toString());
-		} catch (JSONException e) { // NOSONAR It just means that the key wasn't found.
+		if (!json.has(key))
 			return Optional.empty();
-		}
+		else
+			return Optional.of(json.get(key).toString());
 	}
 
 }
