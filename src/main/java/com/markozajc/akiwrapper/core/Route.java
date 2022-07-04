@@ -1,6 +1,12 @@
 package com.markozajc.akiwrapper.core;
 
-import java.io.UnsupportedEncodingException;
+import static com.markozajc.akiwrapper.core.entities.Status.Level.ERROR;
+import static com.markozajc.akiwrapper.core.entities.impl.immutable.ApiKey.accquireApiKey;
+import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.regex.Pattern.compile;
+
 import java.net.URLEncoder;
 import java.util.regex.*;
 
@@ -10,43 +16,18 @@ import org.json.*;
 import org.slf4j.*;
 
 import com.markozajc.akiwrapper.core.entities.Status;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 import com.markozajc.akiwrapper.core.exceptions.*;
-import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Token;
+import com.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Session;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import kong.unirest.*;
+import kong.unirest.UnirestInstance;
 
 public final class Route {
 
-	public static final UnirestInstance UNIREST;
-
-	static {
-		UNIREST = Unirest.spawnInstance();
-		UNIREST.config()
-			.setDefaultHeader("Accept",
-							  "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
-			.setDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
-			.setDefaultHeader("X-Requested-With", "XMLHttpRequest")
-			.setDefaultHeader("Sec-Fetch-Dest", "empty")
-			.setDefaultHeader("Sec-Fetch-Mode", "cors")
-			.setDefaultHeader("Sec-Fetch-Site", "same-origin")
-			.setDefaultHeader("Connection", "keep-alive")
-			.setDefaultHeader("User-Agent",
-							  "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36" +
-								  "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
-			.setDefaultHeader("Referer", "https://en.akinator.com/game")
-			.cookieSpec("ignore");
-		// Configures necessary headers
-		// https://github.com/markozajc/Akiwrapper/issues/14#issuecomment-612255613
-		// Also disable cookies because they aren't necessary.
-		// NB: use "standard" if they become necessary. Default value causes log spam and
-		// probably doesn't even store cookies right.
-	}
-
 	public static final String BASE_AKINATOR_URL = "https://en.akinator.com";
 	private static final String SERVER_DOWN_STATUS_MESSAGE = "server down";
-	private static final Pattern FILTER_ARGUMENT_PATTERN = Pattern.compile("\\{FILTER\\}");
+	private static final Pattern FILTER_ARGUMENT_PATTERN = compile("\\{FILTER\\}");
 
 	/**
 	 * Whether to run status checks on {@link Request#getJSON()} by default. Setting this
@@ -60,7 +41,7 @@ public final class Route {
 	 * Creates a new session for further gameplay.<br>
 	 * <b>Caution!</b> Because this endpoint uses a static hostname, you <u>must</u> pass
 	 * an empty string to {@code baseUrl} of
-	 * {@link #getRequest(String, boolean, String...)} <br>
+	 * {@link #createRequest(UnirestInstance, String, boolean, Object...)} <br>
 	 * Parameters:
 	 * <ol>
 	 * <li>Current time in milliseconds</li>
@@ -117,19 +98,21 @@ public final class Route {
 		this.parametersQuantity = parameters;
 	}
 
-	public static void testResponse(@Nonnull JSONObject response) {
-		Status completion = new StatusImpl(response);
-		if (completion.getLevel() == Status.Level.ERROR) {
-			if (SERVER_DOWN_STATUS_MESSAGE.equalsIgnoreCase(completion.getReason()))
-				throw new ServerUnavailableException(completion);
-
-			throw new StatusException(completion);
-		}
+	/**
+	 * @deprecated Use
+	 *             {@link #createRequest(UnirestInstance,String,boolean,Session,String...)}
+	 *             instead
+	 */
+	@Nonnull
+	@Deprecated(since = "1.5.2", forRemoval = true)
+	public Request getRequest(@Nonnull UnirestInstance unirest, @Nonnull String baseUrl, boolean filterProfanity,
+							  @Nullable Session token, @Nonnull String... parameters) {
+		return createRequest(unirest, baseUrl, filterProfanity, token, (Object[]) parameters);
 	}
 
 	@Nonnull
-	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nullable Token token,
-							  @Nonnull String... parameters) {
+	public Request createRequest(@Nonnull UnirestInstance unirest, @Nonnull String baseUrl, boolean filterProfanity,
+								 @Nullable Session token, @Nonnull Object... parameters) {
 		if (parameters.length < this.parametersQuantity)
 			throw new IllegalArgumentException("Insufficient parameters; Expected " + this.parametersQuantity +
 				", got " +
@@ -137,12 +120,7 @@ public final class Route {
 
 		String[] encodedParams = new String[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
-			try {
-				encodedParams[i] = URLEncoder.encode(parameters[i], "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// Can not occur
-				throw new RuntimeException(e);
-			}
+			encodedParams[i] = URLEncoder.encode(parameters[i].toString(), UTF_8);
 		}
 
 		String formattedPath = this.path;
@@ -154,23 +132,33 @@ public final class Route {
 		}
 		matcher.appendTail(sb);
 		formattedPath = sb.toString();
+		formattedPath = formattedPath.replace("{API_KEY}", accquireApiKey(unirest).querystring().replace("%", "%%"));
+		formattedPath = format(formattedPath, (Object[]) encodedParams);
 
-		formattedPath = formattedPath.replace("{API_KEY}", ApiKey.accquireApiKey().compile().replace("%", "%%"));
-
-		formattedPath = String.format(formattedPath, (Object[]) encodedParams);
-
-		String jQueryCallback = "jQuery331023608747682107778_" + System.currentTimeMillis();
+		String jQueryCallback = "jQuery331023608747682107778_" + currentTimeMillis();
 		formattedPath = formattedPath + "&callback=" + jQueryCallback;
 
 		if (token != null)
-			formattedPath = formattedPath + token.compile();
+			formattedPath = formattedPath + token.querystring();
 
-		return new Request(baseUrl + formattedPath, jQueryCallback);
+		return new Request(unirest, baseUrl + formattedPath, jQueryCallback.length());
+	}
+
+	/**
+	 * @deprecated Use {@link #createRequest(UnirestInstance,String,boolean,Object...)}
+	 *             instead
+	 */
+	@Nonnull
+	@Deprecated(since = "1.5.2", forRemoval = true)
+	public Request getRequest(@Nonnull UnirestInstance unirest, @Nonnull String baseUrl, boolean filterProfanity,
+							  @Nonnull String... parameters) {
+		return createRequest(unirest, baseUrl, filterProfanity, (Object[]) parameters);
 	}
 
 	@Nonnull
-	public Request getRequest(@Nonnull String baseUrl, boolean filterProfanity, @Nonnull String... parameters) {
-		return this.getRequest(baseUrl, filterProfanity, null, parameters);
+	public Request createRequest(@Nonnull UnirestInstance unirest, @Nonnull String baseUrl, boolean filterProfanity,
+								 @Nonnull Object... parameters) {
+		return this.createRequest(unirest, baseUrl, filterProfanity, null, parameters);
 	}
 
 	@Nonnull
@@ -178,7 +166,15 @@ public final class Route {
 		return this.path;
 	}
 
+	/**
+	 * @deprecated Use {@link #getParameterCount()} instead
+	 */
+	@Deprecated(since = "1.5.2", forRemoval = true)
 	public int getParametersQuantity() {
+		return getParameterCount();
+	}
+
+	public int getParameterCount() {
 		return this.parametersQuantity;
 	}
 
@@ -187,12 +183,14 @@ public final class Route {
 		private static final Logger LOG = LoggerFactory.getLogger(Route.Request.class);
 
 		@Nonnull
-		private final String url;
+		private final UnirestInstance unirest;
 		@Nonnull
-		private final String jQueryCallback;
+		private final String url;
+		private final int jQueryCallbackLength;
 
-		Request(@Nonnull String url, @Nonnull String jQueryCallback) {
-			this.jQueryCallback = jQueryCallback;
+		Request(@Nonnull UnirestInstance unirest, @Nonnull String url, int jQueryCallbackLength) {
+			this.unirest = unirest;
+			this.jQueryCallbackLength = jQueryCallbackLength;
 			this.url = url;
 		}
 
@@ -203,23 +201,35 @@ public final class Route {
 
 		@Nonnull
 		public JSONObject getJSON(boolean runChecks) {
-			String response = UNIREST.get(this.url).asString().getBody().replace(this.jQueryCallback, "");
-			response = response.substring(1, response.length() - 1);
+			var response = this.unirest.get(this.url).asString().getBody();
+			response = response.substring(this.jQueryCallbackLength + 1, response.length() - 1);
+
 			LOG.trace("--> {}", this.url);
 			LOG.trace("<-- {}", response);
-			JSONObject result;
+
 			try {
-				result = new JSONObject(response);
+				var result = new JSONObject(response);
+
+				if (runChecks)
+					ensureSuccessful(result);
+
+				return result;
+
 			} catch (JSONException e) {
 				LOG.error("Failed to parse JSON from the API server", e);
 				throw new StatusException(new StatusImpl("AW-KO - COULDN'T PARSE JSON"));
 			}
-
-			if (runChecks)
-				testResponse(result);
-
-			return result;
 		}
 
+		static void ensureSuccessful(@Nonnull JSONObject response) {
+			Status completion = new StatusImpl(response);
+			if (completion.getLevel() == ERROR) {
+				if (SERVER_DOWN_STATUS_MESSAGE.equalsIgnoreCase(completion.getReason()))
+					throw new ServerUnavailableException(completion);
+
+				throw new StatusException(completion);
+			}
+		}
 	}
+
 }
