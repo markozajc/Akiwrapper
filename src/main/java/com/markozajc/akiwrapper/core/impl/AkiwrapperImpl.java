@@ -82,12 +82,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 		this.currentStep = 0;
 	}
 
-	@Nonnull
-	private static Session getSession(@Nonnull JSONObject parameters) {
-		var session = parameters.getJSONObject("identification");
-		return new Session(parseLong(session.getString("signature")), parseInt(session.getString("session")));
-	}
-
 	@SuppressWarnings("null")
 	@Override
 	public Question answer(Answer answer) {
@@ -175,6 +169,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Override
 	public Server getServer() {
 		return this.server;
+	}
+
+	@Nonnull
+	private static Session getSession(@Nonnull JSONObject parameters) {
+		var session = parameters.getJSONObject("identification");
+		return new Session(parseLong(session.getString("signature")), parseInt(session.getString("session")));
 	}
 
 }

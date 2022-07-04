@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import static com.markozajc.akiwrapper.core.entities.Server.GuessType.ANIMAL;
+import static com.markozajc.akiwrapper.core.entities.Server.Language.*;
 import static java.util.Arrays.asList;
 
 import java.util.*;
@@ -7,8 +9,6 @@ import java.util.*;
 import org.junit.jupiter.api.Test;
 
 import com.markozajc.akiwrapper.core.entities.*;
-import com.markozajc.akiwrapper.core.entities.Server.*;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,15 +24,14 @@ class ServerListImplTest {
 	@SuppressWarnings("null")
 	@Test
 	void testServersCollection() {
-		List<Server> serversList = asList(new ServerImpl("x", Language.ARABIC, GuessType.ANIMAL),
-										  new ServerImpl("x", Language.FRENCH, GuessType.ANIMAL));
+		List<Server> serversList = asList(new ServerImpl("x", ARABIC, ANIMAL), new ServerImpl("x", FRENCH, ANIMAL));
 		ServerList serverList = new ServerListImpl(serversList);
 		assertEquals(serversList.size() - 1, serverList.getRemainingSize());
 		assertEquals(serversList, serverList.getServers());
-		assertEquals(Language.ARABIC, serverList.getLanguage());
+		assertEquals(ARABIC, serverList.getLanguage());
 		assertTrue(serverList.hasNext());
 		assertTrue(serverList.next());
-		assertEquals(Language.FRENCH, serverList.getLanguage());
+		assertEquals(FRENCH, serverList.getLanguage());
 		assertFalse(serverList.hasNext());
 		assertFalse(serverList.next());
 	}
@@ -40,29 +39,27 @@ class ServerListImplTest {
 	@SuppressWarnings("null")
 	@Test
 	void testNestedServersCollection() {
-		List<Server> serversList = asList(new ServerImpl("x", Language.ARABIC, GuessType.ANIMAL),
-										  new ServerImpl("x", Language.FRENCH, GuessType.ANIMAL));
+		List<Server> serversList = asList(new ServerImpl("x", ARABIC, ANIMAL), new ServerImpl("x", FRENCH, ANIMAL));
 		ServerList serverList = new ServerListImpl(Arrays.asList(new ServerListImpl(serversList)));
 		assertEquals(serversList.size() - 1, serverList.getRemainingSize());
 		assertEquals(serversList, serverList.getServers());
-		assertEquals(Language.ARABIC, serverList.getLanguage());
+		assertEquals(ARABIC, serverList.getLanguage());
 		assertTrue(serverList.hasNext());
 		assertTrue(serverList.next());
-		assertEquals(Language.FRENCH, serverList.getLanguage());
+		assertEquals(FRENCH, serverList.getLanguage());
 		assertFalse(serverList.hasNext());
 		assertFalse(serverList.next());
 	}
 
 	@Test
 	void testMixedServersCollection() {
-		ServerList serverList =
-			new ServerListImpl(new ServerImpl("x", Language.ARABIC, GuessType.ANIMAL),
-							   new ServerListImpl(new ServerImpl("x", Language.FRENCH, GuessType.ANIMAL)));
+		ServerList serverList = new ServerListImpl(new ServerImpl("x", ARABIC, ANIMAL),
+												   new ServerListImpl(new ServerImpl("x", FRENCH, ANIMAL)));
 		assertEquals(2 /* amount of servers */ - 1, serverList.getRemainingSize());
-		assertEquals(Language.ARABIC, serverList.getLanguage());
+		assertEquals(ARABIC, serverList.getLanguage());
 		assertTrue(serverList.hasNext());
 		assertTrue(serverList.next());
-		assertEquals(Language.FRENCH, serverList.getLanguage());
+		assertEquals(FRENCH, serverList.getLanguage());
 		assertFalse(serverList.hasNext());
 		assertFalse(serverList.next());
 	}

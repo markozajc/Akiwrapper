@@ -1,16 +1,16 @@
 package com.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
+
 import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import org.junit.jupiter.params.provider.EnumSource.Mode;
 
 import com.markozajc.akiwrapper.core.entities.Status;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
-import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,7 +19,7 @@ class StatusImplTest {
 	@ParameterizedTest
 	@EnumSource(
 		value = Level.class,
-		mode = Mode.EXCLUDE)
+		mode = EXCLUDE)
 	void testStringConstructorNoReason(@Nonnull Level level) {
 		@SuppressWarnings("null")
 		Status status = new StatusImpl(level.toString());
