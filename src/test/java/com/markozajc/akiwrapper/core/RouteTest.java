@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core;
 
+import static kong.unirest.Unirest.spawnInstance;
+
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -10,9 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class RouteTest {
 
 	@Test
+	@SuppressWarnings("null")
 	void testMissingParameters() {
-		assertThrows(IllegalArgumentException.class,
-					 () -> Route.NEW_SESSION.getRequest("", false /* and no parameters */));
+		try (var unirest = spawnInstance()) {
+			assertThrows(IllegalArgumentException.class,
+						 () -> Route.NEW_SESSION.createRequest(unirest, "", false /* and no parameters */));
+		}
 	}
 
 	@Test
@@ -20,19 +25,19 @@ class RouteTest {
 		JSONObject base = new JSONObject();
 
 		base.put("completion", "KO - SERVER DOWN");
-		assertThrows(ServerUnavailableException.class, () -> Route.testResponse(base));
+		assertThrows(ServerUnavailableException.class, () -> Route.Request.ensureSuccessful(base));
 
 		base.put("completion", "KO - TEST REASON");
-		assertThrows(StatusException.class, () -> Route.testResponse(base));
+		assertThrows(StatusException.class, () -> Route.Request.ensureSuccessful(base));
 
 		base.put("completion", "WARN - TEST REASON");
-		assertDoesNotThrow(() -> Route.testResponse(base));
+		assertDoesNotThrow(() -> Route.Request.ensureSuccessful(base));
 
 		base.put("completion", "OK - TEST REASON");
-		assertDoesNotThrow(() -> Route.testResponse(base));
+		assertDoesNotThrow(() -> Route.Request.ensureSuccessful(base));
 
 		base.put("completion", "OK");
-		assertDoesNotThrow(() -> Route.testResponse(base));
+		assertDoesNotThrow(() -> Route.Request.ensureSuccessful(base));
 	}
 
 }

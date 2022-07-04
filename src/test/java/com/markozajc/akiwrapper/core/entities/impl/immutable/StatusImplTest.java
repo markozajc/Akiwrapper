@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.EnumSource.Mode;
 
 import com.markozajc.akiwrapper.core.entities.Status;
 import com.markozajc.akiwrapper.core.entities.Status.Level;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 

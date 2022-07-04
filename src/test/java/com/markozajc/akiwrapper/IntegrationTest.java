@@ -1,5 +1,8 @@
 package com.markozajc.akiwrapper;
 
+import static java.lang.String.format;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -7,7 +10,7 @@ import javax.annotation.*;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import org.slf4j.*;
+import org.slf4j.Logger;
 
 import com.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.markozajc.akiwrapper.core.entities.*;
@@ -32,7 +35,7 @@ class IntegrationTest {
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")
 	void testAkiwrapper(@Nonnull Language language, @Nonnull GuessType guessType) {
-		Logger log = LoggerFactory.getLogger(String.format("%s-%s", language, guessType));
+		Logger log = getLogger(format("%s-%s", language, guessType));
 		log.info("Establishing connection");
 		Akiwrapper api;
 		try {

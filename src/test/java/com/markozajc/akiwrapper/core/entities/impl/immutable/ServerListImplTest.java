@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.markozajc.akiwrapper.core.entities.*;
 import com.markozajc.akiwrapper.core.entities.Server.*;
+import com.markozajc.akiwrapper.core.entities.impl.immutable.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
