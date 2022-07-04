@@ -1,5 +1,7 @@
 package com.markozajc.akiwrapper.core.utils;
 
+import static com.markozajc.akiwrapper.core.utils.JSONUtils.*;
+
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -34,33 +36,33 @@ class JSONUtilsTest {
 
 	@Test
 	void testGetInt() {
-		JSONObject json = new JSONObject(TEST_GET_INT_JSON);
-		assertEquals(1, JSONUtils.getInteger(json, "test1").orElse(null));
-		assertEquals(2, JSONUtils.getInteger(json, "test2").orElse(null));
-		assertThrows(NumberFormatException.class, () -> JSONUtils.getInteger(json, "test3"));
-		assertThrows(NumberFormatException.class, () -> JSONUtils.getInteger(json, "test4"));
-		assertNull(JSONUtils.getInteger(json, "test5").orElse(null));
+		var json = new JSONObject(TEST_GET_INT_JSON);
+		assertEquals(1, getInteger(json, "test1").orElse(-1));
+		assertEquals(2, getInteger(json, "test2").orElse(-1));
+		assertThrows(NumberFormatException.class, () -> getInteger(json, "test3"));
+		assertThrows(NumberFormatException.class, () -> getInteger(json, "test4"));
+		assertEquals(-1, getInteger(json, "test5").orElse(-1));
 	}
 
 	@Test
 	void testGetString() {
-		JSONObject json = new JSONObject(TEST_GET_STRING_JSON);
-		assertEquals("string", JSONUtils.getString(json, "test1").orElse(null));
-		assertEquals("s", JSONUtils.getString(json, "test2").orElse(null));
-		assertEquals("1", JSONUtils.getString(json, "test3").orElse(null));
-		assertNull(JSONUtils.getInteger(json, "test4").orElse(null));
+		var json = new JSONObject(TEST_GET_STRING_JSON);
+		assertEquals("string", getString(json, "test1").orElseThrow());
+		assertEquals("s", getString(json, "test2").orElseThrow());
+		assertEquals("1", getString(json, "test3").orElseThrow());
+		assertNull(getString(json, "test4").orElse(null));
 	}
 
 	@Test
 	void testGetDouble() {
-		JSONObject json = new JSONObject(TEST_GET_DOUBLE_JSON);
-		assertEquals(1d, JSONUtils.getDouble(json, "test1").orElse(null));
-		assertEquals(0.5d, JSONUtils.getDouble(json, "test2").orElse(null));
-		assertEquals(2d, JSONUtils.getDouble(json, "test3").orElse(null));
-		assertEquals(1.5d, JSONUtils.getDouble(json, "test4").orElse(null));
-		assertThrows(NumberFormatException.class, () -> JSONUtils.getInteger(json, "test5"));
-		assertThrows(NumberFormatException.class, () -> JSONUtils.getInteger(json, "test6"));
-		assertNull(JSONUtils.getInteger(json, "test7").orElse(null));
+		var json = new JSONObject(TEST_GET_DOUBLE_JSON);
+		assertEquals(1d, getDouble(json, "test1").orElseThrow());
+		assertEquals(0.5d, getDouble(json, "test2").orElseThrow());
+		assertEquals(2d, getDouble(json, "test3").orElseThrow());
+		assertEquals(1.5d, getDouble(json, "test4").orElseThrow());
+		assertThrows(NumberFormatException.class, () -> getDouble(json, "test5"));
+		assertThrows(NumberFormatException.class, () -> getDouble(json, "test6"));
+		assertEquals(-1d, getDouble(json, "test7").orElse(-1d));
 	}
 
 }
