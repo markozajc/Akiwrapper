@@ -8,9 +8,14 @@ import com.markozajc.akiwrapper.AkiwrapperBuilder;
 
 import kong.unirest.UnirestInstance;
 
+/**
+ * Various utilities regarding Unirest for use with and within Akiwrapper.
+ *
+ * @author Marko Zajc
+ */
 public class UnirestUtils {
 
-	private static UnirestInstance SINGLETON_UNIREST;
+	private static UnirestInstance singletonUnirest;
 
 	/**
 	 * Returns the singleton {@link UnirestInstance} or creates one if it's null. Note
@@ -22,12 +27,12 @@ public class UnirestUtils {
 	 * @return the singleton {@link UnirestInstance}
 	 */
 	@Nonnull
-	@SuppressWarnings("null")
+	@SuppressWarnings({ "null", "resource" })
 	public static synchronized UnirestInstance getInstance() {
-		if (SINGLETON_UNIREST == null)
-			SINGLETON_UNIREST = createInstance();
+		if (singletonUnirest == null)
+			singletonUnirest = configureInstance(spawnInstance());
 
-		return SINGLETON_UNIREST;
+		return singletonUnirest;
 	}
 
 	/**
@@ -35,24 +40,28 @@ public class UnirestUtils {
 	 * nothing otherwise. Subsequent calls to {@link #getInstance()} will recreate it.
 	 */
 	public static synchronized void shutdownInstance() {
-		if (SINGLETON_UNIREST != null) {
-			SINGLETON_UNIREST.shutDown(false);
-			SINGLETON_UNIREST = null;
+		if (singletonUnirest != null) {
+			singletonUnirest.shutDown(false);
+			singletonUnirest = null;
 		}
 	}
 
 	/**
-	 * Creates and configures a new {@link UnirestInstance}. Akinator's API servers are
-	 * quite picky about the headers you send to them so if you supply
+	 * Configures a new {@link UnirestInstance} for use by Akiwrapper. Akinator's API
+	 * servers are quite picky about the headers you send to them so if you supply
 	 * {@link AkiwrapperBuilder} with your own {@link UnirestInstance} you should either
-	 * get it from this or configure it accordingly.
+	 * pass it through this or configure it accordingly yourself.<br>
+	 * Note: even though this method returns a {@link UnirestInstance}, the instance you
+	 * pass to it is itself mutated and returned. The return value is only there for ease
+	 * of chaining.
 	 *
-	 * @return a new properly configured {@link UnirestInstance}
+	 * @param unirest
+	 *            the {@link UnirestInstance} to configure
+	 *
+	 * @return the {@link UnirestInstance} you passed, used for chaining
 	 */
 	@Nonnull
-	@SuppressWarnings("null")
-	public static UnirestInstance createInstance() {
-		var unirest = spawnInstance();
+	public static UnirestInstance configureInstance(@Nonnull UnirestInstance unirest) {
 		unirest.config()
 			.addDefaultHeader("Accept",
 							  "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")

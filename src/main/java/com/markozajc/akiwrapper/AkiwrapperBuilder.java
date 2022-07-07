@@ -75,14 +75,38 @@ public class AkiwrapperBuilder {
 		this(null, null, DEFAULT_FILTER_PROFANITY, DEFAULT_LOCALIZATION, DEFAULT_GUESS_TYPE);
 	}
 
-	// TODO javadoc
+	/**
+	 * Sets the {@link UnirestInstance} to be used by the built Akiwrapper instance. Note
+	 * that Akinator's services are quite picky about the HTTP client configuration, so
+	 * you will very likely need to put your instance through
+	 * {@link UnirestUtils#configureInstance(UnirestInstance)} before using it with
+	 * Akiwrapper. You will also need to shut it down yourself, or, if you decide to set
+	 * or leave this on {$code null}, call {@link UnirestUtils#shutdownInstance()} to
+	 * shut down Akiwrapper's default singleton instance.
+	 *
+	 * @param unirest
+	 *            the {@link UnirestInstance} to be used by Akiwrapper or {$code null} to
+	 *            use {@link UnirestUtils#getInstance()}
+	 *
+	 * @return current instance, used for chaining
+	 *
+	 * @see UnirestUtils#getInstance()
+	 */
 	@Nonnull
 	public AkiwrapperBuilder setUnirestInstance(@Nullable UnirestInstance unirest) {
 		this.unirest = unirest;
 		return this;
 	}
 
-	// TODO javadoc
+	/**
+	 * Returns the {@link UnirestInstance} to be used by the built Akiwrapper instance.
+	 * If this is {$code null}, {@link UnirestUtils#getInstance()} will be used (which
+	 * means you will need to shut it down through
+	 * {@link UnirestUtils#shutdownInstance()}).
+	 *
+	 * @return {@link UnirestInstance} to be used or {$code null} for
+	 *         {@link UnirestUtils#getInstance()}
+	 */
 	@Nullable
 	public UnirestInstance getUnirestInstance() {
 		return this.unirest;
