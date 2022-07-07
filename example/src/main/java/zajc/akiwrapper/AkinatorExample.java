@@ -1,8 +1,8 @@
-package com.markozajc.akiwrapper.example;
+package zajc.akiwrapper;
 
-import static com.markozajc.akiwrapper.Akiwrapper.Answer.*;
-import static com.markozajc.akiwrapper.core.entities.Server.GuessType.CHARACTER;
-import static com.markozajc.akiwrapper.core.entities.Server.Language.ENGLISH;
+import static com.github.markozajc.akiwrapper.Akiwrapper.Answer.*;
+import static com.github.markozajc.akiwrapper.core.entities.Server.GuessType.CHARACTER;
+import static com.github.markozajc.akiwrapper.core.entities.Server.Language.ENGLISH;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.*;
 import static java.util.stream.Collectors.joining;
@@ -11,10 +11,10 @@ import java.util.*;
 
 import javax.annotation.Nonnull;
 
-import com.markozajc.akiwrapper.*;
-import com.markozajc.akiwrapper.core.entities.*;
-import com.markozajc.akiwrapper.core.entities.Server.*;
-import com.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
+import com.github.markozajc.akiwrapper.*;
+import com.github.markozajc.akiwrapper.core.entities.*;
+import com.github.markozajc.akiwrapper.core.entities.Server.*;
+import com.github.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 
 @SuppressWarnings("javadoc")
 public class AkinatorExample {
