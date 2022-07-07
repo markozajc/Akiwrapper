@@ -15,7 +15,7 @@ Add the following dependency to your pom.xml:
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
-implementation group: 'com.github.markozajc', name: 'akiwrapper', version: '1.5.1.1'
+implementation group: 'com.github.markozajc', name: 'akiwrapper', version: '1.5.2'
 ```
 
 ## Usage
