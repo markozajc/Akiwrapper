@@ -132,7 +132,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<doclint>all,-missing</doclint>
+					<doclint>all,-syntax,-missing</doclint>
 				</configuration>
 			</plugin>
 

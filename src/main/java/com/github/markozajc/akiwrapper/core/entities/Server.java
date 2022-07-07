@@ -6,6 +6,8 @@ import com.github.markozajc.akiwrapper.core.Route;
 import com.github.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.github.markozajc.akiwrapper.core.utils.Servers;
 
+import kong.unirest.UnirestInstance;
+
 /**
  * A representation of an API server. All requests (except for
  * {@link Route#NEW_SESSION} are passed to an such server. Each server has a
@@ -104,8 +106,8 @@ public interface Server {
 	/**
 	 * Server's host name. As the people behind Akinator tend to mix up their servers and
 	 * the API in general, this should only fetch values from the server-listing endpoint
-	 * (which is done in {@link Servers#getServers()}. The host is a valid URL, complete
-	 * with the path to the endpoint.<br>
+	 * (which is done in {@link Servers#getServers(UnirestInstance)}. The host is a valid
+	 * URL, complete with the path to the endpoint.<br>
 	 * Example: {@code https://srv3.akinator.com:9331/ws}
 	 *
 	 * @return server's host.

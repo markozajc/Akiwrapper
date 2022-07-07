@@ -41,7 +41,7 @@ public final class Route {
 	 * Creates a new session for further gameplay.<br>
 	 * <b>Caution!</b> Because this endpoint uses a static hostname, you <u>must</u> pass
 	 * an empty string to {@code baseUrl} of
-	 * {@link #createRequest(UnirestInstance, String, boolean, Object...)} <br>
+	 * {@link Route#createRequest(UnirestInstance, String, boolean, Object...)} <br>
 	 * Parameters:
 	 * <ol>
 	 * <li>Current time in milliseconds</li>
@@ -100,7 +100,7 @@ public final class Route {
 
 	/**
 	 * @deprecated Use
-	 *             {@link #createRequest(UnirestInstance,String,boolean,Session,String...)}
+	 *             Route#createRequest(UnirestInstance,String,boolean,Session,String...)
 	 *             instead
 	 */
 	@Nonnull
