@@ -1,9 +1,4 @@
-<!-- Make sure to rename this file to "pom.xml" and replace the version of 
-	the Akiwrapper dependency with the current one (can be found in an icon in 
-	the README.md) -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.markozajc</groupId>
@@ -26,8 +21,8 @@
 	<developers>
 		<developer>
 			<name>Marko Zajc</name>
-			<email>sigmund.brotbeck@gmail.com</email>
-			<url>https://github.com/markozajc</url>
+			<email>marko@zajc.eu.org</email>
+			<url>https://zajc.eu.org/</url>
 		</developer>
 	</developers>
 
@@ -42,17 +37,17 @@
 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
+				<version>3.10.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>11</source>
+					<target>11</target>
 				</configuration>
 			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -61,9 +56,8 @@
 						</goals>
 						<configuration>
 							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.markozajc.akiwrapper.example.AkinatorExample</mainClass>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>zajc.akiwrapper.AkinatorExample</mainClass>
 								</transformer>
 							</transformers>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
@@ -81,7 +75,7 @@
 		<dependency>
 			<groupId>com.github.markozajc</groupId>
 			<artifactId>akiwrapper</artifactId>
-			<version><!-- Replace me! --></version>
+			<version>1.5.2</version>
 		</dependency>
 
 	</dependencies>
