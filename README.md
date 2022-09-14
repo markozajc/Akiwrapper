@@ -71,8 +71,8 @@ UnirestUtils.shutdownInstance();
 ```
 
 That's it! If you need more help, be sure to check the bundled example
-[here](https://github.com/markozajc/Akiwrapper/tree/master/example) for an out-of-the-box working implementation.
+[here](https://github.com/markozajc/Akiwrapper/tree/master/example) for an out-of-the-box implementation.
 
 ## Available on:
 * https://git.zajc.eu.org/akiwrapper.git/
-* https://github.com/markozajc/gogarchiver/
+* https://github.com/markozajc/Akiwrapper
