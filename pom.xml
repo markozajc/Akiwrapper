@@ -35,8 +35,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<junit.version>5.8.2</junit.version>
-		<slf4j.version>1.7.36</slf4j.version>
+		<junit.version>5.9.2</junit.version>
+		<slf4j.version>2.0.7</slf4j.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.jcabi</groupId>
 			<artifactId>jcabi-xml</artifactId>
-			<version>0.23.2</version>
+			<version>0.27.2</version>
 		</dependency>
 
 		<!-- JSON parsing -->
@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>com.konghq</groupId>
 			<artifactId>unirest-java</artifactId>
-			<version>3.13.8</version>
+			<version>3.14.2</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>com.github.spotbugs</groupId>
 			<artifactId>spotbugs-annotations</artifactId>
-			<version>4.6.0</version>
+			<version>4.7.3</version>
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
