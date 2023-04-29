@@ -24,9 +24,8 @@ import kong.unirest.UnirestInstance;
 @SuppressFBWarnings("REC_CATCH_EXCEPTION")
 public final class Servers {
 
-	private static final String FOOTPRINT = "cd8e6509f3420878e18d75b9831b317f";
 	private static final String LIST_URL =
-		"https://global3.akinator.com/ws/instances_v2.php?media_id=14" + "&mode=https&footprint=" + FOOTPRINT;
+		"https://global3.akinator.com/ws/instances_v2.php?media_id=14&mode=https&footprint=cd8e6509f3420878e18d75b9831b317f";
 
 	private Servers() {}
 

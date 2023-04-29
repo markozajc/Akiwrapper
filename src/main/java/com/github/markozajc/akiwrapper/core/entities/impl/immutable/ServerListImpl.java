@@ -10,10 +10,8 @@ import com.github.markozajc.akiwrapper.core.entities.*;
 
 public class ServerListImpl implements ServerList {
 
-	@Nonnull
-	private Server currentServer;
-	@Nonnull
-	private final Queue<Server> candidateServers;
+	@Nonnull private Server currentServer;
+	@Nonnull private final Queue<Server> candidateServers;
 
 	@SuppressWarnings("null")
 	public ServerListImpl(@Nonnull Server first, @Nonnull Server... candidates) {

@@ -1,6 +1,7 @@
 package com.github.markozajc.akiwrapper;
 
 import static java.lang.String.format;
+import static org.junit.jupiter.api.Assumptions.abort;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.List;
@@ -41,8 +42,7 @@ class IntegrationTest {
 		try {
 			api = new AkiwrapperBuilder().setLanguage(language).setGuessType(guessType).build();
 		} catch (ServerNotFoundException e) {
-			log.warn("Current combination not supported, server wasn't found.");
-			log.trace("", e);
+			abort("Current combination not supported, server wasn't found.");
 			return;
 		}
 

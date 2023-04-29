@@ -13,16 +13,11 @@ import com.github.markozajc.akiwrapper.core.entities.Guess;
 
 public class GuessImpl implements Guess {
 
-	@Nonnull
-	private final String id;
-	@Nonnull
-	private final String name;
-	@Nullable
-	private final String description;
-	@Nullable
-	private final URL image;
-	@Nonnegative
-	private final double probability;
+	@Nonnull private final String id;
+	@Nonnull private final String name;
+	@Nullable private final String description;
+	@Nullable private final URL image;
+	@Nonnegative private final double probability;
 
 	public GuessImpl(@Nonnull String id, @Nonnull String name, @Nullable String description, @Nullable URL image,
 					 @Nonnegative double probability) {

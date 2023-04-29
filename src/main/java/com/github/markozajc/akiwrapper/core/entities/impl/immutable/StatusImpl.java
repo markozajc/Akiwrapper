@@ -15,10 +15,8 @@ public class StatusImpl implements Status {
 
 	public static final StatusImpl STATUS_OK = new StatusImpl(Level.OK, null);
 
-	@Nullable
-	private final String reason;
-	@Nonnull
-	private final Level level;
+	@Nullable private final String reason;
+	@Nonnull private final Level level;
 
 	private StatusImpl(@Nonnull Level level, @Nullable String reason) {
 		this.level = level;

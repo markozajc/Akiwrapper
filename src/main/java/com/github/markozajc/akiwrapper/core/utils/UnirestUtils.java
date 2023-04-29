@@ -1,5 +1,6 @@
 package com.github.markozajc.akiwrapper.core.utils;
 
+import static com.github.markozajc.akiwrapper.core.utils.WorkaroundUtils.workaroundIncompleteChain;
 import static kong.unirest.Unirest.spawnInstance;
 
 import javax.annotation.Nonnull;
@@ -50,7 +51,9 @@ public class UnirestUtils {
 	 * Configures a new {@link UnirestInstance} for use by Akiwrapper. Akinator's API
 	 * servers are quite picky about the headers you send to them so if you supply
 	 * {@link AkiwrapperBuilder} with your own {@link UnirestInstance} you should either
-	 * pass it through this or configure it accordingly yourself.<br>
+	 * pass it through this or configure it accordingly yourself. This also applies the
+	 * workaround to Akinator's incomplete SSL chain from
+	 * {@link WorkaroundUtils#workaroundIncompleteChain(kong.unirest.Config)} .<br>
 	 * Note: even though this method returns a {@link UnirestInstance}, the instance you
 	 * pass to it is itself mutated and returned. The return value is only there for ease
 	 * of chaining.
@@ -61,6 +64,7 @@ public class UnirestUtils {
 	 * @return the {@link UnirestInstance} you passed, used for chaining
 	 */
 	@Nonnull
+	@SuppressWarnings("null")
 	public static UnirestInstance configureInstance(@Nonnull UnirestInstance unirest) {
 		unirest.config()
 			.addDefaultHeader("Accept",
@@ -76,6 +80,8 @@ public class UnirestUtils {
 								  "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
 			.addDefaultHeader("Referer", "https://en.akinator.com/game")
 			.cookieSpec("ignore");
+		workaroundIncompleteChain(unirest.config());
+
 		return unirest;
 	}
 

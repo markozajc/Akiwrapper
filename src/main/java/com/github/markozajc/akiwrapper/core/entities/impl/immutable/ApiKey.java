@@ -24,10 +24,8 @@ public class ApiKey {
 
 	private static final String FORMAT = "frontaddr=%s&uid_ext_session=%s";
 
-	@Nonnull
-	private final String sessionUid;
-	@Nonnull
-	private final String frontAddress;
+	@Nonnull private final String sessionUid;
+	@Nonnull private final String frontAddress;
 
 	ApiKey(@Nonnull String sessionUid, @Nonnull String frontAddress) {
 		this.sessionUid = sessionUid;

@@ -14,16 +14,11 @@ public class QuestionImpl implements Question {
 
 	private static final String REASON_OUT_OF_QUESTIONS = "no question";
 
-	@Nonnull
-	private final String id;
-	@Nonnull
-	private final String question;
-	@Nonnegative
-	private final int step;
-	@Nonnegative
-	private final double gain;
-	@Nonnegative
-	private final double progression;
+	@Nonnull private final String id;
+	@Nonnull private final String question;
+	@Nonnegative private final int step;
+	@Nonnegative private final double gain;
+	@Nonnegative private final double progression;
 
 	public QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
 						@Nonnegative double progression, @Nonnull Status status) {

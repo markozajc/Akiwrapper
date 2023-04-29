@@ -13,12 +13,9 @@ public class ServerImpl implements Server {
 	private static final String LANGUAGE_ID_XPATH = "LANGUAGE/LANG_ID/text()"; // NOSONAR not a URL
 	private static final String SUBJECT_ID_XPATH = "SUBJECT/SUBJ_ID/text()"; // NOSONAR not a URL
 	private static final String CANDIDATE_URLS_XPATH = "CANDIDATS/*/text()"; // sic
-	@Nonnull
-	private final String url;
-	@Nonnull
-	private final Language localization;
-	@Nonnull
-	private final GuessType guessType;
+	@Nonnull private final String url;
+	@Nonnull private final Language localization;
+	@Nonnull private final GuessType guessType;
 
 	public ServerImpl(@Nonnull String url, @Nonnull Language localization, @Nonnull GuessType guessType) {
 		this.url = url;

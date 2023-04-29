@@ -3,7 +3,7 @@
 
 	<groupId>com.github.markozajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.5.2</version>
+	<version>1.5.2-2</version>
 
 	<name>Akiwrapper</name>
 	<description>A Java API wrapper for Akinator</description>
@@ -35,8 +35,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<junit.version>5.8.2</junit.version>
-		<slf4j.version>1.7.36</slf4j.version>
+		<junit.version>5.9.3</junit.version>
+		<slf4j.version>2.0.7</slf4j.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
@@ -47,7 +47,7 @@
 		<dependency>
 			<groupId>com.jcabi</groupId>
 			<artifactId>jcabi-xml</artifactId>
-			<version>0.23.2</version>
+			<version>0.27.2</version>
 		</dependency>
 
 		<!-- JSON parsing -->
@@ -61,7 +61,7 @@
 		<dependency>
 			<groupId>com.konghq</groupId>
 			<artifactId>unirest-java</artifactId>
-			<version>3.13.8</version>
+			<version>3.14.2</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>com.github.spotbugs</groupId>
 			<artifactId>spotbugs-annotations</artifactId>
-			<version>4.6.0</version>
+			<version>4.7.3</version>
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
@@ -118,6 +118,28 @@
 
 	<build>
 		<plugins>
+
+			<!-- Version enforcer -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>enforce-maven</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.2.5</version>
+								</requireMavenVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- Javadoc -->
 			<plugin>
@@ -154,7 +176,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.10.0</version>
+				<version>2.11.0</version>
 				<configuration>
 					<rulesUri>file://${project.basedir}/versions-ruleset.xml</rulesUri>
 				</configuration>
