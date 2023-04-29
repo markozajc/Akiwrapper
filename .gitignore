@@ -22,3 +22,8 @@
 hs_err_pid*
 /target/
 /repository/
+
+# IDE files
+/.project
+/.classpath
+/.settings/
