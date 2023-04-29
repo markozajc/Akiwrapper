@@ -34,8 +34,7 @@ public final class Route {
 	 * to false may result in unpredicted exceptions! <b>You usually don't need to alter
 	 * this value</b>
 	 */
-	@SuppressFBWarnings("MS_SHOULD_BE_FINAL")
-	public static boolean defaultRunChecks = true; // NOSONAR
+	@SuppressFBWarnings("MS_SHOULD_BE_FINAL") public static boolean defaultRunChecks = true; // NOSONAR
 
 	/**
 	 * Creates a new session for further gameplay.<br>
@@ -81,10 +80,8 @@ public final class Route {
 	 */
 	public static final Route LIST = new Route(1, "/list?mode_question=0&step=%s");
 
-	@Nonnull
-	private final String path;
-	@Nonnull
-	private final String[] filterArguments;
+	@Nonnull private final String path;
+	@Nonnull private final String[] filterArguments;
 
 	private final int parametersQuantity;
 
@@ -182,10 +179,8 @@ public final class Route {
 
 		private static final Logger LOG = LoggerFactory.getLogger(Route.Request.class);
 
-		@Nonnull
-		private final UnirestInstance unirest;
-		@Nonnull
-		private final String url;
+		@Nonnull private final UnirestInstance unirest;
+		@Nonnull private final String url;
 		private final int jQueryCallbackLength;
 
 		Request(@Nonnull UnirestInstance unirest, @Nonnull String url, int jQueryCallbackLength) {

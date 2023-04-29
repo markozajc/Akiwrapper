@@ -32,15 +32,11 @@ public class AkiwrapperBuilder {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AkiwrapperBuilder.class);
 
-	@Nullable
-	private UnirestInstance unirest;
-	@Nullable
-	private Server server;
+	@Nullable private UnirestInstance unirest;
+	@Nullable private Server server;
 	private boolean filterProfanity;
-	@Nonnull
-	private Language language;
-	@Nonnull
-	private GuessType guessType;
+	@Nonnull private Language language;
+	@Nonnull private GuessType guessType;
 
 	/**
 	 * The default profanity filter preference for new {@link Akiwrapper} instances.
@@ -50,14 +46,12 @@ public class AkiwrapperBuilder {
 	/**
 	 * The default {@link Language} for new {@link Akiwrapper} instances.
 	 */
-	@Nonnull
-	public static final Language DEFAULT_LOCALIZATION = ENGLISH;
+	@Nonnull public static final Language DEFAULT_LOCALIZATION = ENGLISH;
 
 	/**
 	 * The default {@link GuessType} for new {@link Akiwrapper} instances.
 	 */
-	@Nonnull
-	public static final GuessType DEFAULT_GUESS_TYPE = CHARACTER;
+	@Nonnull public static final GuessType DEFAULT_GUESS_TYPE = CHARACTER;
 
 	private AkiwrapperBuilder(@Nullable UnirestInstance unirest, @Nullable Server server, boolean filterProfanity,
 							  @Nonnull Language language, @Nonnull GuessType guessType) {

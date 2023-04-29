@@ -54,17 +54,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 		}
 	}
 
-	@Nonnull
-	private final Server server;
-	@Nonnull
-	private final UnirestInstance unirest;
+	@Nonnull private final Server server;
+	@Nonnull private final UnirestInstance unirest;
 	private final boolean filterProfanity;
-	@Nonnull
-	private final Session session;
-	@Nonnegative
-	private int currentStep;
-	@Nullable
-	private Question question;
+	@Nonnull private final Session session;
+	@Nonnegative private int currentStep;
+	@Nullable private Question question;
 	private List<Guess> guessCache;
 
 	@SuppressWarnings("null")
@@ -115,7 +110,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		this.guessCache = null;
 
 		Question current = getQuestion();
-		if ((current == null) || (current.getStep() < 1))
+		if (current == null || current.getStep() < 1)
 			return null;
 
 		var questionJson = CANCEL_ANSWER
