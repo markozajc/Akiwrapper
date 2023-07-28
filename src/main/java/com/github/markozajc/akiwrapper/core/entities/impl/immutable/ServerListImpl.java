@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 
 import com.github.markozajc.akiwrapper.core.entities.*;
 
+@SuppressWarnings("javadoc") // internal impl
 public class ServerListImpl implements ServerList {
 
 	@Nonnull private Server currentServer;

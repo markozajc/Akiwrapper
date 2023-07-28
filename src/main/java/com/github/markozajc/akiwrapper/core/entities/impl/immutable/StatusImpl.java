@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import com.github.markozajc.akiwrapper.core.entities.Status;
 
+@SuppressWarnings("javadoc") // internal impl
 public class StatusImpl implements Status {
 
 	private static final String DIVIDER = " - ";

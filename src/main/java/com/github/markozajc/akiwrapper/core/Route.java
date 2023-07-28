@@ -23,6 +23,7 @@ import com.github.markozajc.akiwrapper.core.impl.AkiwrapperImpl.Session;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import kong.unirest.UnirestInstance;
 
+@SuppressWarnings("javadoc") // internal
 public final class Route {
 
 	public static final String BASE_AKINATOR_URL = "https://en.akinator.com";

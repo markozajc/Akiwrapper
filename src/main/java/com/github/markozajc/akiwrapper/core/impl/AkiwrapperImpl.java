@@ -24,6 +24,7 @@ import com.github.markozajc.akiwrapper.core.exceptions.*;
 
 import kong.unirest.UnirestInstance;
 
+@SuppressWarnings("javadoc") // internal impl
 public class AkiwrapperImpl implements Akiwrapper {
 
 	private static final String NO_MORE_QUESTIONS_STATUS = "elem list is empty";

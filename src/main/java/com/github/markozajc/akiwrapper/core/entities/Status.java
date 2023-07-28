@@ -60,6 +60,7 @@ public interface Status extends Serializable {
 		}
 
 		@Nonnull
+		@SuppressWarnings("javadoc") // internal impl
 		public static Level fromString(@Nonnull String completion) {
 			for (Level iteratedLevel : Level.values())
 				if (completion.toUpperCase().startsWith(iteratedLevel.toString()))

@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 
 import kong.unirest.UnirestInstance;
 
+@SuppressWarnings("javadoc") // internal impl
 public class ApiKey {
 
 	private static final String EXCEPTION_NO_KEY = "Couldn't find the API key!" +

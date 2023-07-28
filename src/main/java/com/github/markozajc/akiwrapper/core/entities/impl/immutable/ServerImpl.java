@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import com.github.markozajc.akiwrapper.core.entities.Server;
 import com.jcabi.xml.XML;
 
+@SuppressWarnings("javadoc") // internal impl
 public class ServerImpl implements Server {
 
 	private static final String LANGUAGE_ID_XPATH = "LANGUAGE/LANG_ID/text()"; // NOSONAR not a URL

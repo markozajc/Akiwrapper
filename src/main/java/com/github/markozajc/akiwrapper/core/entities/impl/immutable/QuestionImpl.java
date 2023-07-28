@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import com.github.markozajc.akiwrapper.core.entities.*;
 import com.github.markozajc.akiwrapper.core.exceptions.MissingQuestionException;
 
+@SuppressWarnings("javadoc") // internal impl
 public class QuestionImpl implements Question {
 
 	private static final String REASON_OUT_OF_QUESTIONS = "no question";

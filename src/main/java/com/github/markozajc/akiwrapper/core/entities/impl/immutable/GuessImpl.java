@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import com.github.markozajc.akiwrapper.core.entities.Guess;
 
+@SuppressWarnings("javadoc") // internal impl
 public class GuessImpl implements Guess {
 
 	@Nonnull private final String id;
