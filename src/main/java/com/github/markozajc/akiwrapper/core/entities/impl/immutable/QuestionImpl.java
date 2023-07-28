@@ -22,9 +22,7 @@ public class QuestionImpl implements Question {
 	@Nonnegative private final double progression;
 
 	public QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
-						@Nonnegative double progression, @Nonnull Status status) {
-		checkMissingQuestion(status);
-
+						@Nonnegative double progression) {
 		this.id = id;
 		this.question = question;
 		this.step = step;
@@ -34,9 +32,11 @@ public class QuestionImpl implements Question {
 
 	@SuppressWarnings("null")
 	public static QuestionImpl from(@Nonnull JSONObject json, @Nonnull Status status) {
+		checkMissingQuestion(status);
+
 		return new QuestionImpl(json.getString("questionid"), json.getString("question"),
 								getInteger(json, "step").orElseThrow(), getDouble(json, "infogain").orElseThrow(),
-								getDouble(json, "progression").orElseThrow(), status);
+								getDouble(json, "progression").orElseThrow());
 	}
 
 	private static void checkMissingQuestion(@Nonnull Status status) {
