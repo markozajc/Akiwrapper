@@ -1,6 +1,6 @@
 package com.github.markozajc.akiwrapper.core.entities;
 
-import javax.annotation.*;
+import javax.annotation.Nonnull;
 
 import com.github.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.github.markozajc.akiwrapper.AkiwrapperBuilder;
@@ -21,7 +21,6 @@ public interface Question extends Identifiable {
 	 *
 	 * @return completion percentage.
 	 */
-	@Nonnegative
 	double getProgression();
 
 	/**
@@ -30,7 +29,6 @@ public interface Question extends Identifiable {
 	 *
 	 * @return current step.
 	 */
-	@Nonnegative
 	int getStep();
 
 	/**
@@ -39,23 +37,7 @@ public interface Question extends Identifiable {
 	 * Akinator can pinpoint the answer after a question was with the answered question.
 	 *
 	 * @return accuracy gain.
-	 *
-	 * @deprecated Use {@link #getInfogain()} instead
 	 */
-	@Nonnegative
-	@Deprecated(since = "1.5.2", forRemoval = true)
-	default double getGain() {
-		return getInfogain();
-	}
-
-	/**
-	 * Returns the gained accuracy from the last question (as a double). I'm not exactly
-	 * sure what this does, but I'm pretty sure that it's meant to describe how well
-	 * Akinator can pinpoint the answer after a question was with the answered question.
-	 *
-	 * @return accuracy gain.
-	 */
-	@Nonnegative
 	double getInfogain();
 
 	/**

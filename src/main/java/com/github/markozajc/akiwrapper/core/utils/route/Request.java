@@ -74,13 +74,8 @@ public class Request {
 		String processedUrl = this.url;
 		boolean hasQuerystring = this.urlHasQuerystring;
 
-		if (this.parameters != null && !this.parameters.isEmpty()) {
+		if (this.parameters != null && !this.parameters.isEmpty())
 			processedUrl += formatQuerystring(formatParameters(this.parameters), hasQuerystring);
-			hasQuerystring = true;
-		}
-
-		// the API will return KO - UNAUTHORIZED if callback doesn't start with jQuery
-		processedUrl += formatQuerystring("callback=jQuery", hasQuerystring);
 
 		LOG.trace("--> {}", processedUrl);
 		var response = this.unirest.get(processedUrl).asString().getBody();

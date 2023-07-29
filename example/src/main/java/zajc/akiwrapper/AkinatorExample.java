@@ -3,7 +3,7 @@ package zajc.akiwrapper;
 import static com.github.markozajc.akiwrapper.Akiwrapper.Answer.*;
 import static com.github.markozajc.akiwrapper.core.entities.Server.GuessType.CHARACTER;
 import static com.github.markozajc.akiwrapper.core.entities.Server.Language.ENGLISH;
-import static java.lang.Integer.parseInt;
+import static java.lang.Character.toLowerCase;
 import static java.lang.System.*;
 import static java.util.stream.Collectors.joining;
 
@@ -19,124 +19,82 @@ import com.github.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 @SuppressWarnings("javadoc")
 public class AkinatorExample {
 
-	public static final double PROBABILITY_THRESHOLD = 0.85;
-	// This is used to determine which guesses are probable (probability is determined by
-	// Akinator) enough to propose to the player.
+	private static final String ANSWER_TIP =
+		"Y or yes, N or no, DK or don't know, P or probably, PN or probably not, or go back one step with B or back.";
+	private static final Scanner IN = new Scanner(System.in).useDelimiter("\n");
 
-	@SuppressWarnings("null")
-	public static void main(String[] args) throws Exception {
-		try (var in = new Scanner(System.in)) {
-			boolean filterProfanity = getProfanityFilter(in);
-			// Gets player's age. Like the Akinator's website, this will turn on the profanity
-			// filter if the age entered is below 16.
+	public static void main(String[] args) {
+		boolean filterProfanity = getProfanityFilter();
+		// Gets player's age. Like the Akinator's website, this will turn on the profanity
+		// filter if the age entered is below 16.
 
-			var language = getLanguage(in);
-			// Gets player's language. Akinator will give the user localized questions and
-			// guesses depending on user's language.
+		var language = getLanguage();
+		// Gets player's language. Akinator will give the user localized questions and
+		// guesses depending on user's language.
 
-			var guessType = getGuessType(in);
-			// Gets the guess type.
+		var guessType = getGuessType();
+		// Gets the guess type.
 
-			Akiwrapper aw;
-			try {
-				aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity)
-					.setLanguage(language)
-					.setGuessType(guessType)
-					.build();
-			} catch (ServerNotFoundException e) {
-				err.println("Unsupported combination of language and guess type");
-				return;
-			}
-			// Builds the Akiwrapper instance, this is what we'll be using to perform
-			// operations such as answering questions, fetching guesses, etc
-
-			var rejected = new ArrayList<Long>();
-			// A list of rejected guesses, used to prevent them from repeating
-
-			while (aw.getQuestion() != null) {
-				// Runs while there are still questions left
-
-				Question question = aw.getQuestion();
-				if (question == null)
-					break;
-				// Breaks the loop if question is null; /should/ not occur, but safety is still
-				// first
-
-				out.printf("Question #%d%n", question.getStep() + 1);
-				out.printf("\t%s%n", question.getQuestion());
-				// Displays the question.
-
-				if (question.getStep() == 0)
-					out.printf("%nAnswer with " +
-						"Y (yes), N (no), DK (don't know), P (probably) or PN (probably not) " +
-						"or go back in time with B (back).%n");
-				// Displays the tip (only for the first time)
-
-				answerQuestion(in, aw);
-
-				reviewGuesses(in, aw, rejected);
-				// Iterates over any available guesses.
-			}
-
-			for (Guess guess : aw.getGuesses()) {
-				if (reviewGuess(guess, in)) {
-					// Reviews all final guesses.
-					finish(true);
-					exit(0);
-				}
-			}
-
-			finish(false);
-			// Loses if all guesses are rejected.
+		Akiwrapper aw;
+		try {
+			aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity)
+				.setLanguage(language)
+				.setGuessType(guessType)
+				.build();
+		} catch (ServerNotFoundException e) {
+			err.println("Unsupported combination of language and guess type");
+			return;
 		}
+		// Builds the Akiwrapper instance, this is what we'll be using to perform
+		// operations such as answering questions, fetching guesses, etc
+
+		while (aw.getQuestion() != null) {
+			// Runs while there are still questions left
+
+			Question question = aw.getQuestion();
+			if (question == null)
+				break;
+			// Breaks the loop if question is null; /should/ not occur, but safety is still
+			// first
+
+			out.printf("Question #%d%n\t%s%n", question.getStep() + 1, question.getQuestion());
+			// Displays the question.
+
+			if (question.getStep() == 0)
+				out.printf("%nAnswer with %s%n", ANSWER_TIP);
+			// Displays the tip (only for the first time)
+
+			out.print("> ");
+
+			answerQuestion(aw);
+			// Displays the question and prompts the player for an answer
+
+			reviewSuggestedGuess(aw);
+			// Checks if any guess is available and prompts the player
+		}
+
+		reviewSuggestedGuess(aw);
+		// Reviews the final guess
+
+		finish(false);
+		// Loses if all guesses are rejected.
 	}
 
-	private static void answerQuestion(@Nonnull Scanner sc, @Nonnull Akiwrapper aw) {
-		boolean answered = false;
-		while (!answered) {
-			// Iterates while the questions remains unanswered.
-
-			var answer = sc.nextLine().toLowerCase();
-
-			if (answer.equals("y")) {
-				aw.answer(YES);
-
-			} else if (answer.equals("n")) {
-				aw.answer(NO);
-
-			} else if (answer.equals("dk")) {
-				aw.answer(DONT_KNOW);
-
-			} else if (answer.equals("p")) {
-				aw.answer(PROBABLY);
-
-			} else if (answer.equals("pn")) {
-				aw.answer(PROBABLY_NOT);
-
-			} else if (answer.equals("b")) {
-				if (aw.getStep() == 0)
-					out.println("Can't undo from the first question.");
-				else
-					aw.undoAnswer();
-
-			} else if (answer.equals("debug")) {
-				out.printf("Debug information:%n\tCurrent API server: %s%n\tCurrent guess count: %d%n",
-						   aw.getServer().getUrl(), aw.getGuesses().size());
-				continue;
-				// Displays some debug information.
-
+	private static Guess reviewSuggestedGuess(@Nonnull Akiwrapper aw) {
+		var guess = aw.suggestGuess();
+		if (guess != null) {
+			if (reviewGuess(guess)) {
+				aw.confirmGuess(guess);
+				finish(true);
+				exit(0);
 			} else {
-				out.println("Please answer with either " +
-					"[Y]ES, [N]O, [D|ONT |K]NOW, [P]ROBABLY or [P|ROBABLY |N]OT or go back one step with [B]ACK.");
-				continue;
+				aw.rejectLastGuess();
 			}
-
-			answered = true;
-			// Answers the question.
 		}
+		return guess;
 	}
 
-	private static boolean reviewGuess(@Nonnull Guess guess, @Nonnull Scanner sc) {
+	private static boolean reviewGuess(@Nonnull Guess guess) {
 		out.println(guess.getName());
 		out.print("\t");
 		if (guess.getDescription() == null)
@@ -146,49 +104,77 @@ public class AkinatorExample {
 		out.println();
 		// Displays the guess' information
 
-		boolean answered = false;
-		boolean isCharacter = false;
-		while (!answered) {
-			// Asks the player if the guess is correct
+		out.print("Is this what you're thinking of? [Y/n] ");
+		var input = IN.next().trim();
+		// Asks the player if the guess is correct
 
-			out.println("Is this your character? (y/n)");
-			String line = sc.nextLine();
-			switch (line) {
-				case "y":
-					// If the player has responded positively.
-					answered = true;
-					isCharacter = true;
-					break;
-
-				case "n":
-					// If the player has responded negatively.
-					answered = true;
-					isCharacter = false;
-					break;
-
-				default:
-					break;
-			}
-		}
-
-		return isCharacter;
+		return input.isEmpty() || toLowerCase(input.charAt(0)) == 'y';
 	}
 
-	private static void reviewGuesses(@Nonnull Scanner sc, @Nonnull Akiwrapper aw, @Nonnull List<Long> declined) {
-		for (var guess : aw.getGuessesAboveProbability(PROBABILITY_THRESHOLD)) {
-			if (!declined.contains(Long.valueOf(guess.getIdLong()))) {
-				// Checks if this guess complies with the conditions.
+	private static void answerQuestion(@Nonnull Akiwrapper aw) {
+		main: while (true) {
+			// Prompts the player for an answer
 
-				if (reviewGuess(guess, sc)) {
-					// If the player accepts this guess
-					finish(true);
-					exit(0);
-				}
+			var input = IN.next().toLowerCase();
 
-				declined.add(guess.getIdLong());
-				// Registers this guess as rejected.
+			switch (input) {
+				case "y":
+				case "yes":
+					aw.answer(YES);
+					break main;
+
+				case "n":
+				case "no":
+					aw.answer(NO);
+					break main;
+
+				case "dk":
+				case "don'tknow":
+				case "dontknow":
+				case "dont know":
+				case "don't know":
+					aw.answer(DONT_KNOW);
+					break main;
+
+				case "p":
+				case "probably":
+					aw.answer(PROBABLY);
+					break main;
+
+				case "pn":
+				case "probablynot":
+				case "probably not":
+					aw.answer(PROBABLY_NOT);
+					break main;
+
+				case "b":
+				case "back":
+					if (aw.getStep() == 0)
+						out.println("Can't undo on the first question.");
+					else
+						aw.undoAnswer();
+					break main;
+
+				case "debug":
+					displayDebug(aw);
+					break;
+				// Displays some debug information.
+
+				default:
+					out.println("Please answer with either " + ANSWER_TIP);
+					break;
 			}
 		}
+	}
+
+	private static void displayDebug(Akiwrapper aw) {
+		var question = aw.getQuestion();
+		out.println("Debug information:");
+		out.printf("\tCurrent API server: %s%n", aw.getServer().getUrl());
+		out.printf("\tProgression: %f%%%n", question == null ? -1 : question.getProgression());
+		out.println("\tGuesses:");
+		aw.getGuesses().stream().forEach(g -> out.printf("\t\t%f - %s%n", g.getProbability(), g.getName()));
+		out.print("> ");
 	}
 
 	private static void finish(boolean win) {
@@ -203,67 +189,53 @@ public class AkinatorExample {
 		}
 	}
 
-	private static boolean getProfanityFilter(@Nonnull Scanner sc) {
-		out.println("What's your age? (default: 18)");
-		while (true) {
-			var age = sc.nextLine();
-
-			if (age.equals(""))
-				return false;
-
-			try {
-				return parseInt(age) < 16;
-			} catch (NumberFormatException e) {
-				out.println("That's not a number");
-			}
-		}
+	private static boolean getProfanityFilter() {
+		out.print("Enable profanity filtering? [y/N] ");
+		var input = IN.next().trim();
+		return !input.isEmpty() && toLowerCase(input.charAt(0)) == 'y';
 	}
 
 	@Nonnull
-	private static Language getLanguage(@Nonnull Scanner sc) {
+	@SuppressWarnings("null")
+	private static Language getLanguage() {
 		var languages = EnumSet.allOf(Language.class);
 
-		out.println("What's your language? (default: English)");
+		out.print("What's your language? [English] ");
 		while (true) {
-			String selectedLanguage = sc.nextLine().toLowerCase().trim();
+			var input = IN.next().trim().toUpperCase();
 
-			if (selectedLanguage.equals(""))
+			if (input.isEmpty())
 				return ENGLISH;
 
-			var language = languages.stream()
-				.filter(l -> l.toString().toLowerCase().equals(selectedLanguage))
-				.findAny()
-				.orElse(null);
+			var language = languages.stream().filter(l -> l.toString().equals(input)).findAny();
 
-			if (language != null) {
-				return language;
+			if (language.isPresent()) {
+				return language.orElseThrow();
 
 			} else {
 				out.println(languages.stream()
 					.map(Enum::toString)
-					.collect(joining("\n-", "Sorry, that language isn't supported. Choose between\n-", "")));
+					.collect(joining("\n-", "Sorry, that language isn't supported. Available options:\n-", "")));
 			}
 		}
 	}
 
 	@Nonnull
-	private static GuessType getGuessType(@Nonnull Scanner sc) {
+	@SuppressWarnings("null")
+	private static GuessType getGuessType() {
 		var guessTypes = EnumSet.allOf(GuessType.class);
 
-		out.println("What will you be guessing? (default: character)");
+		out.print("What will you be guessing? [character] ");
 		while (true) {
-			String selectedGuessType = sc.nextLine().toLowerCase().trim();
+			var input = IN.next().trim().toUpperCase();
 
-			if (selectedGuessType.equals(""))
+			if (input.isEmpty())
 				return CHARACTER;
 
-			var guessType = guessTypes.stream()
-				.filter(l -> l.toString().toLowerCase().equals(selectedGuessType))
-				.findAny()
-				.orElse(null);
+			var guessType = guessTypes.stream().filter(l -> l.toString().equals(input)).findAny();
 
-			if (guessType != null) {
-				return guessType;
+			if (guessType.isPresent()) {
+				return guessType.orElseThrow();
 
 			} else {
 				out.println("" + guessTypes.stream()

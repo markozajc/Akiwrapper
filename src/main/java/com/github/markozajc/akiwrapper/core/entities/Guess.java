@@ -57,4 +57,6 @@ public interface Guess extends Identifiable, Comparable<Guess> {
 	@Nullable
 	URL getImage();
 
+	boolean isExplicit();
+
 }

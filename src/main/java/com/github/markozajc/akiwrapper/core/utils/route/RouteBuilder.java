@@ -2,11 +2,12 @@ package com.github.markozajc.akiwrapper.core.utils.route;
 
 import static com.github.markozajc.akiwrapper.core.utils.route.Route.formatParameters;
 import static com.github.markozajc.akiwrapper.core.utils.route.Route.Endpoint.GAME_SERVER;
+import static java.lang.System.currentTimeMillis;
 
 import java.util.*;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 import com.github.markozajc.akiwrapper.core.utils.route.Route.Endpoint;
 
@@ -94,7 +95,7 @@ public class RouteBuilder {
 
 	@Nonnull
 	public RouteBuilder mandatoryParameter(@Nonnull String key) {
-		putParameter(key);
+		putParameter(key, null);
 
 		if (this.mandatoryParameters == null)
 			this.mandatoryParameters = new HashSet<>();
@@ -105,19 +106,31 @@ public class RouteBuilder {
 
 	@Nonnull
 	public RouteBuilder optionalParameter(@Nonnull String key) {
-		putParameter(key);
+		putParameter(key, null);
 		return this;
 	}
 
-	private void putParameter(@Nonnull String key) {
+	@Nonnull
+	public RouteBuilder defaultParameter(@Nonnull String key, @Nonnull String value) {
+		putParameter(key, value);
+		return this;
+	}
+
+	private void putParameter(@Nonnull String key, @Nullable String value) {
 		if (this.parameters == null)
 			this.parameters = new HashMap<>();
 
-		this.parameters.put(key, null);
+		this.parameters.put(key, value);
 	}
 
 	@SuppressWarnings("null")
 	public Route build() {
+		// these two are required by all routes (the callback one might only be required for
+		// NEW_SESSION, but it changes response parsing logic so I'm opting to just put it
+		// into all requests for future proofing if not anything else)
+		automaticParameter("_", () -> Long.toString(currentTimeMillis()));
+		constantParameter("callback", "jQuery");
+
 		String processedPath = this.path;
 		if (this.constantParameters != null)
 			processedPath += "?" + formatParameters(this.constantParameters);

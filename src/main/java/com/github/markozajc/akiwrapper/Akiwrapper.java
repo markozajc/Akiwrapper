@@ -9,8 +9,7 @@ import javax.annotation.*;
 import com.github.markozajc.akiwrapper.core.entities.*;
 
 /**
- * The "core" of interaction with the Akinator's API. Contains all methods required
- * to fully utilize all (known) Akinator's API's endpoints.
+ * The "core" of interaction with the Akinator's API.
  *
  * @author Marko Zajc
  */
@@ -62,22 +61,12 @@ public interface Akiwrapper {
 	}
 
 	/**
-	 * Answers current question and retrieves the next one. The next question is passed
-	 * as return value and can be retrieved later on with {@link #getQuestion()}. If
-	 * there are no more questions left, this will return {@code null}.
-	 *
-	 * @param answer
-	 *            the answer
-	 *
-	 * @return the latest question or null if an answer was found
-	 *
-	 * @deprecated Use {@link #answer(Answer)} instead
+	 * @return the API server this instance of Akiwrapper uses.
 	 */
-	@Nullable
-	@Deprecated(since = "1.5.2", forRemoval = true)
-	default Question answerCurrentQuestion(Answer answer) {
-		return answer(answer);
-	}
+	@Nonnull
+	Server getServer();
+
+	boolean doesFilterProfanity();
 
 	/**
 	 * Answers current question and retrieves the next one. The next question is passed
@@ -109,20 +98,6 @@ public interface Akiwrapper {
 	Question undoAnswer();
 
 	/**
-	 * Returns the current question. You can answer it with {@link #answer(Answer)}. If
-	 * there are no more questions left, this will return {@code null}.
-	 *
-	 * @return current question
-	 *
-	 * @deprecated Use {@link #getQuestion()} instead
-	 */
-	@Nullable
-	@Deprecated(since = "1.5.2", forRemoval = true)
-	default Question getCurrentQuestion() {
-		return getQuestion();
-	}
-
-	/**
 	 * Returns a probability-sorted (the lower the index, the higher the probability) and
 	 * unmodifiable list of Akinator's guesses, or an empty list if there are no guesses.
 	 * Note that this method caches the result, which means subsequent calls will not
@@ -133,7 +108,7 @@ public interface Akiwrapper {
 	 * @see Akiwrapper#getGuessesAboveProbability(double)
 	 */
 	@Nonnull
-	default	List<Guess> getGuesses() {
+	default List<Guess> getGuesses() {
 		return getGuesses(0);
 	}
 
@@ -151,11 +126,7 @@ public interface Akiwrapper {
 
 	int getStep();
 
-	/**
-	 * @return the API server this instance of Akiwrapper uses.
-	 */
-	@Nonnull
-	Server getServer();
+	boolean isExhausted();
 
 	/**
 	 * @param probability
@@ -165,12 +136,34 @@ public interface Akiwrapper {
 	 *         probability threshold.
 	 *
 	 * @see Akiwrapper#getGuesses()
+	 *
+	 * @deprecated Use {@link #suggestGuess()} instead
 	 */
-	@SuppressWarnings("null")
 	@Nonnull
+	@SuppressWarnings("null")
+	@Deprecated(since = "1.6", forRemoval = true)
 	default List<Guess> getGuessesAboveProbability(double probability) {
 		return getGuesses().stream().filter(g -> g.getProbability() > probability).collect(toList());
 	}
 
-	boolean doesFilterProfanity();
+	/**
+	 * <b>Important:</b> this method mutates the session's state, which means that
+	 * subsequent calls to it will not yield the same result.<br>
+	 * Provides a likely {@link Guess} for the current session or {@code null} if none
+	 * are available. This method should be called after every call to
+	 * {@link #answer(Answer)} to let the player review Akinator's guesses - the internal
+	 * logic replicates how Akinator works, only returning a {@link Guess} when
+	 * Akinator's confidence is high enough. It will also space suggestions out evenly,
+	 * always returning {@code null} for a number of steps after the last suggestion.
+	 *
+	 * @return a suggested {@link Guess} or {@code null} if none are available
+	 */
+	@Nullable
+	Guess suggestGuess();
+
+	void confirmGuess(@Nonnull Guess guess);
+
+	@Nullable
+	Question rejectLastGuess();
+
 }

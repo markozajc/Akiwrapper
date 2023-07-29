@@ -1,6 +1,6 @@
 package com.github.markozajc.akiwrapper.core.entities;
 
-import javax.annotation.*;
+import javax.annotation.Nonnull;
 
 /**
  * A representation of an object with a numeric identifier. Some objects in the API
@@ -21,7 +21,6 @@ public interface Identifiable {
 	 *
 	 * @see #getId()
 	 */
-	@Nonnegative
 	default long getIdLong() {
 		return Long.parseLong(getId());
 	}

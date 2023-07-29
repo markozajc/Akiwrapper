@@ -13,9 +13,9 @@ public class QuestionImpl implements Question {
 
 	@Nonnull private final String id;
 	@Nonnull private final String question;
-	@Nonnegative private final int step;
-	@Nonnegative private final double gain;
-	@Nonnegative private final double progression;
+	private final int step;
+	private final double gain;
+	private final double progression;
 
 	private QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
 						@Nonnegative double progression) {
@@ -27,7 +27,7 @@ public class QuestionImpl implements Question {
 	}
 
 	@SuppressWarnings("null")
-	public static QuestionImpl from(@Nonnull JSONObject json) {
+	public static QuestionImpl fromJson(@Nonnull JSONObject json) {
 		return new QuestionImpl(json.getString("questionid"), json.getString("question"),
 								getInteger(json, "step").orElseThrow(), getDouble(json, "infogain").orElseThrow(),
 								getDouble(json, "progression").orElseThrow());
