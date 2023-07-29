@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import com.github.markozajc.akiwrapper.Akiwrapper.Answer;
 import com.github.markozajc.akiwrapper.core.entities.*;
 import com.github.markozajc.akiwrapper.core.entities.Server.*;
-import com.github.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
+import com.github.markozajc.akiwrapper.core.exceptions.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -59,25 +59,31 @@ class IntegrationTest {
 
 		log.info("Advancing {} steps (one time for each possible answer).", Answer.values().length);
 		for (Answer answer : Answer.values()) {
-			log.debug("Answering with {} and checking the question.", answer.name());
+			log.info("Answering with {} and checking the state (step={}).", answer.name(), api.getStep());
 			Question newQuestion = api.answer(answer);
 			assertEquals(newQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
 			expectedState++;
+			assertEquals(api.getStep(), expectedState);
 			checkQuestion(api.getQuestion(), expectedState);
+			checkGuessCount(log, api);
 		}
 
+		log.info("Asserting the current state.");
 		fetchAndDebugGuesses(log, api);
 
 		log.info("Advancing -{} steps (using undo).", Answer.values().length);
 		for (int i = 0; i < Answer.values().length; i++) {
+			log.info("Undoing a step and checking the state (step={}).", api.getStep());
 			Question undoneQuestion = api.undoAnswer();
 			assertEquals(undoneQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
 			expectedState--;
+			assertEquals(api.getStep(), expectedState);
 			checkQuestion(api.getQuestion(), expectedState);
+			checkGuessCount(log, api);
 		}
 
 		log.info("Asserting the current state.");
-		assertNull(api.undoAnswer());
+		assertThrows(UndoOutOfBoundsException.class, () -> api.undoAnswer());
 		checkQuestion(api.getQuestion(), 0);
 		assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
 		Question currentQuestion = api.getQuestion();
@@ -87,37 +93,54 @@ class IntegrationTest {
 			fail("initialQuestion or currentQuestion were somehow null");
 		// using this syntax instead of assertNotNull to please null analysis of @Nullable
 
-		log.info("Exhausting questions.");
+		log.info("Exhausting questions by answering YES to all.");
 		var lastQuestion = api.getQuestion();
 		assertNotNull(lastQuestion, "Current question is already null");
 
-		while (api.getQuestion() != null) {
-			lastQuestion = api.getQuestion();
-			api.answer(YES);
+		int i = api.getStep();
+		while (true) {
+			checkQuestion(api.getQuestion(), i);
+			assertEquals(api.getStep(), i);
+
+			var question = api.answer(YES);
+			if (question == null) {
+				log.info("Ran out at step {}.", api.getStep());
+				break;
+
+			} else {
+				log.info("Exhausting questions (step={})", api.getStep());
+				checkQuestion(question, ++i);
+			}
+
+			if (i > 80)
+				fail("Got over step 80, API must have changed. Ensure there are no side effects and find the new limit.");
 		}
 
-		if (lastQuestion != null)
-			log.info("Ran out at step {}.", lastQuestion.getStep());
-		else
-			fail("Last question was somehow null");
-
 		log.info("Asserting the current state.");
-		assertNotNull(api.undoAnswer());
-		assertNull(api.answer(YES));
+		assertThrows(QuestionsExhaustedException.class, () -> api.answer(YES));
+		assertThrows(QuestionsExhaustedException.class, () -> api.undoAnswer());
+		assertDoesNotThrow(() -> api.getGuesses());
 
 		fetchAndDebugGuesses(log, api);
 	}
 
+	private void checkGuessCount(Logger log, Akiwrapper api) {
+		for (int i = 1; i < 5; i++) {
+			log.info("Fetching {} guesses.", i);
+			assertTrue(api.getGuesses(i).size() <= i, "Got more guesses than requested from the API");
+		}
+	}
+
 	private static void fetchAndDebugGuesses(Logger log, Akiwrapper api) {
-		log.info("Fetching guesses.", Answer.values().length);
+		log.info("Fetching all guesses.", Answer.values().length);
 		List<Guess> guesses = api.getGuesses();
 		debugGuesses(log, guesses);
 	}
 
 	private static void debugGuesses(Logger log, List<Guess> guesses) {
-		log.debug("There are {} guesses.", guesses.size());
+		log.info("There are {} guesses.", guesses.size());
 		for (Guess guess : guesses) {
-			log.trace("{} - {}", guess.getProbability(), guess.getName());
+			log.info("{} - {}", guess.getProbability(), guess.getName());
 		}
 	}
 

@@ -7,10 +7,9 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
-import com.github.markozajc.akiwrapper.core.entities.*;
+import com.github.markozajc.akiwrapper.core.entities.Server;
 import com.github.markozajc.akiwrapper.core.entities.Server.*;
-import com.github.markozajc.akiwrapper.core.entities.impl.immutable.*;
-import com.github.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
+import com.github.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
 import com.jcabi.xml.XMLDocument;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -30,8 +29,7 @@ public final class Servers {
 	private Servers() {}
 
 	/**
-	 * Finds correct {@link Server}s using given parameters and compiles a
-	 * {@link ServerList} out of them.
+	 * Finds correct {@link Server}s using given parameters
 	 *
 	 * @param unirest
 	 *            the {@link UnirestInstance} to use for the request
@@ -40,20 +38,15 @@ public final class Servers {
 	 * @param guessType
 	 *            guessType of the server to search for
 	 *
-	 * @return a {@link ServerList} with {@link Server}s that suit the given parameters.
-	 *
-	 * @throws ServerNotFoundException
-	 *             if there is no server that matches the query.
+	 * @return a list of {@link Server}s that suit the given parameters.
 	 */
 	@Nonnull
-	public static ServerList findServers(@Nonnull UnirestInstance unirest, @Nonnull Language localization,
-										 @Nonnull GuessType guessType) throws ServerNotFoundException {
-		List<Server> servers = getServers(unirest).filter(s -> s.getGuessType() == guessType)
+	@SuppressWarnings("null")
+	public static List<ServerImpl> findServers(@Nonnull UnirestInstance unirest, @Nonnull Language localization,
+											   @Nonnull GuessType guessType) {
+		return getServers(unirest).filter(s -> s.getGuessType() == guessType)
 			.filter(s -> s.getLanguage() == localization)
 			.collect(toList());
-		if (servers.isEmpty())
-			throw new ServerNotFoundException();
-		return new ServerListImpl(servers);
 	}
 
 	/**
@@ -63,10 +56,10 @@ public final class Servers {
 	 * @param unirest
 	 *            the {@link UnirestInstance} to use for the request
 	 *
-	 * @return a {@link Stream} of all {@link Server}s.
+	 * @return a {@link Stream} of all available {@link Server}s.
 	 */
 	@SuppressWarnings("null")
-	public static Stream<Server> getServers(@Nonnull UnirestInstance unirest) {
+	public static Stream<ServerImpl> getServers(@Nonnull UnirestInstance unirest) {
 		return new XMLDocument(fetchListXml(unirest)).nodes("//RESULT/PARAMETERS/*")
 			.stream()
 			.flatMap(xml -> ServerImpl.fromXml(xml).stream());

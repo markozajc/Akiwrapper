@@ -1,6 +1,6 @@
 package com.github.markozajc.akiwrapper.core.entities.impl.immutable;
 
-import static java.lang.String.format;
+import static com.github.markozajc.akiwrapper.core.entities.Status.Reason.UNKNOWN;
 
 import javax.annotation.*;
 
@@ -12,38 +12,35 @@ import com.github.markozajc.akiwrapper.core.entities.Status;
 public class StatusImpl implements Status {
 
 	private static final String DIVIDER = " - ";
-	private static final String STATUS_FORMAT = "%s" + DIVIDER + "%s";
 
-	public static final StatusImpl STATUS_OK = new StatusImpl(Level.OK, null);
-
-	@Nullable private final String reason;
 	@Nonnull private final Level level;
+	@Nullable private final String message;
+	@Nonnull private final Reason reason;
 
-	private StatusImpl(@Nonnull Level level, @Nullable String reason) {
-		this.level = level;
-		this.reason = reason;
-	}
-
-	public StatusImpl(@Nonnull String completion) {
-		this(Level.fromString(completion), determineReason(completion));
+	public static StatusImpl fromCompletion(@Nonnull String completion) {
+		var level = Level.fromString(completion);
+		var message = determineMessage(completion);
+		var reason = resolveReason(level, message);
+		return new StatusImpl(level, message, reason);
 	}
 
 	@SuppressWarnings("null")
-	public StatusImpl(@Nonnull JSONObject json) {
-		this(json.getString("completion"));
+	public static StatusImpl fromJson(@Nonnull JSONObject json) {
+		return fromCompletion(json.getString("completion"));
+	}
+
+	private StatusImpl(@Nonnull Level level, @Nullable String message, @Nonnull Reason reason) {
+		this.level = level;
+		this.message = message;
+		this.reason = reason;
 	}
 
 	@Nullable
-	private static String determineReason(@Nonnull String completion) {
+	private static String determineMessage(@Nonnull String completion) {
 		int reasonSplitIndex = completion.indexOf(DIVIDER);
 		if (reasonSplitIndex != -1)
 			return completion.substring(reasonSplitIndex + DIVIDER.length());
 		return null;
-	}
-
-	@Override
-	public String getReason() {
-		return this.reason;
 	}
 
 	@Override
@@ -52,11 +49,48 @@ public class StatusImpl implements Status {
 	}
 
 	@Override
+	public String getMessage() {
+		return this.message;
+	}
+
+	@Override
+	public Reason getReason() {
+		return this.reason;
+	}
+
+	@Nonnull
+	public static Reason resolveReason(@Nonnull Level level, @Nullable String message) {
+		if (level == Level.OK && message == null) {
+			return Reason.OK;
+		} else if (level == Level.WARNING && message != null && message.equals("NO QUESTION")) {
+			return Reason.QUESTIONS_EXHAUSTED;
+		} else if (level == Level.ERROR && message != null) {
+			if (message.equals("TECHNICAL ERROR"))
+				return Reason.SERVER_FAILURE;
+			else if (message.equals("MISSING KEY") || message.equals("UNAUTHORIZED"))
+				return Reason.LIBRARY_FAILURE;
+		}
+
+		return UNKNOWN;
+	}
+
+	@Override
 	public String toString() {
-		if (getReason() == null)
-			return getLevel().toString();
-		else
-			return format(STATUS_FORMAT, getLevel().toString(), getReason());
+		var sb = new StringBuilder();
+		sb.append(this.level);
+
+		if (this.message != null) {
+			sb.append(" - ");
+			sb.append(this.message);
+		}
+
+		if (this.reason != UNKNOWN) {
+			sb.append(" (");
+			sb.append(this.reason);
+			sb.append(')');
+		}
+
+		return sb.toString();
 	}
 
 }

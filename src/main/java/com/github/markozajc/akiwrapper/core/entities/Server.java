@@ -2,16 +2,14 @@ package com.github.markozajc.akiwrapper.core.entities;
 
 import javax.annotation.*;
 
-import com.github.markozajc.akiwrapper.core.Route;
 import com.github.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.github.markozajc.akiwrapper.core.utils.Servers;
 
 import kong.unirest.UnirestInstance;
 
 /**
- * A representation of an API server. All requests (except for
- * {@link Route#NEW_SESSION} are passed to an such server. Each server has a
- * predefined {@link Language} and {@link GuessType}.
+ * A representation of an API server. Each server has a predefined {@link Language}
+ * and {@link GuessType}.
  *
  * @author Marko Zajc
  */

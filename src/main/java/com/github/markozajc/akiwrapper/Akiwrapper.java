@@ -123,15 +123,6 @@ public interface Akiwrapper {
 	}
 
 	/**
-	 * Returns the current question. You can answer it with {@link #answer(Answer)}. If
-	 * there are no more questions left, this will return {@code null}.
-	 *
-	 * @return current question
-	 */
-	@Nullable
-	Question getQuestion();
-
-	/**
 	 * Returns a probability-sorted (the lower the index, the higher the probability) and
 	 * unmodifiable list of Akinator's guesses, or an empty list if there are no guesses.
 	 * Note that this method caches the result, which means subsequent calls will not
@@ -142,7 +133,23 @@ public interface Akiwrapper {
 	 * @see Akiwrapper#getGuessesAboveProbability(double)
 	 */
 	@Nonnull
-	List<Guess> getGuesses();
+	default	List<Guess> getGuesses() {
+		return getGuesses(0);
+	}
+
+	@Nonnull
+	List<Guess> getGuesses(int count);
+
+	/**
+	 * Returns the current question. You can answer it with {@link #answer(Answer)}. If
+	 * there are no more questions left, this will return {@code null}.
+	 *
+	 * @return current question
+	 */
+	@Nullable
+	Question getQuestion();
+
+	int getStep();
 
 	/**
 	 * @return the API server this instance of Akiwrapper uses.
@@ -164,4 +171,6 @@ public interface Akiwrapper {
 	default List<Guess> getGuessesAboveProbability(double probability) {
 		return getGuesses().stream().filter(g -> g.getProbability() > probability).collect(toList());
 	}
+
+	boolean doesFilterProfanity();
 }

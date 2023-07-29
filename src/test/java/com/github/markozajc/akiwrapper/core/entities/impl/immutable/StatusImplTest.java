@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
-import com.github.markozajc.akiwrapper.core.entities.Status;
 import com.github.markozajc.akiwrapper.core.entities.Status.Level;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +19,7 @@ class StatusImplTest {
 	@EnumSource(value = Level.class, mode = EXCLUDE)
 	void testStringConstructorNoReason(@Nonnull Level level) {
 		@SuppressWarnings("null")
-		Status status = new StatusImpl(level.toString());
+		var status = StatusImpl.fromCompletion(level.toString());
 		assertEquals(level, status.getLevel());
 		assertNull(status.getReason());
 	}
@@ -29,7 +28,7 @@ class StatusImplTest {
 	@MethodSource("generateTestStringConstructorWithReason")
 	void testStringConstructorWithReason(@Nonnull Level level, @Nonnull String reason) {
 		String completion = level.toString() + " - " + reason;
-		Status status = new StatusImpl(completion);
+		var status = StatusImpl.fromCompletion(completion);
 		assertEquals(level, status.getLevel());
 		assertEquals(reason, status.getReason());
 	}

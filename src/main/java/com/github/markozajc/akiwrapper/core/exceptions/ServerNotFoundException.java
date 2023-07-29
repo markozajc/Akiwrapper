@@ -9,11 +9,10 @@ import com.github.markozajc.akiwrapper.core.entities.Server.*;
  *
  * @author Marko Zajc
  */
-public class ServerNotFoundException extends Exception {
+public class ServerNotFoundException extends AkinatorException {
 
-	/**
-	 * Constructs a new {@link ServerNotFoundException}.
-	 */
-	public ServerNotFoundException() {}
+	public ServerNotFoundException(String message) {
+		super(message);
+	}
 
 }

@@ -3,6 +3,7 @@ package com.github.markozajc.akiwrapper;
 import static com.github.markozajc.akiwrapper.core.entities.Server.GuessType.CHARACTER;
 import static com.github.markozajc.akiwrapper.core.entities.Server.Language.ENGLISH;
 import static com.github.markozajc.akiwrapper.core.utils.Servers.findServers;
+import static java.lang.String.format;
 
 import javax.annotation.*;
 
@@ -12,7 +13,7 @@ import com.github.markozajc.akiwrapper.core.entities.*;
 import com.github.markozajc.akiwrapper.core.entities.Server.*;
 import com.github.markozajc.akiwrapper.core.exceptions.*;
 import com.github.markozajc.akiwrapper.core.impl.AkiwrapperImpl;
-import com.github.markozajc.akiwrapper.core.utils.*;
+import com.github.markozajc.akiwrapper.core.utils.UnirestUtils;
 
 import kong.unirest.UnirestInstance;
 
@@ -33,7 +34,6 @@ public class AkiwrapperBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(AkiwrapperBuilder.class);
 
 	@Nullable private UnirestInstance unirest;
-	@Nullable private Server server;
 	private boolean filterProfanity;
 	@Nonnull private Language language;
 	@Nonnull private GuessType guessType;
@@ -53,10 +53,9 @@ public class AkiwrapperBuilder {
 	 */
 	@Nonnull public static final GuessType DEFAULT_GUESS_TYPE = CHARACTER;
 
-	private AkiwrapperBuilder(@Nullable UnirestInstance unirest, @Nullable Server server, boolean filterProfanity,
-							  @Nonnull Language language, @Nonnull GuessType guessType) {
+	private AkiwrapperBuilder(@Nullable UnirestInstance unirest, boolean filterProfanity, @Nonnull Language language,
+							  @Nonnull GuessType guessType) {
 		this.unirest = unirest;
-		this.server = server;
 		this.filterProfanity = filterProfanity;
 		this.language = language;
 		this.guessType = guessType;
@@ -66,7 +65,7 @@ public class AkiwrapperBuilder {
 	 * Creates a new AkiwrapperBuilder object.
 	 */
 	public AkiwrapperBuilder() {
-		this(null, null, DEFAULT_FILTER_PROFANITY, DEFAULT_LOCALIZATION, DEFAULT_GUESS_TYPE);
+		this(null, DEFAULT_FILTER_PROFANITY, DEFAULT_LOCALIZATION, DEFAULT_GUESS_TYPE);
 	}
 
 	/**
@@ -104,42 +103,6 @@ public class AkiwrapperBuilder {
 	@Nullable
 	public UnirestInstance getUnirestInstance() {
 		return this.unirest;
-	}
-
-	/**
-	 * Sets the {@link Server} or (recommended) a {@link ServerList}. It is not
-	 * recommended to set the {@link Server} manually (unless for debugging purposes or
-	 * as some kind of workaround where Akiwrapper's server finder fails) as Akiwrapper
-	 * already does its best to find the most suitable one. <br>
-	 * <b>Caution!</b> Setting the server to a non-null value overwrites the
-	 * {@link Language} and the {@link GuessType} with the given {@link Server}'s values.
-	 *
-	 * @param server
-	 *
-	 * @return current instance, used for chaining
-	 *
-	 * @see #getServer()
-	 * @see Servers#findServers(UnirestInstance, Language, GuessType)
-	 */
-	@Nonnull
-	public AkiwrapperBuilder setServer(@Nullable Server server) {
-		this.server = server;
-		if (server != null) {
-			this.language = server.getLanguage();
-			this.guessType = server.getGuessType();
-		}
-		return this;
-	}
-
-	/**
-	 * Returns the {@link Server} that requests will be sent to. Might also return a
-	 * {@link ServerList} (which extends {@link Server}).
-	 *
-	 * @return server.
-	 */
-	@Nullable
-	public Server getServer() {
-		return this.server;
 	}
 
 	/**
@@ -181,7 +144,6 @@ public class AkiwrapperBuilder {
 	@Nonnull
 	public AkiwrapperBuilder setLanguage(@Nonnull Language language) {
 		this.language = language;
-		this.server = null;
 		return this;
 	}
 
@@ -212,7 +174,6 @@ public class AkiwrapperBuilder {
 	@Nonnull
 	public AkiwrapperBuilder setGuessType(@Nonnull GuessType guessType) {
 		this.guessType = guessType;
-		this.server = null;
 		return this;
 	}
 
@@ -235,8 +196,6 @@ public class AkiwrapperBuilder {
 	 * {@link #setUnirestInstance(UnirestInstance)}), a singleton instance will be
 	 * acquired from {@link UnirestUtils#getInstance()}. This instance must be shut down
 	 * after you're done using Akiwrapper with {@link UnirestUtils#shutdownInstance()}.
-	 * If no server was set (with {@link #setServer(Server)}), Akiwrapper will find one
-	 * based on {@link #getLanguage()} and {@link #getGuessType()} for you.
 	 *
 	 * @return a new {@link Akiwrapper} instance that will use all set preferences
 	 *
@@ -245,31 +204,27 @@ public class AkiwrapperBuilder {
 	 *             available.
 	 */
 	@Nonnull
-	@SuppressWarnings("resource")
+	@SuppressWarnings({ "resource", "null" })
 	public Akiwrapper build() throws ServerNotFoundException {
-		UnirestInstance unirest = this.unirest != null ? this.unirest : UnirestUtils.getInstance();
+		var unirest = this.unirest != null ? this.unirest : UnirestUtils.getInstance();
 
-		var server = this.server != null ? this.server : findServers(unirest, this.getLanguage(), this.getGuessType());
-		if (server instanceof ServerList) {
-			ServerList serverList = (ServerList) server;
-			int count = serverList.getRemainingSize() + 1;
-			do {
-				LOG.debug("Using server {} out of {} from the list.", count - serverList.getRemainingSize(), count);
-				try {
-					return new AkiwrapperImpl(unirest, server, this.filterProfanity);
+		var servers = findServers(unirest, this.getLanguage(), this.getGuessType());
+		if (servers.isEmpty())
+			throw new ServerNotFoundException(format("No servers exist for %s - %s", this.language, this.guessType));
 
-				} catch (ServerUnavailableException e) {
-					LOG.debug("Server seems to be down.");
+		for (var server : servers) {
+			try {
+				var api = new AkiwrapperImpl(unirest, server, this.filterProfanity);
+				api.createSession();
+				return api;
 
-				} catch (RuntimeException e) {
-					LOG.warn("Failed to construct an instance, trying the next available server", e);
-				}
-			} while (serverList.next());
-			throw new ServerUnavailableException("KO - NO SERVER AVAILABLE");
-		} else {
-			LOG.debug("Given Server is not a ServerList, only attempting to build once.");
-			return new AkiwrapperImpl(unirest, server, this.filterProfanity);
+			} catch (ServerStatusException e) {
+				LOG.debug("Failed to construct an instance, trying the next available server", e);
+			}
 		}
+
+		throw new ServerNotFoundException(format("Servers exist for %s - %s, but none of them is usable", this.language,
+												 this.guessType));
 	}
 
 }

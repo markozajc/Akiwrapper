@@ -32,14 +32,6 @@ public interface Status extends Serializable {
 		ERROR("KO"),
 
 		/**
-		 * The action might have completed completed, but an error has occurred on
-		 * Akiwrapper's side. This status is never actually returned by the API, but is made
-		 * up by Akiwrapper internally to indicate some errors caused by invalid or
-		 * unexpected API responses.
-		 */
-		AKIWRAPPER_ERROR("AW-KO"),
-
-		/**
 		 * Unknown status (should not ever occur under normal circumstances), indicates that
 		 * the status level doesn't match any of the known ones.
 		 */
@@ -71,6 +63,16 @@ public interface Status extends Serializable {
 
 	}
 
+	public enum Reason {
+
+		OK,
+		QUESTIONS_EXHAUSTED,
+		LIBRARY_FAILURE,
+		SERVER_FAILURE,
+		UNKNOWN
+
+	}
+
 	/**
 	 * Returns the level of this status. Status level indicates severity of the status.
 	 *
@@ -79,13 +81,27 @@ public interface Status extends Serializable {
 	Level getLevel();
 
 	/**
-	 * Returns the status reason or {@code null} if it was not specified. Note that the
-	 * status reason is usually pretty cryptic and won't mean much to regular users or
-	 * anyone not experienced with the Akinator API.
+	 * Returns the status message or {@code null} if it was not specified. Note that the
+	 * status message is usually pretty cryptic and won't mean much to regular users or
+	 * anyone not experienced with the Akinator API. If you need something something more
+	 * tangible, use {@link #getReason()}.
 	 *
-	 * @return status reason
+	 * @return status message
 	 */
 	@Nullable
-	String getReason();
+	String getMessage();
+
+	/**
+	 * Returns the status reason, which is picked from a list of predefined values or
+	 * {@link Reason#UNKNOWN} if it's meaning/significance are unknown. This generally
+	 * helps distinguish between a usage error (a problem with your code), a library
+	 * error (a problem with Akiwrapper that should be reported), a server error (a
+	 * problem with Akinator's servers that only they can fix), or an unproblematic
+	 * status.
+	 *
+	 * @return status {@link Reason}
+	 */
+	@Nonnull
+	Reason getReason();
 
 }

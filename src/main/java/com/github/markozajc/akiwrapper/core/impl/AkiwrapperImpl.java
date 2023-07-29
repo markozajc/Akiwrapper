@@ -1,19 +1,16 @@
 package com.github.markozajc.akiwrapper.core.impl;
 
-import static com.github.markozajc.akiwrapper.core.Route.*;
-import static com.github.markozajc.akiwrapper.core.entities.Status.Level.ERROR;
-import static com.github.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl.STATUS_OK;
+import static com.github.markozajc.akiwrapper.core.entities.Status.Reason.QUESTIONS_EXHAUSTED;
+import static com.github.markozajc.akiwrapper.core.utils.route.Routes.*;
 import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
-import static java.lang.System.currentTimeMillis;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.StreamSupport.stream;
 
 import java.util.List;
 
-import javax.annotation.*;
+import javax.annotation.Nonnull;
 
 import org.json.JSONObject;
 
@@ -21,25 +18,29 @@ import com.github.markozajc.akiwrapper.Akiwrapper;
 import com.github.markozajc.akiwrapper.core.entities.*;
 import com.github.markozajc.akiwrapper.core.entities.impl.immutable.*;
 import com.github.markozajc.akiwrapper.core.exceptions.*;
+import com.github.markozajc.akiwrapper.core.utils.ApiKey;
 
 import kong.unirest.UnirestInstance;
 
 @SuppressWarnings("javadoc") // internal impl
 public class AkiwrapperImpl implements Akiwrapper {
 
-	private static final String NO_MORE_QUESTIONS_STATUS = "elem list is empty";
-	private static final String PARAMETERS_KEY = "parameters";
-
 	public static class Session {
 
-		private static final String FORMAT_QUERYSTRING = "&session=%s&signature=%s";
+		private static final String FORMAT_QUERYSTRING = "session=%s&signature=%s";
 
 		private final long signature;
 		private final int session;
 
-		public Session(long signature, int session) {
+		private Session(long signature, int session) {
 			this.signature = signature;
 			this.session = session;
+		}
+
+		@Nonnull
+		public static Session fromJson(@Nonnull JSONObject parameters) {
+			var session = parameters.getJSONObject("identification");
+			return new Session(parseLong(session.getString("signature")), parseInt(session.getString("session")));
 		}
 
 		public long getSignature() {
@@ -50,28 +51,22 @@ public class AkiwrapperImpl implements Akiwrapper {
 			return this.session;
 		}
 
-		public String querystring() {
+		public String asQuerystring() {
 			return format(FORMAT_QUERYSTRING, this.getSession(), this.getSignature());
 		}
 	}
 
-	@Nonnull private final Server server;
+	@Nonnull private final ServerImpl server;
 	@Nonnull private final UnirestInstance unirest;
 	private final boolean filterProfanity;
-	@Nonnull private final Session session;
-	@Nonnegative private int currentStep;
-	@Nullable private Question question;
-	private List<Guess> guessCache;
 
-	@SuppressWarnings("null")
-	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull Server server, boolean filterProfanity) {
-		var questionJson =
-			NEW_SESSION.createRequest(unirest, "", filterProfanity, currentTimeMillis(), server.getUrl()).getJSON();
+	private ApiKey apiKey;
+	private Session session;
+	private Question question;
+	private int currentStep;
+	private boolean exhausted;
 
-		var parameters = questionJson.getJSONObject(PARAMETERS_KEY);
-
-		this.session = getSession(parameters);
-		this.question = QuestionImpl.from(parameters.getJSONObject("step_information"), STATUS_OK);
+	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull ServerImpl server, boolean filterProfanity) {
 		this.filterProfanity = filterProfanity;
 		this.server = server;
 		this.unirest = unirest;
@@ -79,50 +74,62 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@SuppressWarnings("null")
+	public void createSession() {
+		this.apiKey = ApiKey.accquireApiKey(this.unirest);
+		var sessionParameters = NEW_SESSION.createRequest(this).execute().getBody();
+		this.session = Session.fromJson(sessionParameters);
+		this.question = QuestionImpl.from(sessionParameters.getJSONObject("step_information"));
+	}
+
 	@Override
 	public Question answer(Answer answer) {
-		this.guessCache = null;
-		var oldQuestion = this.question;
-		if (oldQuestion != null) {
-			var newQuestionJson = ANSWER
-				.createRequest(this.unirest, this.server.getUrl(), this.filterProfanity, this.session,
-							   oldQuestion.getStep(), answer.getId())
-				.getJSON();
+		if (this.exhausted)
+			throw new QuestionsExhaustedException();
 
-			try {
-				this.question =
-					QuestionImpl.from(newQuestionJson.getJSONObject(PARAMETERS_KEY), new StatusImpl(newQuestionJson));
+		var response = ANSWER.createRequest(this)
+			.parameter(PARAMETER_STEP, this.currentStep)
+			.parameter(PARAMETER_ANSWER, answer.getId())
+			.execute();
 
-			} catch (MissingQuestionException e) { // NOSONAR It does not need to be logged
-				this.question = null;
-				return null;
-			}
-
+		if (response.getStatus().getReason() == QUESTIONS_EXHAUSTED) {
 			this.currentStep += 1;
-			return this.question;
+			this.question = null;
+			this.exhausted = true;
+			return null;
 		}
 
-		return null;
+		this.question = QuestionImpl.from(response.getBody());
+		this.currentStep = this.question.getStep();
+		return this.question;
+	}
+
+	@Override
+	public Question undoAnswer() {
+		if (this.exhausted)
+			throw new QuestionsExhaustedException(); // the api won't let us
+
+		if (this.currentStep == 0)
+			throw new UndoOutOfBoundsException();
+
+		var response = CANCEL_ANSWER.createRequest(this).parameter(PARAMETER_STEP, this.currentStep).execute();
+		this.question = QuestionImpl.from(response.getBody());
+		this.currentStep = this.question.getStep();
+		return this.question;
 	}
 
 	@Override
 	@SuppressWarnings("null")
-	public Question undoAnswer() {
-		this.guessCache = null;
+	public List<Guess> getGuesses(int count) {
+		var request = LIST.createRequest(this).parameter(PARAMETER_STEP, this.currentStep);
+		if (count > 0)
+			request.parameter(PARAMETER_SIZE, count);
+		var response = request.execute();
 
-		Question current = getQuestion();
-		if (current == null || current.getStep() < 1)
-			return null;
-
-		var questionJson = CANCEL_ANSWER
-			.createRequest(this.unirest, this.server.getUrl(), this.filterProfanity, this.session, current.getStep())
-			.getJSON();
-
-		this.question = QuestionImpl.from(questionJson.getJSONObject(PARAMETERS_KEY), new StatusImpl(questionJson));
-
-		this.currentStep -= 1;
-
-		return this.question;
+		return stream(response.getBody().getJSONArray("elements").spliterator(), false).map(JSONObject.class::cast)
+			.map(j -> j.getJSONObject("element"))
+			.map(GuessImpl::from)
+			.sorted()
+			.collect(toUnmodifiableList());
 	}
 
 	@Override
@@ -130,44 +137,31 @@ public class AkiwrapperImpl implements Akiwrapper {
 		return this.question;
 	}
 
-	@SuppressWarnings("null")
 	@Override
-	public List<Guess> getGuesses() {
-		try {
-			if (this.guessCache == null)
-				this.guessCache = stream(LIST
-					.createRequest(this.unirest, this.server.getUrl(), this.filterProfanity, this.session,
-								   this.currentStep)
-					.getJSON()
-					.getJSONObject(PARAMETERS_KEY)
-					.getJSONArray("elements")
-					.spliterator(), false).map(JSONObject.class::cast)
-						.map(j -> j.getJSONObject("element"))
-						.map(GuessImpl::from)
-						.sorted()
-						.collect(toUnmodifiableList());
-
-			return this.guessCache;
-
-		} catch (StatusException e) {
-			if (e.getStatus().getLevel() == ERROR
-				&& NO_MORE_QUESTIONS_STATUS.equalsIgnoreCase(e.getStatus().getReason())) {
-				return emptyList();
-			}
-
-			throw e;
-		}
+	public int getStep() {
+		return this.currentStep;
 	}
 
 	@Override
-	public Server getServer() {
+	public ServerImpl getServer() {
 		return this.server;
 	}
 
-	@Nonnull
-	private static Session getSession(@Nonnull JSONObject parameters) {
-		var session = parameters.getJSONObject("identification");
-		return new Session(parseLong(session.getString("signature")), parseInt(session.getString("session")));
+	@Override
+	public boolean doesFilterProfanity() {
+		return this.filterProfanity;
 	}
 
+	public Session getSession() {
+		return this.session;
+	}
+
+	public ApiKey getApiKey() {
+		return this.apiKey;
+	}
+
+	@Nonnull
+	public UnirestInstance getUnirest() {
+		return this.unirest;
+	}
 }

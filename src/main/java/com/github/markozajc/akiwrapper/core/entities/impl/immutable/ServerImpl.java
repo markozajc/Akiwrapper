@@ -1,5 +1,8 @@
 package com.github.markozajc.akiwrapper.core.entities.impl.immutable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +59,11 @@ public class ServerImpl implements Server {
 	@Override
 	public String getUrl() {
 		return this.url;
+	}
+
+	@Nonnull
+	public String asUrlApiWs() {
+		return "urlApiWs=" + URLEncoder.encode(this.url, UTF_8);
 	}
 
 }

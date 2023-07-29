@@ -114,7 +114,10 @@ public class AkinatorExample {
 				aw.answer(PROBABLY_NOT);
 
 			} else if (answer.equals("b")) {
-				aw.undoAnswer();
+				if (aw.getStep() == 0)
+					out.println("Can't undo from the first question.");
+				else
+					aw.undoAnswer();
 
 			} else if (answer.equals("debug")) {
 				out.printf("Debug information:%n\tCurrent API server: %s%n\tCurrent guess count: %d%n",

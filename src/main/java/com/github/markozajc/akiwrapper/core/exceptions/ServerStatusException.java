@@ -7,18 +7,12 @@ import com.github.markozajc.akiwrapper.core.entities.Status;
  *
  * @author Marko Zajc
  */
-public class StatusException extends RuntimeException {
+public class ServerStatusException extends AkinatorException {
 
 	private final Status status;
 
-	/**
-	 * Constructs a new {@link StatusException}.
-	 *
-	 * @param status
-	 *            status to append
-	 */
-	public StatusException(Status status) {
-		super(status.getLevel().toString().toUpperCase() + " - " + status.getReason());
+	public ServerStatusException(Status status) {
+		super(status.toString());
 		this.status = status;
 	}
 
