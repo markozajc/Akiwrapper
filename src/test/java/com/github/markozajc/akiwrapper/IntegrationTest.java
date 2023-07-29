@@ -51,7 +51,7 @@ class IntegrationTest {
 		log.info("Asserting the current state.");
 		Question initialQuestion = api.getQuestion();
 		int expectedState = 0;
-		checkQuestion(initialQuestion, expectedState);
+		checkQuestion(expectedState, initialQuestion);
 		assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
 		assertEquals(language, api.getServer().getLanguage(), SERVER_LANGUAGE_NO_MATCH);
 		assertEquals(guessType, api.getServer().getGuessType(), SERVER_GUESSTYPE_NO_MATCH);
@@ -63,8 +63,8 @@ class IntegrationTest {
 			Question newQuestion = api.answer(answer);
 			assertEquals(newQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
 			expectedState++;
-			assertEquals(api.getStep(), expectedState);
-			checkQuestion(api.getQuestion(), expectedState);
+			assertEquals(expectedState, api.getStep());
+			checkQuestion(expectedState, api.getQuestion());
 			checkGuessCount(log, api);
 		}
 
@@ -77,14 +77,14 @@ class IntegrationTest {
 			Question undoneQuestion = api.undoAnswer();
 			assertEquals(undoneQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
 			expectedState--;
-			assertEquals(api.getStep(), expectedState);
-			checkQuestion(api.getQuestion(), expectedState);
+			assertEquals(expectedState, api.getStep());
+			checkQuestion(expectedState, api.getQuestion());
 			checkGuessCount(log, api);
 		}
 
 		log.info("Asserting the current state.");
 		assertThrows(UndoOutOfBoundsException.class, () -> api.undoAnswer());
-		checkQuestion(api.getQuestion(), 0);
+		checkQuestion(0, api.getQuestion());
 		assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
 		Question currentQuestion = api.getQuestion();
 		if (initialQuestion != null && currentQuestion != null)
@@ -99,8 +99,8 @@ class IntegrationTest {
 
 		int i = api.getStep();
 		while (true) {
-			checkQuestion(api.getQuestion(), i);
-			assertEquals(api.getStep(), i);
+			checkQuestion(i, api.getQuestion());
+			assertEquals(i, api.getStep());
 
 			var question = api.answer(YES);
 			if (question == null) {
@@ -109,7 +109,7 @@ class IntegrationTest {
 
 			} else {
 				log.info("Exhausting questions (step={})", api.getStep());
-				checkQuestion(question, ++i);
+				checkQuestion(++i, question);
 			}
 
 			if (i > 80)
@@ -124,7 +124,7 @@ class IntegrationTest {
 		fetchAndDebugGuesses(log, api);
 	}
 
-	private void checkGuessCount(Logger log, Akiwrapper api) {
+	private static void checkGuessCount(Logger log, Akiwrapper api) {
 		for (int i = 1; i < 5; i++) {
 			log.info("Fetching {} guesses.", i);
 			assertTrue(api.getGuesses(i).size() <= i, "Got more guesses than requested from the API");
@@ -144,7 +144,7 @@ class IntegrationTest {
 		}
 	}
 
-	private static void checkQuestion(@Nullable Question question, int expectedState) {
+	private static void checkQuestion(int expectedState, @Nullable Question question) {
 		if (question == null) {
 			fail(QUESTION_NULL);
 		} else {

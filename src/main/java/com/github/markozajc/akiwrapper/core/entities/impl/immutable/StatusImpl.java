@@ -67,7 +67,8 @@ public class StatusImpl implements Status {
 		} else if (level == Level.ERROR && message != null) {
 			if (message.equals("TECHNICAL ERROR"))
 				return Reason.SERVER_FAILURE;
-			else if (message.equals("MISSING KEY") || message.equals("UNAUTHORIZED"))
+			else if (message.equals("MISSING KEY") || message.equals("ELEM LIST IS EMPTY")
+				|| message.equals("MISSING PARAMETERS") || message.equals("UNAUTHORIZED"))
 				return Reason.LIBRARY_FAILURE;
 		}
 
