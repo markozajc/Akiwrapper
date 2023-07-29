@@ -12,6 +12,7 @@ import javax.annotation.*;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 
 import com.github.markozajc.akiwrapper.Akiwrapper.Answer;
@@ -123,6 +124,9 @@ class IntegrationTest {
 			assertDoesNotThrow(() -> api.getGuesses());
 
 			fetchAndDebugGuesses(log, api);
+		} catch (TestAbortedException e) {
+			throw e;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail("Got an exception running the test");
