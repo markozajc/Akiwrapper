@@ -9,13 +9,13 @@ Add the following dependency to your pom.xml:
 <dependency>
 	<groupId>com.github.markozajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.5.2</version>
+	<version>1.6</version>
 </dependency>
 ```
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
-implementation group: 'com.github.markozajc', name: 'akiwrapper', version: '1.5.2'
+implementation group: 'com.github.markozajc', name: 'akiwrapper', version: '1.6'
 ```
 
 ## Usage
@@ -28,44 +28,52 @@ If you, for example, wish to use a different language that the default English, 
 something other than characters, you may use the following setup:
 ```java
 Akiwrapper aw = new AkiwrapperBuilder()
-	.setLanguage(Language.GERMAN)
-	.setGuessType(GuessType.PLACE)
-	.build();
+    .setLanguage(Language.GERMAN)
+    .setGuessType(GuessType.PLACE)
+    .build();
 ```
 (keep in mind that not all language-guesstype combinations are supported, though all languages support `CHARACTER`)
 
-You'll likely want to set up a question-answer loop afterwards. Fetch questions with
+You'll typically want to set up a question-answer loop afterwards. Fetch questions with
 ```java
 Question question = aw.getQuestion();
 ```
 
-Display the question to the user, collect their answer, and feed it to Akinator with
+Display the question to the player, collect their answer, and feed it to Akinator with
 ```java
 aw.answer(Answer.YES);
 ``` 
 
-If the player wishes to undo their previous answer, you can let Akinator know with
+If the player wishes to undo their previous answer, you can let do that with
 ```java
 aw.undoAnswer();
 ```
+You can undo answers all the way to the first question.
 
-Akinator will propose a list of guesses after each answer, coupled with their determined probabilities. You can get all
-guesses above a certain probability with
+Akinator will occasionally try guessing what the player is thinking about.
 ```java
-aw.getGuessesAboveProbability(0.85f); // 85% seems to be the sweet spot, though you're free to use anything you want
+var guess = aw.suggestGuess()
+if (guess != null) {
+	// ask the player to confirm or reject the guess
+	if (playerConfirmedGuess) {
+		aw.confirmGuess(guess); // let Akinator know that the guess is right
+		return; // finish the game
+		
+	} else {
+		aw.rejectLastGuess();  // let Akinator know that the guess is not right - this also gives us a new question
+	}
+}
+;
 ```
-Let the player review each guess, but keep track of the declined ones, as Akinator will send you the same guesses over
-and over if he feels like it.
+When a guess is available, the player should be asked to confirm it. If the guess is confirmed, we finish the game and
+optionally let Akinator know. If the guess is rejected, we let Akinator know and continue. Akiwrapper also keeps track
+of rejected guesses for you, so `suggestGuess()` never returns the same guess.
  
-At some point Akinator will run out of questions to ask. This is indicated by `aw.getCurrentQuestion()` equalling null.
-If and when this happens, fetch and propose all remaining guesses (this time without a probability filter) with
-```java
-aw.getGuesses()
-```
-and propose each one to the player. This also marks the absolute end of the game. 
+At some point (normally after question #80) Akinator will run out of questions to ask. This is indicated by
+`aw.isExhausted()`. After there are no questions left, the last guess should be retrieved and shown to the player.
 
 Unless you provide your own UnirestInstance to AkiwrapperBuilder, you should make sure to shut down the singleton 
-instance that Akiwrapper uses by default after you're done with Akiwrapper:
+instance that Akiwrapper uses by default after you're done with Akiwrapper (calling `System.exit()` also works):
 ```java
 UnirestUtils.shutdownInstance();
 ```
