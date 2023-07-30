@@ -48,15 +48,16 @@ public class UnirestUtils {
 	}
 
 	/**
-	 * Configures a new {@link UnirestInstance} for use by Akiwrapper. Akinator's API
-	 * servers are quite picky about the headers you send to them so if you supply
-	 * {@link AkiwrapperBuilder} with your own {@link UnirestInstance} you should either
-	 * pass it through this or configure it accordingly yourself. This also applies the
-	 * workaround to Akinator's incomplete SSL chain from
-	 * {@link WorkaroundUtils#workaroundIncompleteChain(kong.unirest.Config)} .<br>
-	 * Note: even though this method returns a {@link UnirestInstance}, the instance you
-	 * pass to it is itself mutated and returned. The return value is only there for ease
-	 * of chaining.
+	 * <b>Note:</b> even though this method returns a {@link UnirestInstance}, the
+	 * instance you pass to it is itself mutated and returned. The return value is only
+	 * there for ease of chaining. Configures a new {@link UnirestInstance} for use by
+	 * Akiwrapper.<br>
+	 * <br>
+	 * Akinator's API servers are quite picky about the headers you send to them so if
+	 * you supply {@link AkiwrapperBuilder} with your own {@link UnirestInstance} you
+	 * should either pass it through this or configure it accordingly yourself. This also
+	 * applies the workaround to Akinator's incomplete SSL chain from
+	 * {@link WorkaroundUtils#workaroundIncompleteChain(kong.unirest.Config)}.
 	 *
 	 * @param unirest
 	 *            the {@link UnirestInstance} to configure

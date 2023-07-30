@@ -1,5 +1,8 @@
-package com.github.markozajc.akiwrapper.core.entities.impl.immutable;
+package com.github.markozajc.akiwrapper.core.entities.impl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +11,7 @@ import javax.annotation.Nonnull;
 import com.github.markozajc.akiwrapper.core.entities.Server;
 import com.jcabi.xml.XML;
 
+@SuppressWarnings("javadoc") // internal impl
 public class ServerImpl implements Server {
 
 	private static final String LANGUAGE_ID_XPATH = "LANGUAGE/LANG_ID/text()"; // NOSONAR not a URL
@@ -55,6 +59,11 @@ public class ServerImpl implements Server {
 	@Override
 	public String getUrl() {
 		return this.url;
+	}
+
+	@Nonnull
+	public String asUrlApiWs() {
+		return "urlApiWs=" + URLEncoder.encode(this.url, UTF_8);
 	}
 
 }

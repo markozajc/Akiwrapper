@@ -1,6 +1,6 @@
-package com.github.markozajc.akiwrapper.core.entities.impl.immutable;
+package com.github.markozajc.akiwrapper.core.entities.impl;
 
-import static com.github.markozajc.akiwrapper.core.utils.JSONUtils.getDouble;
+import static com.github.markozajc.akiwrapper.core.utils.JSONUtils.*;
 import static java.lang.Double.compare;
 
 import java.net.*;
@@ -11,27 +11,30 @@ import org.json.JSONObject;
 
 import com.github.markozajc.akiwrapper.core.entities.Guess;
 
+@SuppressWarnings("javadoc") // internal impl
 public class GuessImpl implements Guess {
 
 	@Nonnull private final String id;
 	@Nonnull private final String name;
 	@Nullable private final String description;
 	@Nullable private final URL image;
-	@Nonnegative private final double probability;
+	private final double probability;
+	private final boolean explicit;
 
-	public GuessImpl(@Nonnull String id, @Nonnull String name, @Nullable String description, @Nullable URL image,
-					 @Nonnegative double probability) {
+	GuessImpl(@Nonnull String id, @Nonnull String name, @Nullable String description, @Nullable URL image,
+			  @Nonnegative double probability, boolean explicit) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.image = image;
 		this.probability = probability;
+		this.explicit = explicit;
 	}
 
 	@SuppressWarnings("null")
-	public static GuessImpl from(@Nonnull JSONObject json) {
+	public static GuessImpl fromJson(@Nonnull JSONObject json) {
 		return new GuessImpl(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
-							 getDouble(json, "proba").orElseThrow());
+							 getDouble(json, "proba").orElseThrow(), getInteger(json, "corrupt").orElseThrow() == 1);
 	}
 
 	@Nullable
@@ -79,6 +82,11 @@ public class GuessImpl implements Guess {
 	@Override
 	public int compareTo(Guess o) {
 		return compare(o.getProbability(), this.probability);
+	}
+
+	@Override
+	public boolean isExplicit() {
+		return this.explicit;
 	}
 
 }

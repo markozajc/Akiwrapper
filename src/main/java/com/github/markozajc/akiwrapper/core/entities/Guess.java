@@ -4,7 +4,7 @@ import java.net.URL;
 
 import javax.annotation.*;
 
-import com.github.markozajc.akiwrapper.AkiwrapperBuilder;
+import com.github.markozajc.akiwrapper.*;
 import com.github.markozajc.akiwrapper.core.entities.Server.GuessType;
 
 /**
@@ -32,7 +32,8 @@ public interface Guess extends Identifiable, Comparable<Guess> {
 
 	/**
 	 * Returns the approximate probability that the answer is the one user has in mind
-	 * (as a double).
+	 * (as a double).<br>
+	 * The value ranges between 0 and 1.
 	 *
 	 * @return probability that this is the right answer.
 	 */
@@ -56,5 +57,16 @@ public interface Guess extends Identifiable, Comparable<Guess> {
 	 */
 	@Nullable
 	URL getImage();
+
+	/**
+	 * <b>Important:</b> Akinator for some reason flags certain perfectly SFW guesses as
+	 * explicit. Akiwrapper's code for this reason doesn't rely on this parameter -
+	 * {@link Akiwrapper#suggestGuess} will return guesses marked as explicit even when
+	 * profanity filtering is on. Using this value to filter content is optional but not
+	 * advised.
+	 *
+	 * @return whether or not the guess is explicit (often incorrect).
+	 */
+	boolean isExplicit();
 
 }
