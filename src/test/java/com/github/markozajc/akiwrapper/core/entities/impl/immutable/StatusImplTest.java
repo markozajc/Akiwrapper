@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
 import com.github.markozajc.akiwrapper.core.entities.Status.Level;
+import com.github.markozajc.akiwrapper.core.entities.impl.StatusImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 

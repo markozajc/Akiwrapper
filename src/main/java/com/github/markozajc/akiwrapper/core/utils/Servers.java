@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 
 import com.github.markozajc.akiwrapper.core.entities.Server;
 import com.github.markozajc.akiwrapper.core.entities.Server.*;
-import com.github.markozajc.akiwrapper.core.entities.impl.immutable.ServerImpl;
+import com.github.markozajc.akiwrapper.core.entities.impl.ServerImpl;
 import com.jcabi.xml.XMLDocument;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

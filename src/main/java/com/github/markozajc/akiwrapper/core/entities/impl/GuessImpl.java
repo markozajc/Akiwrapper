@@ -1,4 +1,4 @@
-package com.github.markozajc.akiwrapper.core.entities.impl.immutable;
+package com.github.markozajc.akiwrapper.core.entities.impl;
 
 import static com.github.markozajc.akiwrapper.core.utils.JSONUtils.*;
 import static java.lang.Double.compare;

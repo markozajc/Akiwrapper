@@ -12,7 +12,7 @@ import javax.annotation.*;
 import org.json.*;
 import org.slf4j.Logger;
 
-import com.github.markozajc.akiwrapper.core.entities.impl.immutable.StatusImpl;
+import com.github.markozajc.akiwrapper.core.entities.impl.StatusImpl;
 import com.github.markozajc.akiwrapper.core.exceptions.*;
 
 import kong.unirest.UnirestInstance;

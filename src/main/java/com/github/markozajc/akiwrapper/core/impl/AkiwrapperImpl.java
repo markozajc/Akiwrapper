@@ -19,7 +19,7 @@ import org.slf4j.*;
 
 import com.github.markozajc.akiwrapper.Akiwrapper;
 import com.github.markozajc.akiwrapper.core.entities.*;
-import com.github.markozajc.akiwrapper.core.entities.impl.immutable.*;
+import com.github.markozajc.akiwrapper.core.entities.impl.*;
 import com.github.markozajc.akiwrapper.core.exceptions.*;
 import com.github.markozajc.akiwrapper.core.utils.ApiKey;
 
