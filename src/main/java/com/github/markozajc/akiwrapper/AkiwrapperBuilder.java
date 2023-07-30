@@ -18,14 +18,7 @@ import com.github.markozajc.akiwrapper.core.utils.UnirestUtils;
 import kong.unirest.UnirestInstance;
 
 /**
- * A class used to build an {@link Akiwrapper} object. It allows you to set various
- * values before building it in a method chaining fashion. Note that
- * {@link Language}, {@link GuessType}, and {@link Server} configuration are
- * connected - {@link Language} and {@link GuessType} are used to find a suitable
- * {@link Server}, but they will only be used if a {@link Server} is not manually
- * set. It is not recommended to set the {@link Server} manually (unless for
- * debugging purposes or as some kind of workaround where Akiwrapper's server finder
- * fails) as Akiwrapper already does its best to find the most suitable one.
+ * A class used to build an {@link Akiwrapper} object.
  *
  * @author Marko Zajc
  */
@@ -46,7 +39,15 @@ public class AkiwrapperBuilder {
 	/**
 	 * The default {@link Language} for new {@link Akiwrapper} instances.
 	 */
-	@Nonnull public static final Language DEFAULT_LOCALIZATION = ENGLISH;
+	@Nonnull public static final Language DEFAULT_LANGUAGE = ENGLISH;
+
+	/**
+	 * The default {@link Language} for new {@link Akiwrapper} instances.
+	 *
+	 * @deprecated Use {@link #DEFAULT_LANGUAGE} instead
+	 */
+	@Deprecated(since = "1.6", forRemoval = true)
+	@Nonnull public static final Language DEFAULT_LOCALIZATION = DEFAULT_LANGUAGE;
 
 	/**
 	 * The default {@link GuessType} for new {@link Akiwrapper} instances.
@@ -62,10 +63,17 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Creates a new AkiwrapperBuilder object.
+	 * Creates a new {@link AkiwrapperBuilder} with the following defaults:
+	 * <ul>
+	 * <li>profanity filtering is set to {@code false}
+	 * ({@link #DEFAULT_FILTER_PROFANITY}),
+	 * <li>language is set to {@link Language#ENGLISH} ({@link #DEFAULT_LANGUAGE}),
+	 * <li>guess type is set to {@link GuessType#CHARACTER}
+	 * ({@link #DEFAULT_GUESS_TYPE}),
+	 * </ul>
 	 */
 	public AkiwrapperBuilder() {
-		this(null, DEFAULT_FILTER_PROFANITY, DEFAULT_LOCALIZATION, DEFAULT_GUESS_TYPE);
+		this(null, DEFAULT_FILTER_PROFANITY, DEFAULT_LANGUAGE, DEFAULT_GUESS_TYPE);
 	}
 
 	/**
@@ -75,7 +83,8 @@ public class AkiwrapperBuilder {
 	 * {@link UnirestUtils#configureInstance(UnirestInstance)} before using it with
 	 * Akiwrapper. You will also need to shut it down yourself, or, if you decide to set
 	 * or leave this on {$code null}, call {@link UnirestUtils#shutdownInstance()} to
-	 * shut down Akiwrapper's default singleton instance.
+	 * shut down Akiwrapper's default singleton instance, otherwise its threads will stay
+	 * alive.
 	 *
 	 * @param unirest
 	 *            the {@link UnirestInstance} to be used by Akiwrapper or {$code null} to
@@ -95,7 +104,7 @@ public class AkiwrapperBuilder {
 	 * Returns the {@link UnirestInstance} to be used by the built Akiwrapper instance.
 	 * If this is {$code null}, {@link UnirestUtils#getInstance()} will be used (which
 	 * means you will need to shut it down through
-	 * {@link UnirestUtils#shutdownInstance()}).
+	 * {@link UnirestUtils#shutdownInstance()}, otherwise its threads will stay alive).
 	 *
 	 * @return {@link UnirestInstance} to be used or {$code null} for
 	 *         {@link UnirestUtils#getInstance()}
@@ -106,11 +115,15 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Sets the "filter profanity" mode.
+	 * Sets the "filter profanity" mode. Keep in mind that explicit {@link Guess}es can
+	 * still be returned by {@link Akiwrapper#getGuesses()} or
+	 * {@link Akiwrapper#suggestGuess()}, see {@link Guess#isExplicit()} for more details
+	 * on why that is.<br>
+	 * This is set to {@code false} by default.
 	 *
 	 * @param filterProfanity
 	 *
-	 * @return current instance, used for chaining
+	 * @return current instance, used for chaining.
 	 *
 	 * @see #doesFilterProfanity()
 	 */
@@ -122,7 +135,10 @@ public class AkiwrapperBuilder {
 
 	/**
 	 * Returns the profanity filter preference. Profanity filtering is done by Akinator
-	 * and not by Akiwrapper.
+	 * and not by Akiwrapper. Keep in mind that explicit {@link Guess}es can still be
+	 * returned by {@link Akiwrapper#getGuesses()} or {@link Akiwrapper#suggestGuess()},
+	 * see {@link Guess#isExplicit()} for more details on why that is.<br>
+	 * This is set to {@code false} by default.
 	 *
 	 * @return profanity filter preference.
 	 */
@@ -131,13 +147,18 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Sets the {@link Language}.<br>
-	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
-	 * {@code null} (meaning it will be automatically selected).
+	 * <b>Note:</b> not all {@link Language}s support all {@link GuessType}s. The
+	 * standard ones seem to be {@link GuessType#ANIMAL}, {@link GuessType#CHARACTER},
+	 * and {@link GuessType#OBJECT}, but you might still face
+	 * {@link ServerNotFoundException}s using them or other ones.<br>
+	 * <br>
+	 * Sets the {@link Language}. The server will return localized {@link Question}s and
+	 * {@link Guess}es depending on this preference.<br>
+	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @param language
 	 *
-	 * @return current instance, used for chaining
+	 * @return current instance, used for chaining.
 	 *
 	 * @see #getLanguage()
 	 */
@@ -148,10 +169,9 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Returns the {@link Language} preference. {@link Language} impacts what language
-	 * {@link Question}s and {@link Guess}es are in.<br>
-	 * {@link #getGuessType()} and {@link #getLanguage()} decide what {@link Server} will
-	 * be used if it's not set manually.
+	 * Returns the {@link Language}. The server will return localized {@link Question}s
+	 * and {@link Guess}es depending on this preference.<br>
+	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @return language preference.
 	 */
@@ -161,13 +181,19 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Sets the {@link GuessType}.<br>
-	 * <b>Caution!</b> Setting the {@link Language} will set the {@link Server} to
-	 * {@code null} (meaning it will be automatically selected).
+	 * <b>Note:</b> not all {@link Language}s support all {@link GuessType}s. The
+	 * standard ones seem to be {@link GuessType#ANIMAL}, {@link GuessType#CHARACTER},
+	 * and {@link GuessType#OBJECT}, but you might still face
+	 * {@link ServerNotFoundException}s using them or other ones.<br>
+	 * <br>
+	 * Sets the {@link GuessType}. This decides what kind of things the {@link Server}'s
+	 * {@link Guess}es will represent. While the name might imply that this affects only
+	 * guess content, it also affects {@link Question}s.<br>
+	 * This is set to {@link GuessType#CHARACTER} by default.
 	 *
 	 * @param guessType
 	 *
-	 * @return current instance, used for chaining
+	 * @return current instance, used for chaining.
 	 *
 	 * @see #getLanguage()
 	 */
@@ -181,7 +207,8 @@ public class AkiwrapperBuilder {
 	 * Returns the {@link GuessType} preference. {@link GuessType} impacts what kind of
 	 * subject {@link Question}s and {@link Guess}es are about.<br>
 	 * {@link #getGuessType()} and {@link #getLanguage()} decide what {@link Server} will
-	 * be used if it's not set manually.
+	 * be used if it's not set manually.<br>
+	 * This is set to {@link GuessType#CHARACTER} by default.
 	 *
 	 * @return guess type preference.
 	 */
@@ -195,9 +222,10 @@ public class AkiwrapperBuilder {
 	 * {@link UnirestInstance} was set (with
 	 * {@link #setUnirestInstance(UnirestInstance)}), a singleton instance will be
 	 * acquired from {@link UnirestUtils#getInstance()}. This instance must be shut down
-	 * after you're done using Akiwrapper with {@link UnirestUtils#shutdownInstance()}.
+	 * after you're done using Akiwrapper with {@link UnirestUtils#shutdownInstance()},
+	 * otherwise its threads will stay alive.
 	 *
-	 * @return a new {@link Akiwrapper} instance that will use all set preferences
+	 * @return a new {@link Akiwrapper} instance.
 	 *
 	 * @throws ServerNotFoundException
 	 *             if no server with that {@link Language} and {@link GuessType} is

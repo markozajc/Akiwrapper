@@ -1,21 +1,25 @@
 package com.github.markozajc.akiwrapper.core.exceptions;
 
+/**
+ * The root exception class for exceptions in Akiwrapper.
+ *
+ * @author Marko Zajc
+ */
 public class AkinatorException extends RuntimeException {
 
+	@SuppressWarnings("javadoc") // internal
 	public AkinatorException() {
 		super();
 	}
 
-	public AkinatorException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
+	@SuppressWarnings("javadoc") // internal
 	public AkinatorException(String message) {
 		super(message);
 	}
 
-	public AkinatorException(Throwable cause) {
-		super(cause);
+	@SuppressWarnings("javadoc") // internal
+	public AkinatorException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

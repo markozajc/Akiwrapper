@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.annotation.*;
 
+import com.github.markozajc.akiwrapper.core.exceptions.ServerStatusException;
+
 /**
  * An interface used to represent API call's completion status.
  *
@@ -63,12 +65,41 @@ public interface Status extends Serializable {
 
 	}
 
+	/**
+	 * A less cryptic form of the status message, which helps you distinguish between a
+	 * usage error (a problem with your code), a library error (a problem with Akiwrapper
+	 * that should be reported), a server error (a problem with Akinator's servers that
+	 * only they can fix), or an unproblematic status.
+	 */
 	public enum Reason {
 
+		/**
+		 * <b>Note:</b> This {@link Reason} should generally not find its way into a
+		 * {@link ServerStatusException}, please open an issue if it ever does.<br>
+		 * <br>
+		 * The status is non-erroneous.
+		 */
 		OK,
+		/**
+		 * <b>Note:</b> This {@link Reason} should generally not find its way into a
+		 * {@link ServerStatusException}, please open an issue if it ever does.<br>
+		 * <br>
+		 * The status is non-erroneous and the questions have been exhausted.
+		 */
 		QUESTIONS_EXHAUSTED,
+		/**
+		 * The status is erroneous and likely caused by a bug in the library. Please open an
+		 * issue if this occurs.
+		 */
 		LIBRARY_FAILURE,
+		/**
+		 * The status is erroneous and likely caused by a problem with Akinator's servers.
+		 * Please only open an issue if this occurs consistently for a period of time.
+		 */
 		SERVER_FAILURE,
+		/**
+		 * The reason is unknown. Refer to the status message and level for more details.
+		 */
 		UNKNOWN
 
 	}

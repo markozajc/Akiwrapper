@@ -51,7 +51,7 @@ public final class Route {
 	}
 
 	@Nonnull
-	@SuppressWarnings("resource")
+	@SuppressWarnings({ "resource", "null" })
 	public Request createRequest(@Nonnull AkiwrapperImpl api) {
 		boolean hasQuerystring = this.pathHasQuerystring;
 

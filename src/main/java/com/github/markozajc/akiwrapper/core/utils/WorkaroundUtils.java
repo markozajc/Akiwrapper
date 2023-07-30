@@ -9,6 +9,7 @@ import java.security.cert.*;
 import javax.annotation.Nonnull;
 import javax.net.ssl.*;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import kong.unirest.Config;
 
 /**
@@ -19,11 +20,12 @@ import kong.unirest.Config;
 public class WorkaroundUtils {
 
 	/**
+	 * <b>Note:</b> even though this method returns a {@link Config}, the instance you
+	 * pass to it is itself mutated and returned. The return value is only there for ease
+	 * of chaining.<br>
+	 * <br>
 	 * Applies a workaround for the {@code PKIX path building failed} exception to a
-	 * Unirest {@link Config}.<br>
-	 * Note: even though this method returns a {@link Config}, the instance you pass to
-	 * it is itself mutated and returned. The return value is only there for ease of
-	 * chaining.
+	 * Unirest {@link Config}.
 	 *
 	 * @param config
 	 *            the {@link Config} to apply the workaround to
@@ -110,6 +112,7 @@ public class WorkaroundUtils {
 	 */
 	@Nonnull
 	@SuppressWarnings("null")
+	@SuppressFBWarnings("HARD_CODE_PASSWORD")
 	public static X509TrustManager getIncompleteChainWorkaroundCustomTrustManager() throws KeyStoreException,
 																					IOException,
 																					NoSuchAlgorithmException,

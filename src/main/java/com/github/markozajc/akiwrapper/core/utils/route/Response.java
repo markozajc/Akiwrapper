@@ -23,6 +23,7 @@ public class Response {
 	}
 
 	@Nonnull
+	@SuppressWarnings("null")
 	public JSONObject getBody() {
 		return this.body.getJSONObject("parameters");
 	}

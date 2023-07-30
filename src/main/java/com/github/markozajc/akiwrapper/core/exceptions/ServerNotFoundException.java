@@ -1,5 +1,7 @@
 package com.github.markozajc.akiwrapper.core.exceptions;
 
+import javax.annotation.Nonnull;
+
 import com.github.markozajc.akiwrapper.core.entities.Server;
 import com.github.markozajc.akiwrapper.core.entities.Server.*;
 
@@ -11,7 +13,8 @@ import com.github.markozajc.akiwrapper.core.entities.Server.*;
  */
 public class ServerNotFoundException extends AkinatorException {
 
-	public ServerNotFoundException(String message) {
+	@SuppressWarnings("javadoc") // internal
+	public ServerNotFoundException(@Nonnull String message) {
 		super(message);
 	}
 

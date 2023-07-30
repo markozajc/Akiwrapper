@@ -50,80 +50,11 @@ class IntegrationTest {
 				return;
 			}
 
-			log.info("Asserting the current state.");
 			Question initialQuestion = api.getQuestion();
-			int expectedState = 0;
-			checkQuestion(expectedState, initialQuestion);
-			assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
-			assertEquals(language, api.getServer().getLanguage(), SERVER_LANGUAGE_NO_MATCH);
-			assertEquals(guessType, api.getServer().getGuessType(), SERVER_GUESSTYPE_NO_MATCH);
-			log.trace("API server URL: {}", api.getServer().getUrl());
-
-			log.info("Advancing {} steps (one time for each possible answer).", Answer.values().length);
-			for (Answer answer : Answer.values()) {
-				log.info("Answering with {} and checking the state (step={}).", answer.name(), api.getStep());
-				Question newQuestion = api.answer(answer);
-				assertEquals(newQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
-				expectedState++;
-				assertEquals(expectedState, api.getStep());
-				checkQuestion(expectedState, api.getQuestion());
-				checkGuessCount(log, api);
-			}
-
-			log.info("Asserting the current state.");
-			fetchAndDebugGuesses(log, api);
-
-			log.info("Advancing -{} steps (using undo).", Answer.values().length);
-			for (int i = 0; i < Answer.values().length; i++) {
-				log.info("Undoing a step and checking the state (step={}).", api.getStep());
-				Question undoneQuestion = api.undoAnswer();
-				assertEquals(undoneQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
-				expectedState--;
-				assertEquals(expectedState, api.getStep());
-				checkQuestion(expectedState, api.getQuestion());
-				checkGuessCount(log, api);
-			}
-
-			log.info("Asserting the current state.");
-			assertThrows(UndoOutOfBoundsException.class, () -> api.undoAnswer());
-			checkQuestion(0, api.getQuestion());
-			assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
-			Question currentQuestion = api.getQuestion();
-			if (initialQuestion != null && currentQuestion != null)
-				assertEquals(initialQuestion.getQuestion(), currentQuestion.getQuestion(), QUESTION_INITIAL_NO_MATCH);
-			else
-				fail("initialQuestion or currentQuestion were somehow null");
-			// using this syntax instead of assertNotNull to please null analysis of @Nullable
-
-			log.info("Exhausting questions by answering YES to all.");
-			var lastQuestion = api.getQuestion();
-			assertNotNull(lastQuestion, "Current question is already null");
-
-			int i = api.getStep();
-			while (true) {
-				checkQuestion(i, api.getQuestion());
-				assertEquals(i, api.getStep());
-
-				var question = api.answer(YES);
-				if (question == null) {
-					log.info("Ran out at step {}.", api.getStep());
-					break;
-
-				} else {
-					log.info("Exhausting questions (step={})", api.getStep());
-					checkQuestion(++i, question);
-				}
-
-				if (i > 80)
-					fail("Got over step 80, API must have changed. Ensure there are no side effects and find the new limit.");
-			}
-
-			log.info("Asserting the current state.");
-			assertThrows(QuestionsExhaustedException.class, () -> api.answer(YES));
-			assertThrows(QuestionsExhaustedException.class, () -> api.undoAnswer());
-			assertDoesNotThrow(() -> api.getGuesses());
-
-			fetchAndDebugGuesses(log, api);
+			testInitialState(log, api, initialQuestion, language, guessType);
+			int expectedState = testAnswering(log, api);
+			testUndo(log, api, initialQuestion, expectedState);
+			testExhaustion(log, api);
 		} catch (TestAbortedException e) {
 			throw e;
 
@@ -131,6 +62,93 @@ class IntegrationTest {
 			e.printStackTrace();
 			fail("Got an exception running the test");
 		}
+	}
+
+	private static void testInitialState(@Nonnull Logger log, @Nonnull Akiwrapper api,
+										 @Nullable Question initialQuestion, @Nonnull Language language,
+										 @Nonnull GuessType guessType) {
+		log.info("Asserting the current state.");
+		checkQuestion(0, initialQuestion);
+		assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
+		assertEquals(language, api.getServer().getLanguage(), SERVER_LANGUAGE_NO_MATCH);
+		assertEquals(guessType, api.getServer().getGuessType(), SERVER_GUESSTYPE_NO_MATCH);
+		log.trace("API server URL: {}", api.getServer().getUrl());
+	}
+
+	private static int testAnswering(@Nonnull Logger log, @Nonnull Akiwrapper api) {
+		log.info("Advancing {} steps (one time for each possible answer).", Answer.values().length);
+		int expectedState = 0;
+		for (Answer answer : Answer.values()) {
+			log.info("Answering with {} and checking the state (step={}).", answer.name(), api.getStep());
+			Question newQuestion = api.answer(answer);
+			assertEquals(newQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
+			expectedState++;
+			assertEquals(expectedState, api.getStep());
+			checkQuestion(expectedState, api.getQuestion());
+			checkGuessCount(log, api);
+		}
+
+		log.info("Asserting the current state.");
+		fetchAndDebugGuesses(log, api);
+		return expectedState;
+	}
+
+	private static void testUndo(@Nonnull Logger log, @Nonnull Akiwrapper api, @Nullable Question initialQuestion,
+								 int initialExpectedState) {
+		log.info("Advancing -{} steps (using undo).", Answer.values().length);
+		int expectedState = initialExpectedState;
+		for (int i = 0; i < Answer.values().length; i++) {
+			log.info("Undoing a step and checking the state (step={}).", api.getStep());
+			Question undoneQuestion = api.undoAnswer();
+			assertEquals(undoneQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
+			expectedState--;
+			assertEquals(expectedState, api.getStep());
+			checkQuestion(expectedState, api.getQuestion());
+			checkGuessCount(log, api);
+		}
+
+		log.info("Asserting the current state.");
+		assertThrows(UndoOutOfBoundsException.class, () -> api.undoAnswer());
+		checkQuestion(0, api.getQuestion());
+		assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
+		Question currentQuestion = api.getQuestion();
+		if (initialQuestion != null && currentQuestion != null)
+			assertEquals(initialQuestion.getQuestion(), currentQuestion.getQuestion(), QUESTION_INITIAL_NO_MATCH);
+		else
+			fail("initialQuestion or currentQuestion were somehow null");
+		// using this syntax instead of assertNotNull to please null analysis of @Nullable
+	}
+
+	private static void testExhaustion(@Nonnull Logger log, @Nonnull Akiwrapper api) {
+		log.info("Exhausting questions by answering YES to all.");
+		var lastQuestion = api.getQuestion();
+		assertNotNull(lastQuestion, "Current question is already null");
+
+		int i = api.getStep();
+		while (true) {
+			checkQuestion(i, api.getQuestion());
+			assertEquals(i, api.getStep());
+
+			var question = api.answer(YES);
+			if (question == null) {
+				log.info("Ran out at step {}.", api.getStep());
+				break;
+
+			} else {
+				log.info("Exhausting questions (step={})", api.getStep());
+				checkQuestion(++i, question);
+			}
+
+			if (i > 80)
+				fail("Got over step 80, API must have changed. Ensure there are no side effects and find the new limit.");
+		}
+
+		log.info("Asserting the current state.");
+		assertThrows(QuestionsExhaustedException.class, () -> api.answer(YES));
+		assertThrows(QuestionsExhaustedException.class, () -> api.undoAnswer());
+		assertDoesNotThrow(() -> api.getGuesses());
+
+		fetchAndDebugGuesses(log, api);
 	}
 
 	private static void checkGuessCount(Logger log, Akiwrapper api) {

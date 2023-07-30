@@ -105,6 +105,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@Override
+	@SuppressWarnings("null")
 	public Question undoAnswer() {
 		if (isExhausted())
 			throw new QuestionsExhaustedException(); // the api won't let us

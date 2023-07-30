@@ -13,13 +13,9 @@ class IdentifiableTest {
 	}
 
 	@Test
+	@SuppressWarnings("null")
 	void testGetIdLongLong() {
 		String maxLongString = Long.toString(Long.MAX_VALUE);
-		if (maxLongString == null) {
-			fail(); // Sorry suppress warnings broke and would let me ignore null warnings
-			return; // Also because eclipse doesn't realize that fail throws
-		}
-
 		Identifiable identifiable = () -> maxLongString;
 		assertEquals(Long.MAX_VALUE, identifiable.getIdLong());
 	}

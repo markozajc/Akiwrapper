@@ -2,7 +2,6 @@ package com.github.markozajc.akiwrapper.core.entities;
 
 import javax.annotation.*;
 
-import com.github.markozajc.akiwrapper.core.exceptions.ServerNotFoundException;
 import com.github.markozajc.akiwrapper.core.utils.Servers;
 
 import kong.unirest.UnirestInstance;
@@ -16,7 +15,8 @@ import kong.unirest.UnirestInstance;
 public interface Server {
 
 	/**
-	 * A language specific to a {@link Server}.
+	 * A language specific to a {@link Server}. The server will return localized
+	 * {@link Question}s and {@link Guess}es depending on its language.
 	 *
 	 * @author Marko Zajc
 	 */
@@ -60,15 +60,10 @@ public interface Server {
 	}
 
 	/**
-	 * Server's guess type (referred to as the "subject" in the API). Decides what kind
-	 * of things server's guesses will represent. While the name might suggest that this
-	 * affects only {@link Guess}es, it will also inevitably also impact
-	 * {@link Question}s (it wouldn't make sense to ask the "Is it still alive" question
-	 * for a place). <br>
-	 * <b>Caution!</b> Not all {@link Language}s support all {@link GuessType}s. The
-	 * standard ones seem to be {@link #ANIMAL}, {@link #CHARACTER}, and {@link #OBJECT},
-	 * but you might still face {@link ServerNotFoundException}s using them or other
-	 * ones.
+	 * Represents the server's guess type (also referred to as the subject or theme).
+	 * This decides what kind of things the {@link Server}'s {@link Guess}es will
+	 * represent. While the name might imply that this affects only guess content, it
+	 * also affects {@link Question}s.<br>
 	 *
 	 * @author Marko Zajc
 	 */
@@ -102,7 +97,7 @@ public interface Server {
 	}
 
 	/**
-	 * Server's host name. As the people behind Akinator tend to mix up their servers and
+	 * Server's base URL. As the people behind Akinator tend to mix up their servers and
 	 * the API in general, this should only fetch values from the server-listing endpoint
 	 * (which is done in {@link Servers#getServers(UnirestInstance)}. The host is a valid
 	 * URL, complete with the path to the endpoint.<br>
@@ -115,7 +110,7 @@ public interface Server {
 
 	/**
 	 * Returns this {@link Server}'s {@link Language}. The server will return localized
-	 * {@link Question}s and {@link Guess}es depending on its {@link Language}.
+	 * {@link Question}s and {@link Guess}es depending on its language.
 	 *
 	 * @return server's language.
 	 */

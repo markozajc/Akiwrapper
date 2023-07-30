@@ -7,6 +7,7 @@ package com.github.markozajc.akiwrapper.core.exceptions;
  */
 public class QuestionsExhaustedException extends AkinatorException {
 
+	@SuppressWarnings("javadoc") // internal
 	public QuestionsExhaustedException() {}
 
 }
