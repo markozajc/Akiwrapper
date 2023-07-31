@@ -31,8 +31,7 @@
 	<scm>
 		<url>https://git.zajc.eu.org/akiwrapper.git/</url>
 		<connection>scm:git:https:https://git.zajc.eu.org/akiwrapper.git/</connection>
-		<developerConnection>
-			scm:git:ssh://git@zajc.eu.org/srv/git/akiwrapper.git</developerConnection>
+		<developerConnection>scm:git:ssh://git@zajc.eu.org/srv/git/akiwrapper.git</developerConnection>
 	</scm>
 
 	<properties>

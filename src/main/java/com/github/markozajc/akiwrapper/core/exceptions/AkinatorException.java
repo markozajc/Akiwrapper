@@ -9,6 +9,7 @@ public class AkinatorException extends RuntimeException {
 
 	@SuppressWarnings("javadoc") // internal
 	public AkinatorException() {
+		super();
 	}
 
 	@SuppressWarnings("javadoc") // internal
