@@ -78,21 +78,22 @@ public class Request {
 			processedUrl += formatQuerystring(formatParameters(this.parameters), hasQuerystring);
 
 		LOG.trace("--> {}", processedUrl);
-		var response = this.unirest.get(processedUrl).asString().getBody();
+		var response = this.unirest.get(processedUrl).asString();
+		var json = response.getBody();
 
-		LOG.trace("<-- {}", response);
-		response = response.substring(7 /* "jQuery(" */, response.length() - 1 /* ")" */); // cut the callback
+		LOG.trace("<-- {}", json);
+		json = json.substring(7 /* "jQuery(" */, json.length() - 1 /* ")" */); // cut the callback
 
 		try {
-			var body = new JSONObject(response);
+			var body = new JSONObject(json);
 			var status = StatusImpl.fromJson(body);
 			if (status.getLevel() == ERROR)
-				throw new ServerStatusException(status);
+				throw new ServerStatusException(status, processedUrl, response);
 
 			return new Response(status, body);
 
 		} catch (JSONException e) {
-			throw new AkinatorException("Couldn't parse a server response", e);
+			throw new AkinatorException("Couldn't parse a server response", e, processedUrl, response);
 		}
 	}
 
