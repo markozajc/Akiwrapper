@@ -39,8 +39,8 @@ class IntegrationTest {
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")
 	void testAkiwrapper(@Nonnull Language language, @Nonnull GuessType guessType) {
+		Logger log = getLogger(format("%s-%s", language, guessType));
 		try {
-			Logger log = getLogger(format("%s-%s", language, guessType));
 			log.info("Establishing connection");
 			Akiwrapper api;
 			try {
@@ -60,7 +60,12 @@ class IntegrationTest {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+
+			if (e instanceof AkinatorException)
+				log.info(((AkinatorException) e).getDebugInformation());
+
 			fail("Got an exception running the test");
+
 		}
 	}
 
