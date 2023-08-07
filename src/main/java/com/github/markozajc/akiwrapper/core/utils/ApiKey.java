@@ -13,6 +13,13 @@ import com.github.markozajc.akiwrapper.core.utils.route.Route;
 
 import kong.unirest.UnirestInstance;
 
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ *
+ * @author Marko Zajc
+ */
 @SuppressWarnings("javadoc") // internal impl
 public class ApiKey {
 

@@ -13,6 +13,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import kong.unirest.Config;
 
 /**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
  * A utility class with workarounds for problems with Akinator's infrastructure.
  *
  * @author Marko Zajc

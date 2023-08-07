@@ -11,6 +11,13 @@ import javax.annotation.Nonnull;
 import com.github.markozajc.akiwrapper.core.entities.Server;
 import com.jcabi.xml.XML;
 
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ *
+ * @author Marko Zajc
+ */
 @SuppressWarnings("javadoc") // internal impl
 public class ServerImpl implements Server {
 

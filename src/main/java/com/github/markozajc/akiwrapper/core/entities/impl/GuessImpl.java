@@ -11,6 +11,13 @@ import org.json.JSONObject;
 
 import com.github.markozajc.akiwrapper.core.entities.Guess;
 
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ *
+ * @author Marko Zajc
+ */
 @SuppressWarnings("javadoc") // internal impl
 public class GuessImpl implements Guess {
 

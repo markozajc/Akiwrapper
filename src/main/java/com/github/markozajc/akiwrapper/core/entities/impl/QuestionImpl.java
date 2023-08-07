@@ -8,6 +8,13 @@ import org.json.JSONObject;
 
 import com.github.markozajc.akiwrapper.core.entities.Question;
 
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ *
+ * @author Marko Zajc
+ */
 @SuppressWarnings("javadoc") // internal impl
 public class QuestionImpl implements Question {
 
@@ -18,7 +25,7 @@ public class QuestionImpl implements Question {
 	private final double progression;
 
 	private QuestionImpl(@Nonnull String id, @Nonnull String question, @Nonnegative int step, @Nonnegative double gain,
-						@Nonnegative double progression) {
+						 @Nonnegative double progression) {
 		this.id = id;
 		this.question = question;
 		this.step = step;

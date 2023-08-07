@@ -1,7 +1,10 @@
 package com.github.markozajc.akiwrapper.core.utils.route;
 
 import static com.github.markozajc.akiwrapper.core.entities.Status.Level.ERROR;
+import static com.github.markozajc.akiwrapper.core.utils.Utilities.sleepUnchecked;
 import static com.github.markozajc.akiwrapper.core.utils.route.Route.*;
+import static java.lang.String.format;
+import static java.time.Duration.ofSeconds;
 import static java.util.stream.Collectors.joining;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -15,12 +18,15 @@ import org.slf4j.Logger;
 import com.github.markozajc.akiwrapper.core.entities.impl.StatusImpl;
 import com.github.markozajc.akiwrapper.core.exceptions.*;
 
-import kong.unirest.UnirestInstance;
+import kong.unirest.*;
 
 @SuppressWarnings("javadoc") // internal util
 public class Request {
 
 	private static final Logger LOG = getLogger(Request.class);
+
+	private static final int MAX_RETRIES = 5;
+	private static final long RETRY_SLEEP = ofSeconds(2).toMillis();
 
 	@Nonnull private final String url;
 	@Nonnull private final UnirestInstance unirest;
@@ -77,8 +83,7 @@ public class Request {
 		if (this.parameters != null && !this.parameters.isEmpty())
 			processedUrl += formatQuerystring(formatParameters(this.parameters), hasQuerystring);
 
-		LOG.trace("--> {}", processedUrl);
-		var response = this.unirest.get(processedUrl).asString();
+		var response = executeRequest(processedUrl, this.unirest, 0);
 		var json = response.getBody();
 
 		LOG.trace("<-- {}", json);
@@ -95,6 +100,29 @@ public class Request {
 		} catch (JSONException e) {
 			throw new AkinatorException("Couldn't parse a server response", e, processedUrl, response);
 		}
+	}
+
+	@Nonnull
+	private static HttpResponse<String> executeRequest(@Nonnull String processedUrl, @Nonnull UnirestInstance unirest,
+													   int attempt) {
+		LOG.trace("--> {}", processedUrl);
+		var response = unirest.get(processedUrl).asString();
+
+		if (response.getStatus() >= 500) {
+			if (attempt < MAX_RETRIES) {
+				LOG.trace("Got HTTP {} {}, retrying after {} ms", response.getStatus(), response.getStatusText(),
+						  RETRY_SLEEP);
+				sleepUnchecked(RETRY_SLEEP);
+				return executeRequest(processedUrl, unirest, attempt + 1);
+
+			} else {
+				var message = format("Got HTTP %d %s and exceeded re-attempts (%d)", response.getStatus(),
+									 response.getStatusText(), MAX_RETRIES);
+				throw new AkinatorException(message);
+			}
+		}
+
+		return response;
 	}
 
 	private void checkState() {

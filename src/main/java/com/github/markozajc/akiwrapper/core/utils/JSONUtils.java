@@ -11,6 +11,9 @@ import javax.annotation.Nonnull;
 import org.json.JSONObject;
 
 /**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
  * A set of utilities for JSON that prevent type errors.
  *
  * @author Marko Zajc

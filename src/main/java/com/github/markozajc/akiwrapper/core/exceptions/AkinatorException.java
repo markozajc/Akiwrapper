@@ -49,15 +49,20 @@ public class AkinatorException extends RuntimeException {
 	}
 
 	@Nullable
+	@SuppressWarnings("javadoc") // internal
 	public String getRequestUrl() {
 		return this.requestUrl;
 	}
 
 	@Nullable
+	@SuppressWarnings("javadoc") // internal
 	public HttpResponse<String> getResponse() {
 		return this.response;
 	}
 
+	/**
+	 * @return the request debug information (when available) or an empty string
+	 */
 	@Nonnull
 	@SuppressWarnings("null")
 	public String getDebugInformation() {
