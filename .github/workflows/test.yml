@@ -28,6 +28,6 @@ jobs:
       uses: nick-fields/retry@v2
       with:
         timeout_minutes: 60
-        max_attempts: 3
+        max_attempts: 1
         command: mvn --batch-mode verify -Dmaven.javadoc.skip=true
         on_retry_command: mvn --batch-mode clean

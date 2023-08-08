@@ -57,7 +57,7 @@
 						<configuration>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>zajc.akiwrapper.AkinatorExample</mainClass>
+									<mainClass>org.eu.zajc.akiwrapper.example.AkinatorExample</mainClass>
 								</transformer>
 							</transformers>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
@@ -72,9 +72,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.github.markozajc</groupId>
+			<groupId>org.eu.zajc</groupId>
 			<artifactId>akiwrapper</artifactId>
-			<version>1.6</version>
+			<version>1.6.1</version>
 		</dependency>
 	</dependencies>
 
