@@ -5,11 +5,11 @@
 [build]: https://github.com/markozajc/Akiwrapper/actions/workflows/test.yml?query=branch%3Amaster
 
 > **Warning**\
-> For 1.6.1 and above:\
+> Relocation notice for 1.6.1 and above:\
 > Akiwrapper's artifact has relocated from `com.github.markozajc:akiwrapper` to `org.eu.zajc:akiwrapper`. Additionally,
 > the same change has been made on the base package name. You will need to change Akiwrapper's dependency's `groupId`
-> in your pom.xml (as shown in the installation section) and you will need to replace `com.github.markozajc.akiwrapper`
-> with `org.eu.zajc.akiwrapper` in your imports.
+> in your pom.xml or build.gradle (as shown in the installation section) and you will need to replace
+> `com.github.markozajc.akiwrapper` with `org.eu.zajc.akiwrapper` in your imports.
 
 # Akiwrapper [![Maven central emblem][maven-img]][maven] [![Build status][build-img]][build]
 Akiwrapper is a Java API wrapper for [Akinator](https://en.akinator.com/), the popular online
