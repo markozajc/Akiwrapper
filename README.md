@@ -1,8 +1,15 @@
-[maven-img]: https://img.shields.io/maven-central/v/com.github.markozajc/akiwrapper.svg?label=Maven%20Central
-[maven]: https://mvnrepository.com/artifact/com.github.markozajc/akiwrapper
+[maven-img]: https://img.shields.io/maven-central/v/org.eu.zajc/akiwrapper.svg?label=Maven%20Central
+[maven]: https://mvnrepository.com/artifact/org.eu.zajc/akiwrapper
 
 [build-img]: https://github.com/markozajc/Akiwrapper/actions/workflows/test.yml/badge.svg?branch=master
 [build]: https://github.com/markozajc/Akiwrapper/actions/workflows/test.yml?query=branch%3Amaster
+
+> **Warning**\
+> For 1.6.1 and above:\
+> Akiwrapper's artifact has relocated from `com.github.markozajc:akiwrapper` to `org.eu.zajc:akiwrapper`. Additionally,
+> the same change has been made on the base package name. You will need to change Akiwrapper's dependency's `groupId`
+> in your pom.xml (as shown in the installation section) and you will need to replace `com.github.markozajc.akiwrapper`
+> with `org.eu.zajc.akiwrapper` in your imports.
 
 # Akiwrapper [![Maven central emblem][maven-img]][maven] [![Build status][build-img]][build]
 Akiwrapper is a Java API wrapper for [Akinator](https://en.akinator.com/), the popular online
@@ -13,15 +20,15 @@ Akiwrapper is a Java API wrapper for [Akinator](https://en.akinator.com/), the p
 Add the following dependency to your pom.xml:
 ```xml
 <dependency>
-    <groupId>com.github.markozajc</groupId>
+    <groupId>org.eu.zajc</groupId>
     <artifactId>akiwrapper</artifactId>
-    <version>1.6</version>
+    <version>1.6.1</version>
 </dependency>
 ```
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
-implementation group: 'com.github.markozajc', name: 'akiwrapper', version: '1.6'
+implementation group: 'org.eu.zajc', name: 'akiwrapper', version: '1.6.1'
 ```
 
 ## Usage
