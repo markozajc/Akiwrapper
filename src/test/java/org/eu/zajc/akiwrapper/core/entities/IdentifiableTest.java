@@ -18,7 +18,6 @@
  */
 package org.eu.zajc.akiwrapper.core.entities;
 
-import org.eu.zajc.akiwrapper.core.entities.Identifiable;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

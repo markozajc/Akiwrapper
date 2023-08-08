@@ -20,8 +20,8 @@ package org.eu.zajc.akiwrapper.core.entities;
 
 import javax.annotation.Nonnull;
 
-import org.eu.zajc.akiwrapper.AkiwrapperBuilder;
 import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
+import org.eu.zajc.akiwrapper.AkiwrapperBuilder;
 
 /**
  * A representation of Akinator's question that is to be answered with an

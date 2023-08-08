@@ -24,7 +24,6 @@ import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.Server.GuessType;
-import org.eu.zajc.akiwrapper.example.*;
 
 /**
  * A representation of Akinator's guess. A guess may span different types of subject,

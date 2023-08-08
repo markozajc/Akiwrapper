@@ -28,12 +28,10 @@ import java.util.stream.Stream;
 
 import javax.annotation.*;
 
-import org.eu.zajc.akiwrapper.*;
 import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.entities.Server.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
-import org.eu.zajc.akiwrapper.example.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.opentest4j.TestAbortedException;
