@@ -5,7 +5,7 @@
 [build]: https://github.com/markozajc/Akiwrapper/actions/workflows/test.yml?query=branch%3Amaster
 
 > **Warning**\
-> Relocation notice for 1.6.1 and above:\
+> **Relocation notice for 1.6.1 and above:**\
 > Akiwrapper's artifact has relocated from `com.github.markozajc:akiwrapper` to `org.eu.zajc:akiwrapper`. Additionally,
 > the same change has been made on the base package name. You will need to change Akiwrapper's dependency's `groupId`
 > in your pom.xml or build.gradle (as shown in the installation section) and you will need to replace
