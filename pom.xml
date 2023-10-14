@@ -5,7 +5,7 @@
 
 	<groupId>org.eu.zajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.6.1</version>
+	<version>1.6.1-1</version>
 
 	<name>Akiwrapper</name>
 	<description>A Java API wrapper for Akinator</description>
@@ -38,7 +38,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<junit.version>5.10.0</junit.version>
-		<slf4j.version>2.0.7</slf4j.version>
+		<slf4j.version>2.0.9</slf4j.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20230618</version>
+			<version>20231013</version>
 		</dependency>
 
 		<!-- HTTP requests -->
@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>com.github.spotbugs</groupId>
 			<artifactId>spotbugs-annotations</artifactId>
-			<version>4.7.3</version>
+			<version>4.8.0</version>
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
@@ -132,7 +132,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.1</version>
 				<executions>
 					<execution>
 						<goals>
@@ -153,7 +153,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.6.0</version>
 				<executions>
 					<execution>
 						<phase>verify</phase>
@@ -185,7 +185,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.16.0</version>
+				<version>2.16.1</version>
 				<configuration>
 					<rulesUri>file://${project.basedir}/versions-ruleset.xml</rulesUri>
 				</configuration>
