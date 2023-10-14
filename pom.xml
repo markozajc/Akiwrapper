@@ -5,7 +5,7 @@
 
 	<groupId>org.eu.zajc</groupId>
 	<artifactId>akiwrapper</artifactId>
-	<version>1.6.1</version>
+	<version>1.6.1-1</version>
 
 	<name>Akiwrapper</name>
 	<description>A Java API wrapper for Akinator</description>
