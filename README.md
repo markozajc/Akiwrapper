@@ -4,7 +4,7 @@
 [build-img]: https://github.com/markozajc/Akiwrapper/actions/workflows/test.yml/badge.svg?branch=master
 [build]: https://github.com/markozajc/Akiwrapper/actions/workflows/test.yml?query=branch%3Amaster
 
-> **Warning**\
+> [!WARNING]
 > **Relocation notice for 1.6.1 and above:**\
 > Akiwrapper's artifact has relocated from `com.github.markozajc:akiwrapper` to `org.eu.zajc:akiwrapper`. Additionally,
 > the same change has been made on the base package name. You will need to change Akiwrapper's dependency's `groupId`
