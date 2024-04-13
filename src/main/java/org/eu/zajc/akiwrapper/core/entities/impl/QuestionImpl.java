@@ -90,8 +90,6 @@ public class QuestionImpl extends AbstractQuery implements Question {
 
 	@Override
 	public Query answer(Answer answer) {
-		// TODO check if exhausted before calling
-
 		var resp = ANSWER.createRequest(this.getAkiwrapper())
 			.parameter(PARAMETER_STEP, getStep())
 			.parameter(PARAMETER_PROGRESSION, getProgression())
@@ -104,8 +102,6 @@ public class QuestionImpl extends AbstractQuery implements Question {
 	@Override
 	@SuppressWarnings("null")
 	public Query undoAnswer() {
-		// TODO check if exhausted before calling
-
 		if (getStep() == 0)
 			throw new UndoOutOfBoundsException();
 
