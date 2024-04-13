@@ -22,13 +22,13 @@ Add the following dependency to your pom.xml:
 <dependency>
     <groupId>org.eu.zajc</groupId>
     <artifactId>akiwrapper</artifactId>
-    <version>1.6.1-1</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
-implementation group: 'org.eu.zajc', name: 'akiwrapper', version: '1.6.1-1'
+implementation group: 'org.eu.zajc', name: 'akiwrapper', version: '2.0.0'
 ```
 
 ## Usage
@@ -45,51 +45,14 @@ something other than characters, you may use the following setup:
 ```java
 Akiwrapper aw = new AkiwrapperBuilder()
     .setLanguage(Language.GERMAN)
-    .setGuessType(GuessType.PLACE)
+    .setTheme(Theme.PLACE)
     .build();
 ```
-(keep in mind that not all language-guesstype combinations are supported, though all languages support `CHARACTER`)
+(keep in mind that not all language-theme combinations are supported, though all languages support `CHARACTER`)
 
 ### The game loop
 
-You'll typically want to set up a question-answer loop. Fetch questions with
-```java
-Question question = aw.getQuestion();
-```
-
-Display the question to the player, collect their answer, and feed it to Akinator with
-```java
-aw.answer(Answer.YES);
-``` 
-
-If the player wishes to undo their previous answer, you can let do that with
-```java
-aw.undoAnswer();
-```
-You can undo answers all the way to the first question.
-
-### Guesses
-
-Akinator will occasionally try guessing what the player is thinking about.
-```java
-var guess = aw.suggestGuess()
-if (guess != null) {
-    // ask the player to confirm or reject the guess
-    if (playerConfirmedGuess) {
-        aw.confirmGuess(guess); // let Akinator know that the guess is right
-        return; // finish the game
-        
-    } else {
-        aw.rejectLastGuess();  // let Akinator know that the guess is not right - this also gives us a new question
-    }
-}
-```
-When a guess is available, the player should be asked to confirm it. If the guess is confirmed, we finish the game and
-optionally let Akinator know. If the guess is rejected, we let Akinator know and continue. Akiwrapper also keeps track
-of rejected guesses for you, so `suggestGuess()` never returns the same guess.
- 
-At some point (normally after question #80) Akinator will run out of questions to ask. This is indicated by
-`aw.isExhausted()`. After there are no questions left, the last guess should be retrieved and shown to the player.
+**TODO**
 
 ### Cleaning up
 
