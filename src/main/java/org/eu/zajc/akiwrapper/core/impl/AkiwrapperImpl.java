@@ -49,9 +49,9 @@ public class AkiwrapperImpl implements Akiwrapper {
 		private final String session;
 		private final String signature;
 
-		private Session(String signature, String session) {
-			this.signature = signature;
+		private Session(String session, String signature) {
 			this.session = session;
+			this.signature = signature;
 		}
 
 		@Nonnull

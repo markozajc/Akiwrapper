@@ -18,6 +18,7 @@ package org.eu.zajc.akiwrapper.core.utils.route;
 
 import static java.lang.String.format;
 import static java.time.Duration.ofSeconds;
+import static kong.unirest.ContentType.APPLICATION_FORM_URLENCODED;
 import static org.eu.zajc.akiwrapper.core.utils.Utilities.sleepUnchecked;
 import static org.eu.zajc.akiwrapper.core.utils.route.ApiStatus.OK;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -67,8 +68,6 @@ public class ApiRequest {
 		var resp = executeRequest();
 		var body = resp.getBody();
 
-		LOG.trace("<-- {}", body);
-
 		var doc = Jsoup.parse(body);
 		var gameRoot = doc.getElementById("game_content");
 		if (gameRoot == null)
@@ -86,8 +85,6 @@ public class ApiRequest {
 		var resp = executeRequest();
 		var body = resp.getBody();
 
-		LOG.trace("<-- {}", body);
-
 		try {
 			var json = new JSONObject(body);
 			var status = ApiStatus.fromJson(json);
@@ -104,7 +101,6 @@ public class ApiRequest {
 	@Nonnull
 	public ApiResponse<Void> retrieveEmpty() {
 		executeRequest();
-		LOG.trace("<-- (response ignored)");
 		return new ApiResponse<>(null, OK);
 	}
 
@@ -119,26 +115,34 @@ public class ApiRequest {
 	@Nonnull
 	private static HttpResponse<String> executeRequest(@Nonnull String url, @Nonnull Map<String, Object> parameters,
 													   @Nonnull UnirestInstance unirest, int attempt) {
-		LOG.trace("--> {}", url);
-		var response = unirest.post(url).fields(parameters).asString();
+		var req = unirest.post(url).contentType(APPLICATION_FORM_URLENCODED.getMimeType()).fields(parameters);
+		if (LOG.isTraceEnabled())
+			req.toSummary().asString().lines().forEach(l -> LOG.trace("--> {}", l));
 
-		if (response.getStatus() >= 500) {
+		var resp = req.asString();
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("<-- {} {}", resp.getStatus(), resp.getStatusText());
+			resp.getHeaders().toString().lines().forEach(l -> LOG.trace("<-- {}", l));
+			LOG.trace("<-- ========================");
+			resp.getBody().lines().forEach(l -> LOG.trace("<-- {}", l));
+		}
+
+		if (resp.getStatus() >= 500) {
 			if (attempt < MAX_RETRIES) {
-				LOG.trace("Got HTTP {} {}, retrying after {} ms", response.getStatus(), response.getStatusText(),
-						  RETRY_SLEEP);
+				LOG.trace("Got HTTP {} {}, retrying after {} ms", resp.getStatus(), resp.getStatusText(), RETRY_SLEEP);
 				sleepUnchecked(RETRY_SLEEP);
 				return executeRequest(url, parameters, unirest, attempt + 1);
 
 			} else {
-				throw new AkinatorException(format("Got HTTP %d %s and exceeded re-attempts (%d)", response.getStatus(),
-												   response.getStatusText(), MAX_RETRIES));
+				throw new AkinatorException(format("Got HTTP %d %s and exceeded re-attempts (%d)", resp.getStatus(),
+												   resp.getStatusText(), MAX_RETRIES));
 			}
 
-		} else if (!response.isSuccess()) {
-			throw new AkinatorException("Got HTTP %d %s".formatted(response.getStatus(), response.getStatusText()));
+		} else if (!resp.isSuccess()) {
+			throw new AkinatorException("Got HTTP %d %s".formatted(resp.getStatus(), resp.getStatusText()));
 		}
 
-		return response;
+		return resp;
 	}
 
 }

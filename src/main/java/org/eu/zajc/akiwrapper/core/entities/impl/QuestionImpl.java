@@ -96,6 +96,7 @@ public class QuestionImpl extends AResponse implements Question {
 			.parameter(PARAMETER_STEP, getStep())
 			.parameter(PARAMETER_PROGRESSION, getProgression())
 			.parameter(PARAMETER_ANSWER, answer.getId())
+			.parameter(PARAMETER_STEP_LAST_PROPOSITION, this.getAkiwrapper().getLastGuessStep())
 			.retrieveJson();
 		return parseNext(resp);
 	}
