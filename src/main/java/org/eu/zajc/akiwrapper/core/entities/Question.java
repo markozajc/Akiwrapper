@@ -31,10 +31,10 @@ import org.eu.zajc.akiwrapper.core.exceptions.*;
  *
  * @author Marko Zajc
  */
-public interface Question extends Response {
+public interface Question extends Query {
 
 	/**
-	 * Sends an answer to the current {@link Question} and fetches the {@link Response},
+	 * Sends an answer to the current {@link Question} and fetches the {@link Query},
 	 * incrementing the current step.<br>
 	 * If there are no more questions left, this will return {@code null}. Any subsequent
 	 * calls to this method after the question list has been exhausted will throw a
@@ -55,7 +55,7 @@ public interface Question extends Response {
 	 * @see #undoAnswer()
 	 */
 	@Nullable
-	Response answer(Answer answer);
+	Query answer(Answer answer);
 
 	/**
 	 * Goes one question backwards, undoing the previous {@link #answer(Answer)} call.
@@ -81,7 +81,7 @@ public interface Question extends Response {
 	 * @see #answer(Answer)
 	 */
 	@Nonnull
-	Response undoAnswer();
+	Query undoAnswer();
 
 	/**
 	 * Returns the question content that should be displayed to the user. This localized

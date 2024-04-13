@@ -16,14 +16,14 @@
  */
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
-import static org.eu.zajc.akiwrapper.core.utils.route.ApiStatus.QUESTIONS_EXHAUSTED;
+import static org.eu.zajc.akiwrapper.core.utils.route.Status.QUESTIONS_EXHAUSTED;
 
 import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
-import org.eu.zajc.akiwrapper.core.utils.route.ApiResponse;
+import org.eu.zajc.akiwrapper.core.utils.route.Response;
 import org.json.JSONObject;
 
 /**
@@ -34,24 +34,24 @@ import org.json.JSONObject;
  * @author Marko Zajc
  */
 @SuppressWarnings("javadoc") // internal impl
-public abstract class AResponse implements Response {
+public abstract class AbstractQuery implements Query {
 
 	@Nonnull private final AkiwrapperImpl akiwrapper;
 	private final int step;
 	private final double progression;
 
-	protected AResponse(@Nonnull AkiwrapperImpl akiwrapper, int step, double progression) {
+	protected AbstractQuery(@Nonnull AkiwrapperImpl akiwrapper, int step, double progression) {
 		this.akiwrapper = akiwrapper;
 		this.step = step;
 		this.progression = progression;
 	}
 
 	protected void ensureCurrent() {
-		if (this.akiwrapper.getCurrentResponse() != this)
-			throw new IllegalStateException("Can only reply to the current response");
+		if (this.akiwrapper.getCurrentQuery() != this)
+			throw new IllegalStateException("Can only reply to the current query");
 	}
 
-	public Response parseNext(@Nonnull ApiResponse<JSONObject> resp) {
+	public Query parseNext(@Nonnull Response<JSONObject> resp) {
 		var parsed = resp.getStatus() == QUESTIONS_EXHAUSTED ? null : fromJson(this.akiwrapper, resp.getBody());
 		if (parsed instanceof Guess)
 			this.akiwrapper.setLastGuessStep(this.step);
@@ -61,7 +61,7 @@ public abstract class AResponse implements Response {
 	}
 
 	@Nonnull
-	private static Response fromJson(@Nonnull AkiwrapperImpl akiwrapper, JSONObject json) {
+	private static Query fromJson(@Nonnull AkiwrapperImpl akiwrapper, JSONObject json) {
 		if (json.has("question"))
 			return QuestionImpl.fromJson(akiwrapper, json);
 		else if (json.has("name_proposition"))

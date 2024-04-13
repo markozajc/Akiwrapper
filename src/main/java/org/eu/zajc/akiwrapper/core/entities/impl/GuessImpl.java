@@ -18,7 +18,7 @@
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
 import static org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl.*;
-import static org.eu.zajc.akiwrapper.core.utils.route.ApiRoutes.*;
+import static org.eu.zajc.akiwrapper.core.utils.route.Routes.*;
 
 import java.net.*;
 
@@ -37,7 +37,7 @@ import org.json.*;
  * @author Marko Zajc
  */
 @SuppressWarnings("javadoc") // internal impl
-public class GuessImpl extends AResponse implements Guess {
+public class GuessImpl extends AbstractQuery implements Guess {
 
 	@Nonnull private final String id;
 	@Nonnull private final String name;
@@ -62,7 +62,7 @@ public class GuessImpl extends AResponse implements Guess {
 	@SuppressWarnings("null")
 	public static GuessImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json) {
 		try {
-			var last = akiwrapper.getCurrentResponse();
+			var last = akiwrapper.getCurrentQuery();
 			return new GuessImpl(akiwrapper, last == null ? LAST_STEP : last.getStep(),
 								 last == null ? 100D : last.getProgression(), json.getString("id_proposition"),
 								 json.getString("name_proposition"), getPseudonym(json),
@@ -100,7 +100,7 @@ public class GuessImpl extends AResponse implements Guess {
 	}
 
 	@Override
-	public Response reject() {
+	public Query reject() {
 		// TODO check if exhausted before calling
 
 		try {

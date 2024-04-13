@@ -14,28 +14,32 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.eu.zajc.akiwrapper.core.utils.route;
+package org.eu.zajc.akiwrapper.core.entities;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("javadoc") // internal util
-public class ApiResponse<T> {
+import org.eu.zajc.akiwrapper.Akiwrapper;
 
-	private final T body;
-	@Nonnull private final ApiStatus status;
-
-	public ApiResponse(T body, @Nonnull ApiStatus status) {
-		this.status = status;
-		this.body = body;
-	}
-
-	public T getBody() {
-		return this.body;
-	}
+public interface Query {
 
 	@Nonnull
-	public ApiStatus getStatus() {
-		return this.status;
-	}
+	Akiwrapper getAkiwrapper();
+
+	/**
+	 * Returns the current step (question number). This uses zero-based index, meaning
+	 * the first question will be on step {@code 0}. TODO details for guess
+	 *
+	 * @return current step.
+	 */
+	int getStep();
+
+	/**
+	 * Current completion percentage (as a double). Higher means that Akinator believes
+	 * to be closer to the correct answer.<br>
+	 * The value ranges between 0 and 100.
+	 *
+	 * @return completion percentage.
+	 */
+	double getProgression();
 
 }

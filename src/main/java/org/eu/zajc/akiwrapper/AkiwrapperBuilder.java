@@ -156,7 +156,7 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Sets the {@link Language}. Akinator will return localized {@link Response}s
+	 * Sets the {@link Language}. Akinator will return localized {@link Query}s
 	 * depending on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
@@ -176,7 +176,7 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Gets the {@link Language}. Akinator will return localized {@link Response}s
+	 * Gets the {@link Language}. Akinator will return localized {@link Query}s
 	 * depending on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
@@ -194,7 +194,7 @@ public class AkiwrapperBuilder {
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
 	 * Sets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Response}s will be about.<br>
+	 * {@link Query}s will be about.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @param theme
@@ -214,7 +214,7 @@ public class AkiwrapperBuilder {
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
 	 * Sets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Response}s will be about.<br>
+	 * {@link Query}s will be about.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @param theme
@@ -237,7 +237,7 @@ public class AkiwrapperBuilder {
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
 	 * Gets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Response}s will be about.<br>
+	 * {@link Query}s will be about.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @return theme preference.
@@ -254,7 +254,7 @@ public class AkiwrapperBuilder {
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
 	 * Gets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Response}s will be about.<br>
+	 * {@link Query}s will be about.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @return theme preference.

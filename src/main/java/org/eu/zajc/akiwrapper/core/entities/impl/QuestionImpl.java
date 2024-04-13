@@ -16,7 +16,7 @@
  */
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
-import static org.eu.zajc.akiwrapper.core.utils.route.ApiRoutes.*;
+import static org.eu.zajc.akiwrapper.core.utils.route.Routes.*;
 
 import java.net.*;
 import java.util.Optional;
@@ -39,7 +39,7 @@ import org.jsoup.nodes.Element;
  * @author Marko Zajc
  */
 @SuppressWarnings("javadoc") // internal impl
-public class QuestionImpl extends AResponse implements Question {
+public class QuestionImpl extends AbstractQuery implements Question {
 
 	@Nonnull private final String question;
 	@Nonnull private final URL akitude;
@@ -89,7 +89,7 @@ public class QuestionImpl extends AResponse implements Question {
 	}
 
 	@Override
-	public Response answer(Answer answer) {
+	public Query answer(Answer answer) {
 		// TODO check if exhausted before calling
 
 		var resp = ANSWER.createRequest(this.getAkiwrapper())
@@ -103,7 +103,7 @@ public class QuestionImpl extends AResponse implements Question {
 
 	@Override
 	@SuppressWarnings("null")
-	public Response undoAnswer() {
+	public Query undoAnswer() {
 		// TODO check if exhausted before calling
 
 		if (getStep() == 0)
