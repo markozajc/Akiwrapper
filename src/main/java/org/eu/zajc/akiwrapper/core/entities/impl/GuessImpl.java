@@ -17,13 +17,16 @@
 
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
+import static org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl.*;
+import static org.eu.zajc.akiwrapper.core.utils.route.ApiRoutes.*;
+
 import java.net.*;
 
 import javax.annotation.*;
 
-import org.eu.zajc.akiwrapper.Akiwrapper;
-import org.eu.zajc.akiwrapper.core.entities.Guess;
-import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
+import org.eu.zajc.akiwrapper.core.entities.*;
+import org.eu.zajc.akiwrapper.core.exceptions.*;
+import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.json.*;
 
 /**
@@ -34,9 +37,8 @@ import org.json.*;
  * @author Marko Zajc
  */
 @SuppressWarnings("javadoc") // internal impl
-public class GuessImpl implements Guess {
+public class GuessImpl extends AResponse implements Guess {
 
-	@Nonnull private final Akiwrapper akiwrapper;
 	@Nonnull private final String id;
 	@Nonnull private final String name;
 	@Nullable private final String pseudonym;
@@ -44,9 +46,10 @@ public class GuessImpl implements Guess {
 	@Nullable private final URL image;
 	@Nonnull private final String flagPhoto; // the purpose of this is unknown, but it's required for Routes.CHOICE
 
-	GuessImpl(@Nonnull Akiwrapper akiwrapper, @Nonnull String id, @Nonnull String name, @Nullable String pseudonym,
-			  @Nonnull String description, @Nullable URL image, @Nonnull String flagPhoto) {
-		this.akiwrapper = akiwrapper;
+	GuessImpl(@Nonnull AkiwrapperImpl akiwrapper, int step, double progression, @Nonnull String id,
+			  @Nonnull String name, @Nullable String pseudonym, @Nonnull String description, @Nullable URL image,
+			  @Nonnull String flagPhoto) {
+		super(akiwrapper, step, progression);
 		this.id = id;
 		this.name = name;
 		this.pseudonym = pseudonym;
@@ -55,11 +58,14 @@ public class GuessImpl implements Guess {
 		this.flagPhoto = flagPhoto;
 	}
 
+	@Nonnull
 	@SuppressWarnings("null")
-	public static GuessImpl fromJson(@Nonnull Akiwrapper akiwrapper, @Nonnull JSONObject json) {
+	public static GuessImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json) {
 		try {
-			return new GuessImpl(akiwrapper, json.getString("id_proposition"), json.getString("name"),
-								 getPseudonym(json), json.getString("description_proposition"),
+			var last = akiwrapper.getCurrentResponse();
+			return new GuessImpl(akiwrapper, last == null ? LAST_STEP : last.getStep(),
+								 last == null ? 100D : last.getProgression(), json.getString("id_proposition"),
+								 json.getString("name"), getPseudonym(json), json.getString("description_proposition"),
 								 new URI(json.getString("photo")).toURL(), json.getString("flag_photo"));
 
 		} catch (JSONException | URISyntaxException | MalformedURLException e) {
@@ -74,8 +80,45 @@ public class GuessImpl implements Guess {
 	}
 
 	@Override
-	public Akiwrapper getAkiwrapper() {
-		return this.akiwrapper;
+	public void confirm() {
+		// TODO check if exhausted before calling
+
+		try {
+			CHOICE.createRequest(getAkiwrapper())
+				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_GUESS_ID, this.id)
+				.parameter(PARAMETER_GUESS_NAME, this.name)
+				.parameter(PARAMETER_GUESS_DESCRIPTION, this.description)
+				.parameter(PARAMETER_GUESS_FLAG_PHOTO, this.flagPhoto)
+				.retrieveEmpty();
+
+		} catch (AkinatorException e) {
+			// we don't care about out session anymore anyways, throwing would be silly
+			LOG.warn("Caught an exception when confirming a guess", e);
+		}
+	}
+
+	@Override
+	public Response reject() {
+		// TODO check if exhausted before calling
+
+		try {
+			var resp = EXCLUDE.createRequest(getAkiwrapper())
+				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_PROGRESSION, getProgression())
+				.retrieveJson();
+			return parseNext(resp);
+
+		} catch (AkinatorException e) {
+			if (getAkiwrapper().isExhausted()) {
+				// we don't care about out session anymore anyways, throwing would be silly
+				LOG.warn("Caught an exception when rejecting a guess", e);
+				return null;
+
+			} else {
+				throw e;
+			}
+		}
 	}
 
 	@Override
@@ -103,6 +146,7 @@ public class GuessImpl implements Guess {
 		return this.id;
 	}
 
+	@Nonnull
 	public String getFlagPhoto() {
 		return this.flagPhoto;
 	}

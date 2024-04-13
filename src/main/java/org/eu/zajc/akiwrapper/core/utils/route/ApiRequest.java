@@ -19,7 +19,7 @@ package org.eu.zajc.akiwrapper.core.utils.route;
 import static java.lang.String.format;
 import static java.time.Duration.ofSeconds;
 import static org.eu.zajc.akiwrapper.core.utils.Utilities.sleepUnchecked;
-import static org.eu.zajc.akiwrapper.core.utils.route.Status.OK;
+import static org.eu.zajc.akiwrapper.core.utils.route.ApiStatus.OK;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Map;
@@ -35,9 +35,9 @@ import org.slf4j.Logger;
 import kong.unirest.*;
 
 @SuppressWarnings("javadoc") // internal util
-public class Request {
+public class ApiRequest {
 
-	private static final Logger LOG = getLogger(Request.class);
+	private static final Logger LOG = getLogger(ApiRequest.class);
 
 	private static final int MAX_RETRIES = 5;
 	private static final long RETRY_SLEEP = ofSeconds(2).toMillis();
@@ -46,21 +46,14 @@ public class Request {
 	@Nonnull private final UnirestInstance unirest;
 	@Nonnull private Map<String, Object> parameters;
 
-	Request(@Nonnull String url, @Nonnull UnirestInstance unirest, @Nonnull Map<String, Object> parameters) {
+	ApiRequest(@Nonnull String url, @Nonnull UnirestInstance unirest, @Nonnull Map<String, Object> parameters) {
 		this.url = url;
 		this.unirest = unirest;
 		this.parameters = parameters;
 	}
 
 	@Nonnull
-	@SuppressWarnings("null")
-	public Request parameter(@Nonnull String name, int value) {
-		parameter(name, Integer.toString(value));
-		return this;
-	}
-
-	@Nonnull
-	public Request parameter(@Nonnull String name, @Nonnull String value) {
+	public ApiRequest parameter(@Nonnull String name, @Nonnull Object value) {
 		if (this.parameters.containsKey(name))
 			this.parameters.put(name, value);
 		else
@@ -70,7 +63,7 @@ public class Request {
 	}
 
 	@Nonnull
-	public Response<Element> retrieveDocument() {
+	public ApiResponse<Element> retrieveDocument() {
 		var resp = executeRequest();
 		var body = resp.getBody();
 
@@ -81,15 +74,15 @@ public class Request {
 		if (gameRoot == null)
 			throw new MalformedResponseException();
 
-		var status = Status.fromHtml(gameRoot);
+		var status = ApiStatus.fromHtml(gameRoot);
 		if (status.isErroneous())
 			throw new ServerStatusException(status);
 
-		return new Response<>(gameRoot, status);
+		return new ApiResponse<>(gameRoot, status);
 	}
 
 	@Nonnull
-	public Response<JSONObject> retrieveJson() {
+	public ApiResponse<JSONObject> retrieveJson() {
 		var resp = executeRequest();
 		var body = resp.getBody();
 
@@ -97,11 +90,11 @@ public class Request {
 
 		try {
 			var json = new JSONObject(body);
-			var status = Status.fromJson(json);
+			var status = ApiStatus.fromJson(json);
 			if (status.isErroneous())
 				throw new ServerStatusException(status);
 
-			return new Response<>(json, status);
+			return new ApiResponse<>(json, status);
 
 		} catch (JSONException e) {
 			throw new MalformedResponseException(e);
@@ -109,10 +102,10 @@ public class Request {
 	}
 
 	@Nonnull
-	public Response<Void> retrieveEmpty() {
+	public ApiResponse<Void> retrieveEmpty() {
 		executeRequest();
 		LOG.trace("<-- (response ignored)");
-		return new Response<>(null, OK);
+		return new ApiResponse<>(null, OK);
 	}
 
 	@Nonnull

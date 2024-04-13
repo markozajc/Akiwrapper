@@ -16,39 +16,26 @@
  */
 package org.eu.zajc.akiwrapper.core.utils.route;
 
-import static java.util.Collections.emptySet;
-
-import java.util.Set;
-
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("javadoc") // internal util
-public class RouteBuilder {
+public class ApiResponse<T> {
 
-	@Nonnull private final String path;
-	private boolean requiresSession = false;
-	private Set<String> parameterNames;
+	private final T body;
+	@Nonnull private final ApiStatus status;
 
-	public RouteBuilder(@Nonnull String path) {
-		this.path = path;
+	public ApiResponse(T body, @Nonnull ApiStatus status) {
+		this.status = status;
+		this.body = body;
+	}
+
+	public T getBody() {
+		return this.body;
 	}
 
 	@Nonnull
-	public RouteBuilder requiresSession() {
-		this.requiresSession = true;
-		return this;
-	}
-
-	@Nonnull
-	public RouteBuilder parameters(@Nonnull String... names) {
-		this.parameterNames = Set.of(names);
-		return this;
-	}
-
-	@SuppressWarnings("null")
-	public Route build() {
-		return new Route(this.path, this.requiresSession,
-						 this.parameterNames == null ? emptySet() : this.parameterNames);
+	public ApiStatus getStatus() {
+		return this.status;
 	}
 
 }

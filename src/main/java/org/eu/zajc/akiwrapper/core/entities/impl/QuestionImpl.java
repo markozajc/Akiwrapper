@@ -16,14 +16,17 @@
  */
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
+import static org.eu.zajc.akiwrapper.core.utils.route.ApiRoutes.*;
+
 import java.net.*;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
-import org.eu.zajc.akiwrapper.Akiwrapper;
-import org.eu.zajc.akiwrapper.core.entities.Question;
-import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
+import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
+import org.eu.zajc.akiwrapper.core.entities.*;
+import org.eu.zajc.akiwrapper.core.exceptions.*;
+import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.utils.Utilities;
 import org.json.*;
 import org.jsoup.nodes.Element;
@@ -36,28 +39,24 @@ import org.jsoup.nodes.Element;
  * @author Marko Zajc
  */
 @SuppressWarnings("javadoc") // internal impl
-public class QuestionImpl implements Question {
+public class QuestionImpl extends AResponse implements Question {
 
-	@Nonnull private final Akiwrapper akiwrapper;
 	@Nonnull private final String question;
 	@Nonnull private final URL akitude;
-	private final int step;
-	private final double progression;
 
-	private QuestionImpl(@Nonnull Akiwrapper akiwrapper, @Nonnull String question, int step, double progression,
+	private QuestionImpl(@Nonnull AkiwrapperImpl akiwrapper, int step, double progression, @Nonnull String question,
 						 @Nonnull URL akitude) {
-		this.akiwrapper = akiwrapper;
+		super(akiwrapper, step, progression);
 		this.question = question;
-		this.step = step;
-		this.progression = progression;
 		this.akitude = akitude;
 	}
 
+	@Nonnull
 	@SuppressWarnings("null")
-	public static QuestionImpl fromJson(@Nonnull Akiwrapper akiwrapper, @Nonnull JSONObject json) {
+	public static QuestionImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json) {
 		try {
-			return new QuestionImpl(akiwrapper, json.getString("question"), Utilities.parseInt(json.getString("step")),
-									Utilities.parseDouble(json.getString("progression")),
+			return new QuestionImpl(akiwrapper, Utilities.parseInt(json.getString("step")),
+									Utilities.parseDouble(json.getString("progression")), json.getString("question"),
 									new URI("https://en.akinator.com/assets/img/akitudes_670x1096/" +
 										json.getString("akitude")).toURL());
 
@@ -67,7 +66,7 @@ public class QuestionImpl implements Question {
 	}
 
 	@SuppressWarnings("null")
-	public static QuestionImpl fromHtml(@Nonnull Akiwrapper akiwrapper, @Nonnull Element gameRoot) {
+	public static QuestionImpl fromHtml(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull Element gameRoot) {
 		URL akitude;
 		try {
 			akitude = new URI("https://en.akinator.com" + Optional.ofNullable(gameRoot.getElementById("akitude"))
@@ -82,7 +81,7 @@ public class QuestionImpl implements Question {
 				.map(Element::text)
 				.orElseThrow(MalformedResponseException::new)) - 1;
 
-			return new QuestionImpl(akiwrapper, question, step, 0, akitude);
+			return new QuestionImpl(akiwrapper, step, 0, question, akitude);
 
 		} catch (MalformedURLException | URISyntaxException e) {
 			throw new MalformedResponseException(e);
@@ -90,23 +89,35 @@ public class QuestionImpl implements Question {
 	}
 
 	@Override
-	public Akiwrapper getAkiwrapper() {
-		return this.akiwrapper;
+	public Response answer(Answer answer) {
+		// TODO check if exhausted before calling
+
+		var resp = ANSWER.createRequest(this.getAkiwrapper())
+			.parameter(PARAMETER_STEP, getStep())
+			.parameter(PARAMETER_PROGRESSION, getProgression())
+			.parameter(PARAMETER_ANSWER, answer.getId())
+			.retrieveJson();
+		return parseNext(resp);
+	}
+
+	@Override
+	@SuppressWarnings("null")
+	public Response undoAnswer() {
+		// TODO check if exhausted before calling
+
+		if (getStep() == 0)
+			throw new UndoOutOfBoundsException();
+
+		var resp = CANCEL_ANSWER.createRequest(this.getAkiwrapper())
+			.parameter(PARAMETER_STEP, getStep())
+			.parameter(PARAMETER_PROGRESSION, getProgression())
+			.retrieveJson();
+		return parseNext(resp);
 	}
 
 	@Override
 	public String getText() {
 		return this.question;
-	}
-
-	@Override
-	public int getStep() {
-		return this.step;
-	}
-
-	@Override
-	public double getProgression() {
-		return this.progression;
 	}
 
 	@Override

@@ -21,7 +21,7 @@ import org.eu.zajc.akiwrapper.core.entities.Guess;
 import org.eu.zajc.akiwrapper.core.entities.impl.GuessImpl;
 
 @SuppressWarnings("javadoc") // internal util
-public final class Routes {
+public final class ApiRoutes {
 
 	/**
 	 * The current zero-indexed question number
@@ -60,20 +60,20 @@ public final class Routes {
 	 * Creates a new game session that all further state is associated with.<br>
 	 * <i>This route requires no parameters.</i>
 	 */
-	public static final Route NEW_SESSION = new RouteBuilder("/game").build();
+	public static final ApiRoute NEW_SESSION = new ApiRouteBuilder("/game").build();
 
 	/**
 	 * Answers the current question and fetches the next one.<br>
 	 * <b>This route requires a session</b><br>
 	 * Parameters:
 	 * <ul>
-	 * <li>{@link Routes#PARAMETER_STEP}</li>
-	 * <li>{@link Routes#PARAMETER_PROGRESSION}</li>
-	 * <li>{@link Routes#PARAMETER_ANSWER}</li>
-	 * <li>{@link Routes#PARAMETER_STEP_LAST_PROPOSITION}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_STEP}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_PROGRESSION}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_ANSWER}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_STEP_LAST_PROPOSITION}</li>
 	 * </ul>
 	 */
-	public static final Route ANSWER = new RouteBuilder("/answer").requiresSession()
+	public static final ApiRoute ANSWER = new ApiRouteBuilder("/answer").requiresSession()
 		.parameters(PARAMETER_STEP, PARAMETER_PROGRESSION, PARAMETER_ANSWER, PARAMETER_STEP_LAST_PROPOSITION)
 		.build();
 
@@ -82,12 +82,12 @@ public final class Routes {
 	 * <b>This route requires a session</b><br>
 	 * Parameters:
 	 * <ul>
-	 * <li>{@link Routes#PARAMETER_STEP}</li>
-	 * <li>{@link Routes#PARAMETER_PROGRESSION}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_STEP}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_PROGRESSION}</li>
 	 * </ul>
 	 */
-	public static final Route CANCEL_ANSWER =
-		new RouteBuilder("/cancel_answer").requiresSession().parameters(PARAMETER_STEP, PARAMETER_PROGRESSION).build();
+	public static final ApiRoute CANCEL_ANSWER =
+		new ApiRouteBuilder("/cancel_answer").requiresSession().parameters(PARAMETER_STEP, PARAMETER_PROGRESSION).build();
 
 	/**
 	 * <b>IMPORTANT: This route is EXCLUDED from tests!</b> Because automated tests don't
@@ -97,13 +97,13 @@ public final class Routes {
 	 * <b>This route requires a session</b><br>
 	 * Parameters:
 	 * <ul>
-	 * <li>{@link Routes#PARAMETER_STEP}</li>
-	 * <li>{@link Routes#PARAMETER_PROGRESSION}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_STEP}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_PROGRESSION}</li>
 	 * </ul>
 	 * <b>This route requires a session</b>
 	 */
-	public static final Route EXCLUDE =
-		new RouteBuilder("/exclude").requiresSession().parameters(PARAMETER_STEP, PARAMETER_PROGRESSION).build();
+	public static final ApiRoute EXCLUDE =
+		new ApiRouteBuilder("/exclude").requiresSession().parameters(PARAMETER_STEP, PARAMETER_PROGRESSION).build();
 
 	/**
 	 * <b>IMPORTANT: This route is EXCLUDED from tests!</b> Because automated tests don't
@@ -116,19 +116,19 @@ public final class Routes {
 	 * <b>This route requires a session</b><br>
 	 * Parameters:
 	 * <ul>
-	 * <li>{@link Routes#PARAMETER_STEP}</li>
-	 * <li>{@link Routes#PARAMETER_GUESS_ID}</li>
-	 * <li>{@link Routes#PARAMETER_GUESS_NAME}</li>
-	 * <li>{@link Routes#PARAMETER_GUESS_DESCRIPTION}</li>
-	 * <li>{@link Routes#PARAMETER_GUESS_FLAG_PHOTO}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_STEP}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_GUESS_ID}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_GUESS_NAME}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_GUESS_DESCRIPTION}</li>
+	 * <li>{@link ApiRoutes#PARAMETER_GUESS_FLAG_PHOTO}</li>
 	 * </ul>
 	 * <b>This route requires a session</b>
 	 */
-	public static final Route CHOICE = new RouteBuilder("/choice").requiresSession()
+	public static final ApiRoute CHOICE = new ApiRouteBuilder("/choice").requiresSession()
 		.parameters(PARAMETER_STEP, PARAMETER_GUESS_ID, PARAMETER_GUESS_FLAG_PHOTO, PARAMETER_GUESS_NAME,
 					PARAMETER_GUESS_DESCRIPTION)
 		.build();
 
-	private Routes() {}
+	private ApiRoutes() {}
 
 }

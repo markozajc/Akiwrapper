@@ -35,6 +35,28 @@ import org.eu.zajc.akiwrapper.AkiwrapperBuilder;
 public interface Guess extends Response {
 
 	/**
+	 * Confirms the {@link Guess}. This ends the session and likely affects Akinator's
+	 * algorithm to associate the taken answer route with the confirmed guess, improving
+	 * the guessing algorithm.
+	 *
+	 * @apiNote Do not use this method in automated tests, as it introduces faulty data
+	 *          into Akinator's database, dulling the ranking algorithm.
+	 */
+	void confirm();
+
+	/**
+	 * Rejects the {@link Guess} and provides the next {@link Response}. If the response
+	 * is a question, it will have the same step as the previous one, but different text.
+	 *
+	 * @return Akinator's {@link Response}.
+	 *
+	 * @apiNote Do not use this method in automated tests, as it introduces faulty data
+	 *          into Akinator's database, dulling the ranking algorithm.
+	 */
+	@Nullable
+	Response reject();
+
+	/**
 	 * Returns the name of the guessed subject. This is provided in the language that was
 	 * specified using the {@link AkiwrapperBuilder}.
 	 *

@@ -16,7 +16,7 @@
  */
 package org.eu.zajc.akiwrapper.core.exceptions;
 
-import org.eu.zajc.akiwrapper.core.utils.route.Status;
+import org.eu.zajc.akiwrapper.core.utils.route.ApiStatus;
 
 /**
  * An exception indicating that the server returned an erroneous status.
@@ -25,15 +25,15 @@ import org.eu.zajc.akiwrapper.core.utils.route.Status;
  */
 public class ServerStatusException extends AkinatorException {
 
-	private final Status status;
+	private final ApiStatus status;
 
 	@SuppressWarnings("javadoc") // internal
-	public ServerStatusException(Status status) {
+	public ServerStatusException(ApiStatus status) {
 		super("Got an erroneous status: " + status.toString());
 		this.status = status;
 	}
 
-	public Status getStatus() {
+	public ApiStatus getStatus() {
 		return this.status;
 	}
 
