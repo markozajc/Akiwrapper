@@ -14,32 +14,16 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.eu.zajc.akiwrapper.core.entities;
+package snippet;
 
-import org.junit.jupiter.api.Test;
+public class Snippet {
 
-import static org.junit.jupiter.api.Assertions.*;
-
-class IdentifiableTest {
-
-	@Test
-	void testGetIdLong() {
-		Identifiable identifiable = () -> "1234";
-		assertEquals(1234, identifiable.getIdLong());
-	}
-
-	@Test
-	@SuppressWarnings("null")
-	void testGetIdLongLong() {
-		String maxLongString = Long.toString(Long.MAX_VALUE);
-		Identifiable identifiable = () -> maxLongString;
-		assertEquals(Long.MAX_VALUE, identifiable.getIdLong());
-	}
-
-	@Test
-	void testGetIdLongUnparsable() {
-		Identifiable identifiable = () -> "abcd";
-		assertThrows(NumberFormatException.class, () -> identifiable.getIdLong());
-	}
-
+	 * Rejects the current {@link Guess}<br>
+	 * <b>This route requires a session</b><br>
+	 * Parameters:
+	 * <ul>
+	 * <li>{@link Routes#PARAMETER_STEP}</li>
+	 * <li>{@link Routes#PARAMETER_PROGRESSION}</li>
+	 * </ul>
 }
+

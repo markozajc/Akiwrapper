@@ -16,15 +16,13 @@
  */
 package org.eu.zajc.akiwrapper.core.impl;
 
-import static java.lang.Integer.parseInt;
-import static java.lang.Long.parseLong;
-import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toUnmodifiableList;
 import static java.util.stream.StreamSupport.stream;
-import static org.eu.zajc.akiwrapper.core.entities.Status.Reason.QUESTIONS_EXHAUSTED;
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.*;
+import static org.eu.zajc.akiwrapper.core.utils.route.Status.Reason.QUESTIONS_EXHAUSTED;
 
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 
@@ -34,8 +32,8 @@ import org.eu.zajc.akiwrapper.Akiwrapper;
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.entities.impl.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
-import org.eu.zajc.akiwrapper.core.utils.ApiKey;
 import org.json.JSONObject;
+import org.jsoup.nodes.Element;
 import org.slf4j.*;
 
 import kong.unirest.UnirestInstance;
@@ -52,32 +50,30 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	public static class Session {
 
-		private static final String FORMAT_QUERYSTRING = "session=%s&signature=%s";
+		private final String session;
+		private final String signature;
 
-		private final long signature;
-		private final int session;
-
-		private Session(long signature, int session) {
+		private Session(String signature, String session) {
 			this.signature = signature;
 			this.session = session;
 		}
 
 		@Nonnull
-		public static Session fromJson(@Nonnull JSONObject parameters) {
-			var session = parameters.getJSONObject("identification");
-			return new Session(parseLong(session.getString("signature")), parseInt(session.getString("session")));
+		@SuppressWarnings("null")
+		public static Session fromHtml(@Nonnull Element gameRoot) {
+			return Optional.ofNullable(gameRoot.getElementById("askSoundlike")).map(o -> {
+				var session = ofNullable(o.getElementById("session")).map(e -> e.attr("value")).orElse(null);
+				var signature = ofNullable(o.getElementById("signature")).map(e -> e.attr("value")).orElse(null);
+				if (session == null || signature == null)
+					return null;
+
+				return new Session(session, signature);
+			}).orElseThrow(MalformedResponseException::new);
 		}
 
-		public long getSignature() {
-			return this.signature;
-		}
-
-		public int getSession() {
-			return this.session;
-		}
-
-		public String asQuerystring() {
-			return format(FORMAT_QUERYSTRING, this.getSession(), this.getSignature());
+		public void apply(@Nonnull Map<String, Object> parameters) {
+			parameters.put("session", this.session);
+			parameters.put("signature", this.signature);
 		}
 	}
 
@@ -85,28 +81,29 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	private static final int LAST_STEP = 80;
 
-	@Nonnull private final ServerImpl server;
 	@Nonnull private final UnirestInstance unirest;
+	@Nonnull private final Language language;
+	@Nonnull private final Theme theme;
 	private final boolean filterProfanity;
 
-	private ApiKey apiKey;
 	private Session session;
-	private Question question;
+	private Response lastResponse;
 	private int lastGuessStep;
 	private MutableLongSet rejectedGuesses = LongSets.mutable.empty();
 
-	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull ServerImpl server, boolean filterProfanity) {
-		this.filterProfanity = filterProfanity;
-		this.server = server;
+	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull Language language, @Nonnull Theme theme,
+						  boolean filterProfanity) {
 		this.unirest = unirest;
+		this.language = language;
+		this.theme = theme;
+		this.filterProfanity = filterProfanity;
 	}
 
 	@SuppressWarnings("null")
 	public void createSession() {
-		this.apiKey = ApiKey.accquireApiKey(this.unirest);
-		var sessionParameters = NEW_SESSION.createRequest(this).execute().getBody();
-		this.session = Session.fromJson(sessionParameters);
-		this.question = QuestionImpl.fromJson(sessionParameters.getJSONObject("step_information"));
+		var resp = NEW_SESSION.createRequest(this).retrieveDocument().getBody();
+		this.session = Session.fromHtml(resp);
+		this.lastResponse = QuestionImpl.fromHtml(this, resp);
 	}
 
 	@Override
@@ -117,7 +114,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		var response = ANSWER.createRequest(this)
 			.parameter(PARAMETER_STEP, getStep())
 			.parameter(PARAMETER_ANSWER, answer.getId())
-			.execute();
+			.retrieveJson();
 
 		if (response.getStatus().getReason() == QUESTIONS_EXHAUSTED) {
 			return this.question = null;
@@ -135,7 +132,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		if (getStep() == 0)
 			throw new UndoOutOfBoundsException();
 
-		var response = CANCEL_ANSWER.createRequest(this).parameter(PARAMETER_STEP, getStep()).execute();
+		var response = CANCEL_ANSWER.createRequest(this).parameter(PARAMETER_STEP, getStep()).retrieveJson();
 		return this.question = QuestionImpl.fromJson(response.getBody());
 	}
 
@@ -145,7 +142,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		var request = LIST.createRequest(this).parameter(PARAMETER_STEP, getStep());
 		if (count > 0)
 			request.parameter(PARAMETER_SIZE, count);
-		var response = request.execute();
+		var response = request.retrieveJson();
 
 		return stream(response.getBody().getJSONArray("elements").spliterator(), false).map(JSONObject.class::cast)
 			.map(j -> j.getJSONObject("element"))
@@ -177,7 +174,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Override
 	public Question rejectLastGuess() {
 		try {
-			var response = EXCLUSION.createRequest(this).parameter(PARAMETER_STEP, getStep()).execute();
+			var response = EXCLUSION.createRequest(this).parameter(PARAMETER_STEP, getStep()).retrieveJson();
 			return this.question = QuestionImpl.fromJson(response.getBody());
 
 		} catch (AkinatorException e) {
@@ -199,7 +196,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 			CHOICE.createRequest(this)
 				.parameter(PARAMETER_STEP, getStep())
 				.parameter(PARAMETER_ELEMENT, guess.getId())
-				.execute();
+				.retrieveJson();
 		} catch (AkinatorException e) {
 			// we don't care about out session anymore anyways, throwing would be silly
 			LOG.warn("Caught an exception when confirming a guess", e);
@@ -224,21 +221,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@Override
-	public ServerImpl getServer() {
-		return this.server;
-	}
-
-	@Override
 	public boolean doesFilterProfanity() {
 		return this.filterProfanity;
 	}
 
 	public Session getSession() {
 		return this.session;
-	}
-
-	public ApiKey getApiKey() {
-		return this.apiKey;
 	}
 
 	@Nonnull

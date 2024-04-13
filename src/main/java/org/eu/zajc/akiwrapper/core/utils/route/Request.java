@@ -18,19 +18,18 @@ package org.eu.zajc.akiwrapper.core.utils.route;
 
 import static java.lang.String.format;
 import static java.time.Duration.ofSeconds;
-import static java.util.stream.Collectors.joining;
-import static org.eu.zajc.akiwrapper.core.entities.Status.Level.ERROR;
 import static org.eu.zajc.akiwrapper.core.utils.Utilities.sleepUnchecked;
-import static org.eu.zajc.akiwrapper.core.utils.route.Route.*;
+import static org.eu.zajc.akiwrapper.core.utils.route.Status.OK;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.*;
+import java.util.Map;
 
-import javax.annotation.*;
+import javax.annotation.Nonnull;
 
-import org.eu.zajc.akiwrapper.core.entities.impl.StatusImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
 import org.json.*;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 
 import kong.unirest.*;
@@ -45,25 +44,12 @@ public class Request {
 
 	@Nonnull private final String url;
 	@Nonnull private final UnirestInstance unirest;
-	private Set<String> mandatoryParameters;
-	private Map<String, String> parameters;
-	private final boolean urlHasQuerystring;
+	@Nonnull private Map<String, Object> parameters;
 
-	Request(@Nonnull String url, @Nonnull UnirestInstance unirest, @Nullable Set<String> mandatoryParameters,
-			@Nullable Map<String, String> parameters, boolean pathHasQuerystring) {
+	Request(@Nonnull String url, @Nonnull UnirestInstance unirest, @Nonnull Map<String, Object> parameters) {
 		this.url = url;
 		this.unirest = unirest;
-		this.urlHasQuerystring = pathHasQuerystring;
-
-		if (mandatoryParameters != null)
-			this.mandatoryParameters = new HashSet<>(mandatoryParameters);
-		else
-			this.mandatoryParameters = null;
-
-		if (parameters != null)
-			this.parameters = new HashMap<>(parameters);
-		else
-			this.parameters = null;
+		this.parameters = parameters;
 	}
 
 	@Nonnull
@@ -75,76 +61,91 @@ public class Request {
 
 	@Nonnull
 	public Request parameter(@Nonnull String name, @Nonnull String value) {
-		if (this.parameters != null && this.parameters.containsKey(name)) {
+		if (this.parameters.containsKey(name))
 			this.parameters.put(name, value);
-
-			if (this.mandatoryParameters != null)
-				this.mandatoryParameters.remove(name);
-
-		} else {
+		else
 			throw new IllegalArgumentException("Parameter \"" + name + "\" is not defined");
-		}
+
 		return this;
 	}
 
 	@Nonnull
-	@SuppressWarnings("null")
-	public Response execute() {
-		checkState();
+	public Response<Element> retrieveDocument() {
+		var resp = executeRequest();
+		var body = resp.getBody();
 
-		String processedUrl = this.url;
-		boolean hasQuerystring = this.urlHasQuerystring;
+		LOG.trace("<-- {}", body);
 
-		if (this.parameters != null && !this.parameters.isEmpty())
-			processedUrl += formatQuerystring(formatParameters(this.parameters), hasQuerystring);
+		var doc = Jsoup.parse(body);
+		var gameRoot = doc.getElementById("game_content");
+		if (gameRoot == null)
+			throw new MalformedResponseException();
 
-		var response = executeRequest(processedUrl, this.unirest, 0);
-		var json = response.getBody();
+		var status = Status.fromHtml(gameRoot);
+		if (status.isErroneous())
+			throw new ServerStatusException(status);
 
-		LOG.trace("<-- {}", json);
-		json = json.substring(7 /* "jQuery(" */, json.length() - 1 /* ")" */); // cut the callback
+		return new Response<>(gameRoot, status);
+	}
+
+	@Nonnull
+	public Response<JSONObject> retrieveJson() {
+		var resp = executeRequest();
+		var body = resp.getBody();
+
+		LOG.trace("<-- {}", body);
 
 		try {
-			var body = new JSONObject(json);
-			var status = StatusImpl.fromJson(body);
-			if (status.getLevel() == ERROR)
-				throw new ServerStatusException(status, processedUrl, response);
+			var json = new JSONObject(body);
+			var status = Status.fromJson(json);
+			if (status.isErroneous())
+				throw new ServerStatusException(status);
 
-			return new Response(status, body);
+			return new Response<>(json, status);
 
 		} catch (JSONException e) {
-			throw new AkinatorException("Couldn't parse a server response", e, processedUrl, response);
+			throw new MalformedResponseException(e);
 		}
 	}
 
 	@Nonnull
-	private static HttpResponse<String> executeRequest(@Nonnull String processedUrl, @Nonnull UnirestInstance unirest,
-													   int attempt) {
-		LOG.trace("--> {}", processedUrl);
-		var response = unirest.get(processedUrl).asString();
+	public Response<Void> retrieveEmpty() {
+		executeRequest();
+		LOG.trace("<-- (response ignored)");
+		return new Response<>(null, OK);
+	}
+
+	@Nonnull
+	private HttpResponse<String> executeRequest() {
+		if (this.parameters.containsValue(null))
+			throw new IllegalStateException("One or more mandatory parameters aren't set");
+
+		return executeRequest(this.url, this.parameters, this.unirest, 0);
+	}
+
+	@Nonnull
+	private static HttpResponse<String> executeRequest(@Nonnull String url, @Nonnull Map<String, Object> parameters,
+													   @Nonnull UnirestInstance unirest, int attempt) {
+		LOG.trace("--> {}", url);
+		var response = unirest.post(url).fields(parameters).asString();
 
 		if (response.getStatus() >= 500) {
 			if (attempt < MAX_RETRIES) {
 				LOG.trace("Got HTTP {} {}, retrying after {} ms", response.getStatus(), response.getStatusText(),
 						  RETRY_SLEEP);
 				sleepUnchecked(RETRY_SLEEP);
-				return executeRequest(processedUrl, unirest, attempt + 1);
+				return executeRequest(url, parameters, unirest, attempt + 1);
 
 			} else {
-				var message = format("Got HTTP %d %s and exceeded re-attempts (%d)", response.getStatus(),
-									 response.getStatusText(), MAX_RETRIES);
-				throw new AkinatorException(message);
+				throw new AkinatorException(format("Got HTTP %d %s and exceeded re-attempts (%d)", response.getStatus(),
+												   response.getStatusText(), MAX_RETRIES));
 			}
+
+		} else if (!response.isSuccess()) {
+			throw new AkinatorException("Got HTTP %d %s".formatted(response.getStatus(), response.getStatusText()));
 		}
 
 		return response;
-	}
-
-	private void checkState() {
-		if (this.mandatoryParameters != null && !this.mandatoryParameters.isEmpty()) {
-			var unset = this.mandatoryParameters.stream().collect(joining(", "));
-			throw new IllegalStateException("Some mandatory parameters aren't set: " + unset);
-		}
 	}
 
 }

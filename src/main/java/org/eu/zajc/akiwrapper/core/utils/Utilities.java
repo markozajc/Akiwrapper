@@ -20,6 +20,8 @@ import static java.lang.Thread.*;
 
 import javax.annotation.Nonnull;
 
+import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
+
 /**
  * <b>Note:</b> This is an internal class and its internals are subject to change
  * without prior deprecation. Use with caution.<br>
@@ -48,6 +50,22 @@ public class Utilities {
 	@SuppressWarnings("unchecked")
 	public static <X extends Throwable> RuntimeException asUnchecked(@Nonnull Throwable ex) throws X {
 		throw (X) ex;
+	}
+
+	public static int parseInt(String s) throws MalformedResponseException {
+		try {
+			return Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			throw new MalformedResponseException();
+		}
+	}
+
+	public static double parseDouble(String s) throws MalformedResponseException {
+		try {
+			return Double.parseDouble(s);
+		} catch (NumberFormatException e) {
+			throw new MalformedResponseException();
+		}
 	}
 
 	/**
