@@ -53,12 +53,8 @@ public abstract class AResponse implements Response {
 
 	public Response parseNext(@Nonnull ApiResponse<JSONObject> resp) {
 		var parsed = resp.getStatus() == QUESTIONS_EXHAUSTED ? null : fromJson(this.akiwrapper, resp.getBody());
-		if (parsed instanceof Guess) {
+		if (parsed instanceof Guess)
 			this.akiwrapper.setLastGuessStep(this.step);
-
-			if (this.akiwrapper.isGuessRejected((Guess) parsed))
-				return ((Guess) parsed).reject(); // skip already rejected guesses recursively
-		}
 
 		this.akiwrapper.setCurrentResponse(parsed);
 		return parsed;

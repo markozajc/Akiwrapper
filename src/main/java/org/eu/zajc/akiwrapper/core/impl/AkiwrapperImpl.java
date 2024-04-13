@@ -23,10 +23,8 @@ import java.util.*;
 
 import javax.annotation.*;
 
-import org.eclipse.collections.api.factory.primitive.LongSets;
-import org.eclipse.collections.api.set.primitive.MutableLongSet;
 import org.eu.zajc.akiwrapper.Akiwrapper;
-import org.eu.zajc.akiwrapper.core.entities.*;
+import org.eu.zajc.akiwrapper.core.entities.Response;
 import org.eu.zajc.akiwrapper.core.entities.impl.QuestionImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.jsoup.nodes.Element;
@@ -85,7 +83,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private Session session;
 	private Response currentResponse;
 	private int lastGuessStep;
-	private MutableLongSet rejectedGuesses = LongSets.mutable.empty();
 
 	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull Language language, @Nonnull Theme theme,
 						  boolean filterProfanity) {
@@ -117,14 +114,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	public void setLastGuessStep(int lastGuessStep) {
 		this.lastGuessStep = lastGuessStep;
-	}
-
-	public void addRejectedGuess(@Nonnull Guess g) {
-		this.rejectedGuesses.add(g.getIdLong());
-	}
-
-	public boolean isGuessRejected(@Nonnull Guess g) {
-		return this.rejectedGuesses.contains(g.getIdLong());
 	}
 
 	@Override
