@@ -103,6 +103,8 @@ public class GuessImpl extends AResponse implements Guess {
 		// TODO check if exhausted before calling
 
 		try {
+			this.getAkiwrapper().addRejectedGuess(this);
+
 			var resp = EXCLUDE.createRequest(getAkiwrapper())
 				.parameter(PARAMETER_STEP, getStep())
 				.parameter(PARAMETER_PROGRESSION, getProgression())
