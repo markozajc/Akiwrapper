@@ -14,31 +14,22 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.eu.zajc.akiwrapper.core.entities;
-
-import javax.annotation.Nonnull;
+package org.eu.zajc.akiwrapper.core.exceptions;
 
 /**
- * A representation of an object with a numeric identifier. Some objects in the API
- * have an ID appended to them.
+ * Indicates an unexpected or erroneous response from Akinator's API.
  *
  * @author Marko Zajc
  */
-public interface Identifiable {
+public class MalformedResponseException extends AkinatorException {
 
-	/**
-	 * @return ID of that object. Each object has an unique ID
-	 */
-	@Nonnull
-	String getId();
+	public MalformedResponseException() {
+		this(null);
+	}
 
-	/**
-	 * @return ID as a long
-	 *
-	 * @see #getId()
-	 */
-	default long getIdLong() {
-		return Long.parseLong(getId());
+	public MalformedResponseException(Throwable cause) {
+		super("Akinator has returned a malformed response. Please try again after a while, or open an issue on" +
+			"https://github.com/markozajc/Akiwrapper/issues is the error persists.", cause);
 	}
 
 }

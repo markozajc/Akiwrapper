@@ -18,20 +18,34 @@ package org.eu.zajc.akiwrapper.core.exceptions;
 
 import javax.annotation.Nonnull;
 
-import org.eu.zajc.akiwrapper.core.entities.Server;
-import org.eu.zajc.akiwrapper.core.entities.Server.*;
+import org.eu.zajc.akiwrapper.Akiwrapper.*;
 
 /**
- * An exception indicating that no {@link Server} could be found for the given
- * combination of {@link Language} and {@link GuessType}.
+ * An exception indicating the requested {@link Language} does not support the
+ * requested {@link Theme}.
  *
  * @author Marko Zajc
  */
-public class ServerNotFoundException extends AkinatorException {
+public class LanguageThemeCombinationException extends AkinatorException {
+
+	@Nonnull private final Language language;
+	@Nonnull private final Theme theme;
 
 	@SuppressWarnings("javadoc") // internal
-	public ServerNotFoundException(@Nonnull String message) {
-		super(message);
+	public LanguageThemeCombinationException(@Nonnull Language language, @Nonnull Theme theme) {
+		super("Language %s does not support theme %s".formatted(language, theme));
+		this.language = language;
+		this.theme = theme;
+	}
+
+	@Nonnull
+	public Language getLanguage() {
+		return this.language;
+	}
+
+	@Nonnull
+	public Theme getTheme() {
+		return this.theme;
 	}
 
 }

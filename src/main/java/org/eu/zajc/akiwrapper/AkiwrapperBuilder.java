@@ -16,19 +16,16 @@
  */
 package org.eu.zajc.akiwrapper;
 
-import static java.lang.String.format;
-import static org.eu.zajc.akiwrapper.core.entities.Server.GuessType.CHARACTER;
-import static org.eu.zajc.akiwrapper.core.entities.Server.Language.ENGLISH;
-import static org.eu.zajc.akiwrapper.core.utils.Servers.findServers;
+import static org.eu.zajc.akiwrapper.Akiwrapper.Language.ENGLISH;
+import static org.eu.zajc.akiwrapper.Akiwrapper.Theme.CHARACTER;
 
 import javax.annotation.*;
 
+import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.*;
-import org.eu.zajc.akiwrapper.core.entities.Server.*;
-import org.eu.zajc.akiwrapper.core.exceptions.*;
+import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
 import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.utils.UnirestUtils;
-import org.slf4j.*;
 
 import kong.unirest.UnirestInstance;
 
@@ -39,12 +36,10 @@ import kong.unirest.UnirestInstance;
  */
 public class AkiwrapperBuilder {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AkiwrapperBuilder.class);
-
 	@Nullable private UnirestInstance unirest;
 	private boolean filterProfanity;
 	@Nonnull private Language language;
-	@Nonnull private GuessType guessType;
+	@Nonnull private Theme theme;
 
 	/**
 	 * The default profanity filter preference for new {@link Akiwrapper} instances.
@@ -57,24 +52,23 @@ public class AkiwrapperBuilder {
 	@Nonnull public static final Language DEFAULT_LANGUAGE = ENGLISH;
 
 	/**
-	 * The default {@link Language} for new {@link Akiwrapper} instances.
-	 *
-	 * @deprecated Use {@link #DEFAULT_LANGUAGE} instead
+	 * The default {@link Theme} for new {@link Akiwrapper} instances.
 	 */
-	@Deprecated(since = "1.6", forRemoval = true)
-	@Nonnull public static final Language DEFAULT_LOCALIZATION = DEFAULT_LANGUAGE;
+	@Nonnull public static final Theme DEFAULT_THEME = CHARACTER;
 
 	/**
-	 * The default {@link GuessType} for new {@link Akiwrapper} instances.
+	 * The default {@link Theme} for new {@link Akiwrapper} instances.
+	 *
+	 * @deprecated Use {@link #DEFAULT_THEME} instead
 	 */
-	@Nonnull public static final GuessType DEFAULT_GUESS_TYPE = CHARACTER;
+	@Deprecated(since = "2.0", forRemoval = true) @Nonnull public static final Theme DEFAULT_GUESS_TYPE = CHARACTER;
 
 	private AkiwrapperBuilder(@Nullable UnirestInstance unirest, boolean filterProfanity, @Nonnull Language language,
-							  @Nonnull GuessType guessType) {
+							  @Nonnull Theme theme) {
 		this.unirest = unirest;
 		this.filterProfanity = filterProfanity;
 		this.language = language;
-		this.guessType = guessType;
+		this.theme = theme;
 	}
 
 	/**
@@ -83,12 +77,11 @@ public class AkiwrapperBuilder {
 	 * <li>profanity filtering is set to {@code false}
 	 * ({@link #DEFAULT_FILTER_PROFANITY}),
 	 * <li>language is set to {@link Language#ENGLISH} ({@link #DEFAULT_LANGUAGE}),
-	 * <li>guess type is set to {@link GuessType#CHARACTER}
-	 * ({@link #DEFAULT_GUESS_TYPE}),
+	 * <li>theme is set to {@link Theme#CHARACTER} ({@link #DEFAULT_GUESS_TYPE}),
 	 * </ul>
 	 */
 	public AkiwrapperBuilder() {
-		this(null, DEFAULT_FILTER_PROFANITY, DEFAULT_LANGUAGE, DEFAULT_GUESS_TYPE);
+		this(null, DEFAULT_FILTER_PROFANITY, DEFAULT_LANGUAGE, DEFAULT_THEME);
 	}
 
 	/**
@@ -103,9 +96,9 @@ public class AkiwrapperBuilder {
 	 *
 	 * @param unirest
 	 *            the {@link UnirestInstance} to be used by Akiwrapper or {$code null} to
-	 *            use {@link UnirestUtils#getInstance()}
+	 *            use {@link UnirestUtils#getInstance()}.
 	 *
-	 * @return current instance, used for chaining
+	 * @return current instance, used for chaining.
 	 *
 	 * @see UnirestUtils#getInstance()
 	 */
@@ -122,7 +115,7 @@ public class AkiwrapperBuilder {
 	 * {@link UnirestUtils#shutdownInstance()}, otherwise its threads will stay alive).
 	 *
 	 * @return {@link UnirestInstance} to be used or {$code null} for
-	 *         {@link UnirestUtils#getInstance()}
+	 *         {@link UnirestUtils#getInstance()}.
 	 */
 	@Nullable
 	public UnirestInstance getUnirestInstance() {
@@ -130,10 +123,9 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Sets the "filter profanity" mode. Keep in mind that explicit {@link Guess}es can
-	 * still be returned by {@link Akiwrapper#getGuesses()} or
-	 * {@link Akiwrapper#suggestGuess()}, see {@link Guess#isExplicit()} for more details
-	 * on why that is.<br>
+	 * Sets the profanity filter preference. Profanity filtering is done by Akinator and
+	 * not by Akiwrapper. Keep in mind that Akinator's filters aren't perfect, so
+	 * explicit {@link Guess}es can still be returned.<br>
 	 * This is set to {@code false} by default.
 	 *
 	 * @param filterProfanity
@@ -150,9 +142,8 @@ public class AkiwrapperBuilder {
 
 	/**
 	 * Returns the profanity filter preference. Profanity filtering is done by Akinator
-	 * and not by Akiwrapper. Keep in mind that explicit {@link Guess}es can still be
-	 * returned by {@link Akiwrapper#getGuesses()} or {@link Akiwrapper#suggestGuess()},
-	 * see {@link Guess#isExplicit()} for more details on why that is.<br>
+	 * and not by Akiwrapper. Keep in mind that Akinator's filters aren't perfect, so
+	 * explicit {@link Guess}es can still be returned.<br>
 	 * This is set to {@code false} by default.
 	 *
 	 * @return profanity filter preference.
@@ -162,13 +153,11 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * <b>Note:</b> not all {@link Language}s support all {@link GuessType}s. The
-	 * standard ones seem to be {@link GuessType#ANIMAL}, {@link GuessType#CHARACTER},
-	 * and {@link GuessType#OBJECT}, but you might still face
-	 * {@link ServerNotFoundException}s using them or other ones.<br>
-	 * <br>
-	 * Sets the {@link Language}. The server will return localized {@link Question}s and
-	 * {@link Guess}es depending on this preference.<br>
+	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
+	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
+	 * for a list of supported themes. <br>
+	 * Sets the {@link Language}. Akinator will return localized {@link Response}s
+	 * depending on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @param language
@@ -184,11 +173,16 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Returns the {@link Language}. The server will return localized {@link Question}s
-	 * and {@link Guess}es depending on this preference.<br>
+	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
+	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
+	 * for a list of supported themes. <br>
+	 * Gets the {@link Language}. Akinator will return localized {@link Response}s
+	 * depending on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @return language preference.
+	 *
+	 * @see #setLanguage(Language)
 	 */
 	@Nonnull
 	public Language getLanguage() {
@@ -196,40 +190,83 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * <b>Note:</b> not all {@link Language}s support all {@link GuessType}s. The
-	 * standard ones seem to be {@link GuessType#ANIMAL}, {@link GuessType#CHARACTER},
-	 * and {@link GuessType#OBJECT}, but you might still face
-	 * {@link ServerNotFoundException}s using them or other ones.<br>
-	 * <br>
-	 * Sets the {@link GuessType}. This decides what kind of things the {@link Server}'s
-	 * {@link Guess}es will represent. While the name might imply that this affects only
-	 * guess content, it also affects {@link Question}s.<br>
-	 * This is set to {@link GuessType#CHARACTER} by default.
+	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
+	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
+	 * for a list of supported themes. <br>
+	 * Sets the {@link Theme}. This decides what kind of subjects Akinator's
+	 * {@link Response}s will be about.<br>
+	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
-	 * @param guessType
+	 * @param theme
 	 *
 	 * @return current instance, used for chaining.
 	 *
-	 * @see #getLanguage()
+	 * @see #getTheme()
 	 */
 	@Nonnull
-	public AkiwrapperBuilder setGuessType(@Nonnull GuessType guessType) {
-		this.guessType = guessType;
+	public AkiwrapperBuilder setTheme(@Nonnull Theme theme) {
+		this.theme = theme;
 		return this;
 	}
 
 	/**
-	 * Returns the {@link GuessType} preference. {@link GuessType} impacts what kind of
-	 * subject {@link Question}s and {@link Guess}es are about.<br>
-	 * {@link #getGuessType()} and {@link #getLanguage()} decide what {@link Server} will
-	 * be used if it's not set manually.<br>
-	 * This is set to {@link GuessType#CHARACTER} by default.
+	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
+	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
+	 * for a list of supported themes. <br>
+	 * Sets the {@link Theme}. This decides what kind of subjects Akinator's
+	 * {@link Response}s will be about.<br>
+	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
-	 * @return guess type preference.
+	 * @param theme
+	 *
+	 * @return current instance, used for chaining.
+	 *
+	 * @see #getGuessType()
+	 *
+	 * @deprecated Use {@link #setTheme(Theme)} instead
 	 */
 	@Nonnull
-	public GuessType getGuessType() {
-		return this.guessType;
+	@Deprecated(since = "2.0", forRemoval = true)
+	public AkiwrapperBuilder setGuessType(@Nonnull Theme theme) {
+		this.theme = theme;
+		return this;
+	}
+
+	/**
+	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
+	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
+	 * for a list of supported themes. <br>
+	 * Gets the {@link Theme}. This decides what kind of subjects Akinator's
+	 * {@link Response}s will be about.<br>
+	 * This is set to {@link Theme#CHARACTER} by default.
+	 *
+	 * @return theme preference.
+	 *
+	 * @see #setTheme(Theme)
+	 */
+	@Nonnull
+	public Theme getTheme() {
+		return this.theme;
+	}
+
+	/**
+	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
+	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
+	 * for a list of supported themes. <br>
+	 * Gets the {@link Theme}. This decides what kind of subjects Akinator's
+	 * {@link Response}s will be about.<br>
+	 * This is set to {@link Theme#CHARACTER} by default.
+	 *
+	 * @return theme preference.
+	 *
+	 * @see #setGuessType(Theme)
+	 *
+	 * @deprecated Use {@link #getTheme()} instead.
+	 */
+	@Nonnull
+	@Deprecated(since = "2.0", forRemoval = true)
+	public Theme getGuessType() {
+		return this.theme;
 	}
 
 	/**
@@ -242,32 +279,17 @@ public class AkiwrapperBuilder {
 	 *
 	 * @return a new {@link Akiwrapper} instance.
 	 *
-	 * @throws ServerNotFoundException
-	 *             if no server with that {@link Language} and {@link GuessType} is
-	 *             available.
+	 * @throws LanguageThemeCombinationException
+	 *             if the {@link Language} and {@link Theme} combination is incompatible.
 	 */
 	@Nonnull
-	@SuppressWarnings({ "resource", "null" })
-	public Akiwrapper build() throws ServerNotFoundException {
+	@SuppressWarnings("resource")
+	public Akiwrapper build() throws LanguageThemeCombinationException {
 		var unirest = this.unirest != null ? this.unirest : UnirestUtils.getInstance();
 
-		var servers = findServers(unirest, this.getLanguage(), this.getGuessType());
-		if (servers.isEmpty())
-			throw new ServerNotFoundException(format("No servers exist for %s - %s", this.language, this.guessType));
-
-		for (var server : servers) {
-			try {
-				var api = new AkiwrapperImpl(unirest, server, this.filterProfanity);
-				api.createSession();
-				return api;
-
-			} catch (ServerStatusException e) {
-				LOG.debug("Failed to construct an instance, trying the next available server", e);
-			}
-		}
-
-		throw new ServerNotFoundException(format("Servers exist for %s - %s, but none of them is usable", this.language,
-												 this.guessType));
+		var api = new AkiwrapperImpl(unirest, this.language, this.theme, this.filterProfanity);
+		api.createSession();
+		return api;
 	}
 
 }

@@ -16,26 +16,23 @@
  */
 package org.eu.zajc.akiwrapper.core.entities;
 
+import static java.lang.Long.parseLong;
+
 import java.net.URL;
 
 import javax.annotation.*;
 
-import org.eu.zajc.akiwrapper.*;
-import org.eu.zajc.akiwrapper.core.entities.Server.GuessType;
+import org.eu.zajc.akiwrapper.Akiwrapper.Theme;
+import org.eu.zajc.akiwrapper.AkiwrapperBuilder;
 
 /**
  * A representation of Akinator's guess. A guess may span different types of subject,
- * depending on what was set for the {@link GuessType} in the
- * {@link AkiwrapperBuilder} (default is {@link GuessType#CHARACTER}). A guess
- * consists of four parts - subject name, description (both localized), a URL to the
- * image of the subject, and the probability that the guess is correct. Note that
- * image URL and description are optional, and may be {@code null}. {@link Guess}es
- * implement {@link Comparable} and are by default sorted by probability - the lower
- * the index, the higher the probability.
+ * depending on what was set for the {@link Theme} in the {@link AkiwrapperBuilder}
+ * (default is {@link Theme#CHARACTER}).
  *
  * @author Marko Zajc
  */
-public interface Guess extends Identifiable, Comparable<Guess> {
+public interface Guess extends Response {
 
 	/**
 	 * Returns the name of the guessed subject. This is provided in the language that was
@@ -47,22 +44,25 @@ public interface Guess extends Identifiable, Comparable<Guess> {
 	String getName();
 
 	/**
-	 * Returns the approximate probability that the answer is the one user has in mind
-	 * (as a double).<br>
-	 * The value ranges between 0 and 1.
+	 * Returns the pseudonym of the guessed subject. As a pseudonym is optional, this may
+	 * be {@code null}. Please note that the pseudonym is sometimes set to a placeholder
+	 * value such as "X" or "-" rather than @{code null}. This is provided in the
+	 * language that was specified using the {@link AkiwrapperBuilder}.
 	 *
-	 * @return probability that this is the right answer.
+	 * @return guessed characer's name.
 	 */
-	double getProbability();
+	@Nullable
+	String getPseudonym();
 
 	/**
-	 * Returns the description of this subject. As a description is optional and thus not
-	 * always present, this may be {@code null}. It is provided in the language that was
-	 * specified using the {@link AkiwrapperBuilder}.
+	 * Returns the description of this subject. Please note that the description is
+	 * sometimes set to a placeholder value such as "X" or "-" rather than @{code null}.
+	 * It is provided in the language that was specified using the
+	 * {@link AkiwrapperBuilder}.
 	 *
 	 * @return description of the guessed subject.
 	 */
-	@Nullable
+	@Nonnull
 	String getDescription();
 
 	/**
@@ -75,14 +75,26 @@ public interface Guess extends Identifiable, Comparable<Guess> {
 	URL getImage();
 
 	/**
-	 * <b>Important:</b> Akinator for some reason flags certain perfectly SFW guesses as
-	 * explicit. Akiwrapper's code for this reason doesn't rely on this parameter -
-	 * {@link Akiwrapper#suggestGuess} will return guesses marked as explicit even when
-	 * profanity filtering is on. Using this value to filter content is optional but not
-	 * advised.
+	 * Returns this guess's ID. ID's are unique to each guess and can be used to track
+	 * rejected guesses, because Akinator won't do that for you.
 	 *
-	 * @return whether or not the guess is explicit (often incorrect).
+	 * @return this guess's ID.
+	 *
+	 * @see #getIdLong()
 	 */
-	boolean isExplicit();
+	@Nonnull
+	String getId();
+
+	/**
+	 * Returns this guess's ID as a @{code long}. ID's are unique to each guess and can
+	 * be used to track rejected guesses, because Akinator won't do that for you.
+	 *
+	 * @return this guess's ID as a {@code long}.
+	 *
+	 * @see #getId()
+	 */
+	default long getIdLong() {
+		return parseLong(getId());
+	}
 
 }

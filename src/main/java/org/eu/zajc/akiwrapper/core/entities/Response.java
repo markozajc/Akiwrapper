@@ -14,27 +14,15 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.eu.zajc.akiwrapper.core.exceptions;
+package org.eu.zajc.akiwrapper.core.entities;
 
-import org.eu.zajc.akiwrapper.core.utils.route.Status;
+import javax.annotation.Nonnull;
 
-/**
- * An exception indicating that the server returned an erroneous status.
- *
- * @author Marko Zajc
- */
-public class ServerStatusException extends AkinatorException {
+import org.eu.zajc.akiwrapper.Akiwrapper;
 
-	private final Status status;
+public interface Response {
 
-	@SuppressWarnings("javadoc") // internal
-	public ServerStatusException(Status status) {
-		super("Got an erroneous status: " + status.toString());
-		this.status = status;
-	}
-
-	public Status getStatus() {
-		return this.status;
-	}
+	@Nonnull
+	Akiwrapper getAkiwrapper();
 
 }

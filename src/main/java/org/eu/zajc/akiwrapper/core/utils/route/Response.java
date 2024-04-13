@@ -18,29 +18,24 @@ package org.eu.zajc.akiwrapper.core.utils.route;
 
 import javax.annotation.Nonnull;
 
-import org.eu.zajc.akiwrapper.core.entities.Status;
-import org.json.JSONObject;
-
 @SuppressWarnings("javadoc") // internal util
-public class Response {
+public class Response<T> {
 
+	private final T body;
 	@Nonnull private final Status status;
-	@Nonnull private final JSONObject body;
 
-	public Response(@Nonnull Status status, @Nonnull JSONObject body) {
+	public Response(T body, @Nonnull Status status) {
 		this.status = status;
 		this.body = body;
+	}
+
+	public T getBody() {
+		return this.body;
 	}
 
 	@Nonnull
 	public Status getStatus() {
 		return this.status;
-	}
-
-	@Nonnull
-	@SuppressWarnings("null")
-	public JSONObject getBody() {
-		return this.body.getJSONObject("parameters");
 	}
 
 }

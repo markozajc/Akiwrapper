@@ -16,15 +16,15 @@
  */
 package org.eu.zajc.akiwrapper;
 
+import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
 
 import java.io.ObjectInputFilter.Status;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
-import org.eu.zajc.akiwrapper.core.entities.Server.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
 
 /**
@@ -60,6 +60,82 @@ import org.eu.zajc.akiwrapper.core.exceptions.*;
  * @author Marko Zajc
  */
 public interface Akiwrapper {
+
+	/**
+	 * The language determines how {@link Question}s and {@link Guess}es are localized.
+	 *
+	 * @author Marko Zajc
+	 */
+	public enum Language {
+
+		ENGLISH("en", Theme.CHARACTER, Theme.OBJECT, Theme.ANIMAL),
+		ARABIC("ar", Theme.CHARACTER),
+		CHINESE("cn", Theme.CHARACTER),
+		GERMAN("de", Theme.CHARACTER, Theme.ANIMAL),
+		SPANISH("es", Theme.CHARACTER, Theme.ANIMAL),
+		FRENCH("fr", Theme.CHARACTER, Theme.OBJECT, Theme.ANIMAL),
+		HEBREW("il", Theme.CHARACTER),
+		ITALIAN("it", Theme.CHARACTER, Theme.ANIMAL),
+		JAPANESE("jp", Theme.CHARACTER, Theme.ANIMAL),
+		KOREAN("kr", Theme.CHARACTER),
+		DUTCH("nl", Theme.CHARACTER),
+		POLISH("pl", Theme.CHARACTER),
+		PORTUGESE("pt", Theme.CHARACTER),
+		RUSSIAN("ru", Theme.CHARACTER),
+		TURKISH("tr", Theme.CHARACTER),
+		INDONESIAN("id", Theme.CHARACTER);
+
+		@Nonnull private final String languageCode;
+		@Nonnull private final Set<Theme> supportedThemes;
+
+		@SuppressWarnings("null")
+		Language(@Nonnull String languageCode, @Nonnull Theme supportedTheme, @Nonnull Theme... otherSupportedThemes) {
+			this.languageCode = languageCode;
+			this.supportedThemes = unmodifiableSet(EnumSet.of(supportedTheme, otherSupportedThemes));
+		}
+
+		@Nonnull
+		public String getLanguageCode() {
+			return this.languageCode;
+		}
+
+		@Nonnull
+		public Set<Theme> getSupportedThemes() {
+			return this.supportedThemes;
+		}
+
+		public boolean isThemeSupported(@Nonnull Theme theme) {
+			return this.supportedThemes.contains(theme);
+		}
+
+	}
+
+	/**
+	 * Represents the theme (sometimes called subject) of the game. This determines what
+	 * kind of {@link Question}s and {@link Guess}es will be provided. Please note that
+	 * while all {@link Language}s support {@link Theme#CHARACTER}, but other themes
+	 * might not be supported. Call {@link Language#getSupportedThemes()} for a list of
+	 * supported themes.
+	 *
+	 * @author Marko Zajc
+	 */
+	public enum Theme {
+
+		CHARACTER(1),
+		OBJECT(2),
+		ANIMAL(14);
+
+		private final int id;
+
+		Theme(int id) {
+			this.id = id;
+		}
+
+		public int getId() {
+			return this.id;
+		}
+
+	}
 
 	/**
 	 * An enum used to represent an answer to Akinator's question.
@@ -107,15 +183,25 @@ public interface Akiwrapper {
 	}
 
 	/**
-	 * Returns the API {@link Server} currently in use. The {@link Server} is
-	 * automatically determined and set by {@link AkiwrapperBuilder} based on the
-	 * {@link Language} and {@link GuessType} preferences, both of which can be retrieved
-	 * from the {@link Server} object itself.
+	 * Returns the {@link Language} used. Akinator returns localized {@link Question}s
+	 * and {@link Guess}es depending by this. Please note that while all
+	 * {@link Language}s support {@link Theme#CHARACTER}, but other themes might not be
+	 * supported. Call {@link Language#getSupportedThemes()} for a list of supported
+	 * themes.
 	 *
-	 * @return the API server currently in use.
+	 * @return the language.
 	 */
 	@Nonnull
-	Server getServer();
+	Language getLanguage();
+
+	/**
+	 * Returns the {@link Theme} used. Akinator returns different kinds of
+	 * {@link Question}s and {@link Guess}es depending by this.
+	 *
+	 * @return server's guess type.
+	 */
+	@Nonnull
+	Theme getTheme();
 
 	/**
 	 * Returns whether or not Akinator has been instructed to filter out explicit

@@ -17,15 +17,14 @@
 
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
-import static java.lang.Double.compare;
-import static org.eu.zajc.akiwrapper.core.utils.JSONUtils.*;
-
 import java.net.*;
 
 import javax.annotation.*;
 
+import org.eu.zajc.akiwrapper.Akiwrapper;
 import org.eu.zajc.akiwrapper.core.entities.Guess;
-import org.json.JSONObject;
+import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
+import org.json.*;
 
 /**
  * <b>Note:</b> This is an internal class and its internals are subject to change
@@ -37,44 +36,46 @@ import org.json.JSONObject;
 @SuppressWarnings("javadoc") // internal impl
 public class GuessImpl implements Guess {
 
+	@Nonnull private final Akiwrapper akiwrapper;
 	@Nonnull private final String id;
 	@Nonnull private final String name;
-	@Nullable private final String description;
+	@Nullable private final String pseudonym;
+	@Nonnull private final String description;
 	@Nullable private final URL image;
-	private final double probability;
-	private final boolean explicit;
+	@Nonnull private final String flagPhoto; // the purpose of this is unknown, but it's required for Routes.CHOICE
 
-	GuessImpl(@Nonnull String id, @Nonnull String name, @Nullable String description, @Nullable URL image,
-			  @Nonnegative double probability, boolean explicit) {
+	GuessImpl(@Nonnull Akiwrapper akiwrapper, @Nonnull String id, @Nonnull String name, @Nullable String pseudonym,
+			  @Nonnull String description, @Nullable URL image, @Nonnull String flagPhoto) {
+		this.akiwrapper = akiwrapper;
 		this.id = id;
 		this.name = name;
+		this.pseudonym = pseudonym;
 		this.description = description;
 		this.image = image;
-		this.probability = probability;
-		this.explicit = explicit;
+		this.flagPhoto = flagPhoto;
 	}
 
 	@SuppressWarnings("null")
-	public static GuessImpl fromJson(@Nonnull JSONObject json) {
-		return new GuessImpl(json.getString("id"), json.getString("name"), getDescription(json), getImage(json),
-							 getDouble(json, "proba").orElseThrow(), getInteger(json, "corrupt").orElseThrow() == 1);
-	}
-
-	@Nullable
-	private static String getDescription(@Nonnull JSONObject json) {
-		var desc = json.getString("description");
-		return "-".equals(desc) ? null : desc;
-	}
-
-	@Nullable
-	private static URL getImage(@Nonnull JSONObject json) {
+	public static GuessImpl fromJson(@Nonnull Akiwrapper akiwrapper, @Nonnull JSONObject json) {
 		try {
-			return "none.jpg".equals(json.getString("picture_path")) ? null
-				: new URL(json.getString("absolute_picture_path"));
+			return new GuessImpl(akiwrapper, json.getString("id_proposition"), json.getString("name"),
+								 getPseudonym(json), json.getString("description_proposition"),
+								 new URI(json.getString("photo")).toURL(), json.getString("flag_photo"));
 
-		} catch (MalformedURLException e) {
-			return null;
+		} catch (JSONException | URISyntaxException | MalformedURLException e) {
+			throw new MalformedResponseException(e);
 		}
+	}
+
+	@Nullable
+	private static String getPseudonym(@Nonnull JSONObject json) {
+		var pseudo = json.getString("pseudo");
+		return "none".equals(pseudo) ? null : pseudo;
+	}
+
+	@Override
+	public Akiwrapper getAkiwrapper() {
+		return this.akiwrapper;
 	}
 
 	@Override
@@ -83,8 +84,8 @@ public class GuessImpl implements Guess {
 	}
 
 	@Override
-	public double getProbability() {
-		return this.probability;
+	public String getPseudonym() {
+		return this.pseudonym;
 	}
 
 	@Override
@@ -102,14 +103,8 @@ public class GuessImpl implements Guess {
 		return this.id;
 	}
 
-	@Override
-	public int compareTo(Guess o) {
-		return compare(o.getProbability(), this.probability);
-	}
-
-	@Override
-	public boolean isExplicit() {
-		return this.explicit;
+	public String getFlagPhoto() {
+		return this.flagPhoto;
 	}
 
 }
