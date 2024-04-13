@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 
 @SuppressWarnings("javadoc") // internal util
-public final class Route {
+public final class ApiRoute {
 
 	private static final String URL_FORMAT = "https://%s.akinator.com/%s";
 
@@ -37,7 +37,7 @@ public final class Route {
 	private final boolean requiresSession;
 	@Nonnull private Set<String> parameterNames;
 
-	Route(@Nonnull String path, boolean requiresSession, @Nonnull Set<String> parameters) {
+	ApiRoute(@Nonnull String path, boolean requiresSession, @Nonnull Set<String> parameters) {
 		this.path = path;
 		this.requiresSession = requiresSession;
 		this.parameterNames = parameters;
@@ -45,7 +45,7 @@ public final class Route {
 
 	@Nonnull
 	@SuppressWarnings({ "resource", "null" })
-	public Request createRequest(@Nonnull AkiwrapperImpl api) {
+	public ApiRequest createRequest(@Nonnull AkiwrapperImpl api) {
 		var url = URL_FORMAT.formatted(api.getLanguage().getLanguageCode(), this.path);
 
 		Map<String, Object> parameters =
@@ -63,7 +63,7 @@ public final class Route {
 			api.getSession().apply(parameters);
 		}
 
-		return new Request(url, api.getUnirest(), parameters);
+		return new ApiRequest(url, api.getUnirest(), parameters);
 	}
 
 }

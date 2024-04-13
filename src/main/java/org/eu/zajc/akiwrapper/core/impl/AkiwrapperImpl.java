@@ -17,22 +17,18 @@
 package org.eu.zajc.akiwrapper.core.impl;
 
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toUnmodifiableList;
-import static java.util.stream.StreamSupport.stream;
-import static org.eu.zajc.akiwrapper.core.utils.route.Routes.*;
-import static org.eu.zajc.akiwrapper.core.utils.route.Status.Reason.QUESTIONS_EXHAUSTED;
+import static org.eu.zajc.akiwrapper.core.utils.route.ApiRoutes.NEW_SESSION;
 
 import java.util.*;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 import org.eclipse.collections.api.factory.primitive.LongSets;
 import org.eclipse.collections.api.set.primitive.MutableLongSet;
 import org.eu.zajc.akiwrapper.Akiwrapper;
-import org.eu.zajc.akiwrapper.core.entities.*;
-import org.eu.zajc.akiwrapper.core.entities.impl.*;
-import org.eu.zajc.akiwrapper.core.exceptions.*;
-import org.json.JSONObject;
+import org.eu.zajc.akiwrapper.core.entities.Response;
+import org.eu.zajc.akiwrapper.core.entities.impl.QuestionImpl;
+import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.jsoup.nodes.Element;
 import org.slf4j.*;
 
@@ -77,9 +73,9 @@ public class AkiwrapperImpl implements Akiwrapper {
 		}
 	}
 
-	private static final Logger LOG = LoggerFactory.getLogger(AkiwrapperImpl.class);
+	public static final Logger LOG = LoggerFactory.getLogger(AkiwrapperImpl.class);
 
-	private static final int LAST_STEP = 80;
+	public static final int LAST_STEP = 80;
 
 	@Nonnull private final UnirestInstance unirest;
 	@Nonnull private final Language language;
@@ -87,7 +83,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private final boolean filterProfanity;
 
 	private Session session;
-	private Response lastResponse;
+	private Response currentResponse;
 	private int lastGuessStep;
 	private MutableLongSet rejectedGuesses = LongSets.mutable.empty();
 
@@ -103,121 +99,30 @@ public class AkiwrapperImpl implements Akiwrapper {
 	public void createSession() {
 		var resp = NEW_SESSION.createRequest(this).retrieveDocument().getBody();
 		this.session = Session.fromHtml(resp);
-		this.lastResponse = QuestionImpl.fromHtml(this, resp);
+		this.currentResponse = QuestionImpl.fromHtml(this, resp);
 	}
 
 	@Override
-	public Question answer(Answer answer) {
-		if (isExhausted())
-			throw new QuestionsExhaustedException();
-
-		var response = ANSWER.createRequest(this)
-			.parameter(PARAMETER_STEP, getStep())
-			.parameter(PARAMETER_ANSWER, answer.getId())
-			.retrieveJson();
-
-		if (response.getStatus().getReason() == QUESTIONS_EXHAUSTED) {
-			return this.question = null;
-		}
-
-		return this.question = QuestionImpl.fromJson(response.getBody());
+	public Response getCurrentResponse() {
+		return this.currentResponse;
 	}
 
-	@Override
-	@SuppressWarnings("null")
-	public Question undoAnswer() {
-		if (isExhausted())
-			throw new QuestionsExhaustedException(); // the api won't let us
-
-		if (getStep() == 0)
-			throw new UndoOutOfBoundsException();
-
-		var response = CANCEL_ANSWER.createRequest(this).parameter(PARAMETER_STEP, getStep()).retrieveJson();
-		return this.question = QuestionImpl.fromJson(response.getBody());
+	public void setCurrentResponse(@Nullable Response response) {
+		this.currentResponse = response;
 	}
 
-	@Override
-	@SuppressWarnings("null")
-	public List<Guess> getGuesses(int count) {
-		var request = LIST.createRequest(this).parameter(PARAMETER_STEP, getStep());
-		if (count > 0)
-			request.parameter(PARAMETER_SIZE, count);
-		var response = request.retrieveJson();
-
-		return stream(response.getBody().getJSONArray("elements").spliterator(), false).map(JSONObject.class::cast)
-			.map(j -> j.getJSONObject("element"))
-			.map(GuessImpl::fromJson)
-			.sorted()
-			.collect(toUnmodifiableList());
+	public int getLastGuessStep() {
+		return this.lastGuessStep;
 	}
 
-	@Override
-	public Guess suggestGuess() {
-		boolean shouldSuggest = isExhausted() || getStep() - this.lastGuessStep >= 5 // NOSONAR I'm just copying
-			&& (this.question != null && this.question.getProgression() > 97 || getStep() - this.lastGuessStep == 25)
-			&& getStep() != 75;
-		// I have no clue what that last part is, but that's what akinator does
-
-		if (!shouldSuggest)
-			return null;
-
-		for (var guess : getGuesses(2)) {
-			if (!this.rejectedGuesses.contains(guess.getIdLong())) {
-				this.rejectedGuesses.add(guess.getIdLong());
-				this.lastGuessStep = getStep();
-				return guess;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public Question rejectLastGuess() {
-		try {
-			var response = EXCLUSION.createRequest(this).parameter(PARAMETER_STEP, getStep()).retrieveJson();
-			return this.question = QuestionImpl.fromJson(response.getBody());
-
-		} catch (AkinatorException e) {
-			if (isExhausted()) {
-				// we don't care about out session anymore anyways, throwing would be silly
-				LOG.warn("Caught an exception when rejecting a guess", e);
-				return null;
-
-			} else {
-				throw e;
-			}
-		}
-
-	}
-
-	@Override
-	public void confirmGuess(Guess guess) {
-		try {
-			CHOICE.createRequest(this)
-				.parameter(PARAMETER_STEP, getStep())
-				.parameter(PARAMETER_ELEMENT, guess.getId())
-				.retrieveJson();
-		} catch (AkinatorException e) {
-			// we don't care about out session anymore anyways, throwing would be silly
-			LOG.warn("Caught an exception when confirming a guess", e);
-		}
-	}
-
-	@Override
-	public Question getQuestion() {
-		return this.question;
-	}
-
-	@Override
-	public int getStep() {
-		var question = this.getQuestion();
-		return question == null ? LAST_STEP : question.getStep();
+	public void setLastGuessStep(int lastGuessStep) {
+		this.lastGuessStep = lastGuessStep;
 	}
 
 	@Override
 	public boolean isExhausted() {
-		// question is only null after we've exhausted them (that is post step 80)
-		return this.question == null;
+		// response is only null after we've exhausted them (that is post step 80)
+		return this.currentResponse == null;
 	}
 
 	@Override

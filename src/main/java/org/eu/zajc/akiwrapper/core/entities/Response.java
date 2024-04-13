@@ -25,4 +25,21 @@ public interface Response {
 	@Nonnull
 	Akiwrapper getAkiwrapper();
 
+	/**
+	 * Returns the current step (question number). This uses zero-based index, meaning
+	 * the first question will be on step {@code 0}. TODO details for guess
+	 *
+	 * @return current step.
+	 */
+	int getStep();
+
+	/**
+	 * Current completion percentage (as a double). Higher means that Akinator believes
+	 * to be closer to the correct answer.<br>
+	 * The value ranges between 0 and 100.
+	 *
+	 * @return completion percentage.
+	 */
+	double getProgression();
+
 }

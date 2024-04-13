@@ -26,7 +26,7 @@ import org.jsoup.nodes.Element;
  *
  * @author Marko Zajc
  */
-public enum Status {
+public enum ApiStatus {
 
 	/**
 	 * Everything is OK, you may continue normally.
@@ -52,7 +52,7 @@ public enum Status {
 	private final String name;
 	private final boolean erroneous;
 
-	Status(String name, boolean erroneous) {
+	ApiStatus(String name, boolean erroneous) {
 		this.name = name;
 		this.erroneous = erroneous;
 	}
@@ -74,13 +74,13 @@ public enum Status {
 
 	@Nonnull
 	@SuppressWarnings({ "javadoc", "null" }) // internal impl
-	public static Status fromJson(@Nonnull JSONObject json) {
+	public static ApiStatus fromJson(@Nonnull JSONObject json) {
 		return json.has("completion") ? fromString(json.getString("completion")) : OK;
 	}
 
 	@Nonnull
 	@SuppressWarnings({ "javadoc", "null" }) // internal impl
-	public static Status fromHtml(@Nonnull Element gameRoot) {
+	public static ApiStatus fromHtml(@Nonnull Element gameRoot) {
 		// determines error status based on the akitude. this isn't the most stable, but it's
 		// more reliable than checking localized strings or document structure
 		return gameRoot.getElementsByClass("akinator-body")
@@ -94,8 +94,8 @@ public enum Status {
 
 	@Nonnull
 	@SuppressWarnings("javadoc") // internal impl
-	public static Status fromString(@Nonnull String completion) {
-		for (Status iteratedLevel : Status.values())
+	public static ApiStatus fromString(@Nonnull String completion) {
+		for (ApiStatus iteratedLevel : ApiStatus.values())
 			if (completion.toUpperCase().startsWith(iteratedLevel.toString()))
 				return iteratedLevel;
 

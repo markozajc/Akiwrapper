@@ -16,11 +16,11 @@
  */
 package org.eu.zajc.akiwrapper.core.exceptions;
 
-import org.eu.zajc.akiwrapper.Akiwrapper;
+import org.eu.zajc.akiwrapper.core.entities.Question;
 
 /**
- * An exception indicating that {@link Akiwrapper#undoAnswer()} has been called on
- * the first question - when {@link Akiwrapper#getStep()} is {@code 0}.
+ * An exception indicating that {@link Question#undoAnswer()} has been called on the
+ * first question - when {@link Question#getStep()} is {@code 0}.
  *
  * @author Marko Zajc
  */
