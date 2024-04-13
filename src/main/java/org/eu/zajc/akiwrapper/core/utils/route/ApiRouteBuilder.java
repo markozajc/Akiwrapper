@@ -16,9 +16,9 @@
  */
 package org.eu.zajc.akiwrapper.core.utils.route;
 
-import static java.util.Collections.emptySet;
+import static java.util.Collections.emptyList;
 
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nonnull;
 
@@ -48,7 +48,7 @@ public class ApiRouteBuilder {
 	@SuppressWarnings("null")
 	public ApiRoute build() {
 		return new ApiRoute(this.path, this.requiresSession,
-						 this.parameterNames == null ? emptySet() : this.parameterNames);
+							this.parameterNames == null ? emptyList() : new ArrayList<>(this.parameterNames));
 	}
 
 }

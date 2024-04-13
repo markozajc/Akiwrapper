@@ -80,18 +80,23 @@ public class UnirestUtils {
 	@Nonnull
 	public static UnirestInstance configureInstance(@Nonnull UnirestInstance unirest) {
 		unirest.config()
-			.addDefaultHeader("Accept",
-							  "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*. q=0.01")
-			.addDefaultHeader("Accept-Language", "en-US,en.q=0.9,ar.q=0.8")
+			.addDefaultHeader("User-Agent",
+							  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:86.0) Gecko/20100101 Firefox/86.0")
+			.addDefaultHeader("Accept", "*/*")
+			.addDefaultHeader("Accept-Language", "en-US,en;q=0.5")
+			.addDefaultHeader("Referer", "https://en.akinator.com/game")
+			.addDefaultHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
 			.addDefaultHeader("X-Requested-With", "XMLHttpRequest")
+			.addDefaultHeader("Origin", "https://en.akinator.com")
+			.addDefaultHeader("DNT", "1")
+			.addDefaultHeader("Sec-GPC", "1")
+			.addDefaultHeader("Connection", "keep-alive")
 			.addDefaultHeader("Sec-Fetch-Dest", "empty")
 			.addDefaultHeader("Sec-Fetch-Mode", "cors")
 			.addDefaultHeader("Sec-Fetch-Site", "same-origin")
-			.addDefaultHeader("Connection", "keep-alive")
-			.addDefaultHeader("User-Agent",
-							  "Mozilla/5.0 (Windows NT 10.0. Win64. x64) AppleWebKit/537.36" +
-								  "(KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36")
-			.addDefaultHeader("Referer", "https://en.akinator.com/game")
+			.addDefaultHeader("Pragma", "no-cache")
+			.addDefaultHeader("Cache-Control", "no-cache")
+			.addDefaultHeader("TE", "trailers")
 			.cookieSpec("ignore")
 			.followRedirects(false);
 

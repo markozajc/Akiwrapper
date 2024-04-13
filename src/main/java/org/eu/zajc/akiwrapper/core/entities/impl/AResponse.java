@@ -56,8 +56,8 @@ public abstract class AResponse implements Response {
 		if (parsed instanceof Guess) {
 			this.akiwrapper.setLastGuessStep(this.step);
 
-			if (this.akiwrapper.isGuessRejected((Guess) resp))
-				return ((Guess) resp).reject(); // skip already rejected guesses recursively
+			if (this.akiwrapper.isGuessRejected((Guess) parsed))
+				return ((Guess) parsed).reject(); // skip already rejected guesses recursively
 		}
 
 		this.akiwrapper.setCurrentResponse(parsed);

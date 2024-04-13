@@ -65,8 +65,9 @@ public class GuessImpl extends AResponse implements Guess {
 			var last = akiwrapper.getCurrentResponse();
 			return new GuessImpl(akiwrapper, last == null ? LAST_STEP : last.getStep(),
 								 last == null ? 100D : last.getProgression(), json.getString("id_proposition"),
-								 json.getString("name"), getPseudonym(json), json.getString("description_proposition"),
-								 new URI(json.getString("photo")).toURL(), json.getString("flag_photo"));
+								 json.getString("name_proposition"), getPseudonym(json),
+								 json.getString("description_proposition"), new URI(json.getString("photo")).toURL(),
+								 json.getString("flag_photo"));
 
 		} catch (JSONException | URISyntaxException | MalformedURLException e) {
 			throw new MalformedResponseException(e);

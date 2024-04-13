@@ -2,6 +2,7 @@ package org.eu.zajc.akiwrapper.example;
 
 import static java.lang.Character.toLowerCase;
 import static java.lang.System.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.joining;
 import static org.eu.zajc.akiwrapper.Akiwrapper.Answer.*;
 import static org.eu.zajc.akiwrapper.Akiwrapper.Language.ENGLISH;
@@ -15,13 +16,13 @@ import org.eu.zajc.akiwrapper.*;
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
+import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 
-@SuppressWarnings("javadoc")
 public class AkinatorExample {
 
 	private static final String ANSWER_TIP =
 		"Y or yes, N or no, DK or don't know, P or probably, PN or probably not, or go back one step with B or back.";
-	private static final Scanner IN = new Scanner(System.in).useDelimiter("\n");
+	private static final Scanner IN = new Scanner(System.in, UTF_8).useDelimiter("\n");
 
 	public static void main(String[] args) {
 		boolean filterProfanity = getProfanityFilter();
@@ -54,9 +55,7 @@ public class AkinatorExample {
 			// Akinator responds with either a question or a guess after each interaction. We
 			// first determine the response type
 
-			if (resp instanceof Question) {
-				var q = (Question) resp;
-
+			if (resp instanceof Question q) {
 				// The response is a question, display it
 				out.printf("Question #%d%n", q.getStep() + 1);
 				out.printf("\t%s%n", q.getText());
@@ -68,9 +67,7 @@ public class AkinatorExample {
 				// .. and then answer it
 				resp = answer(q);
 
-			} else if (resp instanceof Guess) {
-				var g = (Guess) resp;
-
+			} else if (resp instanceof Guess g) {
 				// The response is a guess, display it
 				out.println(g.getName());
 				out.printf("\t%s%n%n", g.getDescription());
@@ -108,36 +105,32 @@ public class AkinatorExample {
 			var input = IN.next().toLowerCase();
 
 			switch (input) {
-				case "y":
-				case "yes":
+				case "y", "yes":
 					return q.answer(YES);
 
-				case "n":
-				case "no":
+				case "n", "no":
 					return q.answer(NO);
 
-				case "dk":
-				case "don'tknow":
-				case "dontknow":
-				case "dont know":
-				case "don't know":
+				case "dk", "don'tknow", "dontknow", "dont know", "don't know":
 					return q.answer(DONT_KNOW);
 
-				case "p":
-				case "probably":
+				case "p", "probably":
 					return q.answer(PROBABLY);
 
-				case "pn":
-				case "probablynot":
-				case "probably not":
+				case "pn", "probablynot", "probably not":
 					return q.answer(PROBABLY_NOT);
 
-				case "b":
-				case "back":
+				case "b", "back":
 					if (q.getStep() == 0)
 						out.println("Can't undo on the first question.");
 					else
 						return q.undoAnswer();
+					break;
+
+				case "debug":
+					out.println("Debug information:");
+					out.printf("\tlastGuessStep: %d%n", ((AkiwrapperImpl) q.getAkiwrapper()).getLastGuessStep());
+					out.printf("\tisExhausted: %b%n", ((AkiwrapperImpl) q.getAkiwrapper()).isExhausted());
 					break;
 
 				default:
