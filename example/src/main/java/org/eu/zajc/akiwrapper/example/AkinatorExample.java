@@ -4,17 +4,17 @@ import static java.lang.Character.toLowerCase;
 import static java.lang.System.*;
 import static java.util.stream.Collectors.joining;
 import static org.eu.zajc.akiwrapper.Akiwrapper.Answer.*;
-import static org.eu.zajc.akiwrapper.core.entities.Server.GuessType.CHARACTER;
-import static org.eu.zajc.akiwrapper.core.entities.Server.Language.ENGLISH;
+import static org.eu.zajc.akiwrapper.Akiwrapper.Language.ENGLISH;
+import static org.eu.zajc.akiwrapper.Akiwrapper.Theme.CHARACTER;
 
 import java.util.*;
 
-import javax.annotation.Nonnull;
+import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.*;
+import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.*;
-import org.eu.zajc.akiwrapper.core.entities.Server.*;
-import org.eu.zajc.akiwrapper.core.exceptions.ServerNotFoundException;
+import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
 
 @SuppressWarnings("javadoc")
 public class AkinatorExample {
@@ -39,80 +39,70 @@ public class AkinatorExample {
 		try {
 			aw = new AkiwrapperBuilder().setFilterProfanity(filterProfanity)
 				.setLanguage(language)
-				.setGuessType(guessType)
+				.setTheme(guessType)
 				.build();
-		} catch (ServerNotFoundException e) {
+		} catch (LanguageThemeCombinationException e) {
 			err.println("Unsupported combination of language and guess type");
 			return;
 		}
 		// Builds the Akiwrapper instance, this is what we'll be using to perform
 		// operations such as answering questions, fetching guesses, etc
 
-		while (aw.getQuestion() != null) {
-			// Runs while there are still questions left
+		var resp = aw.getCurrentResponse(); // Get the initial response
 
-			Question question = aw.getQuestion();
-			if (question == null)
-				break;
-			// Breaks the loop if question is null; /should/ not occur, but safety is still
-			// first
+		while (resp != null) {
+			// Akinator responds with either a question or a guess after each interaction. We
+			// first determine the response type
 
-			out.printf("Question #%d%n\t%s%n", question.getStep() + 1, question.getQuestion());
-			// Displays the question.
+			if (resp instanceof Question) {
+				var q = (Question) resp;
 
-			if (question.getStep() == 0)
-				out.printf("%nAnswer with %s%n", ANSWER_TIP);
-			// Displays the tip (only for the first time)
+				// The response is a question, display it
+				out.printf("Question #%d%n", q.getStep() + 1);
+				out.printf("\t%s%n", q.getText());
 
-			out.print("> ");
+				// Also display the question tip (on the first question)
+				if (q.getStep() == 0)
+					out.printf("%nAnswer with %s%n", ANSWER_TIP);
 
-			answerQuestion(aw);
-			// Displays the question and prompts the player for an answer
+				// .. and then answer it
+				resp = answer(q);
 
-			reviewSuggestedGuess(aw);
-			// Checks if any guess is available and prompts the player
-		}
+			} else if (resp instanceof Guess) {
+				var g = (Guess) resp;
 
-		reviewSuggestedGuess(aw);
-		// Reviews the final guess
+				// The response is a guess, display it
+				out.println(g.getName());
+				out.printf("\t%s%n%n", g.getDescription());
+				// Displays the guess' information
 
-		finish(false);
-		// Loses if all guesses are rejected.
-	}
+				out.printf("Is this %s you're thinking of? [Y/n] ", aw.getTheme() == CHARACTER ? "who" : "what");
+				var input = IN.next().trim();
+				// Asks the player if the guess is correct
 
-	private static Guess reviewSuggestedGuess(@Nonnull Akiwrapper aw) {
-		var guess = aw.suggestGuess();
-		if (guess != null) {
-			if (reviewGuess(guess)) {
-				aw.confirmGuess(guess);
-				finish(true);
-				exit(0);
-			} else {
-				aw.rejectLastGuess();
+				if (input.isEmpty() || toLowerCase(input.charAt(0)) == 'y') {
+					// Akinator wins if the guess was correct
+					out.println("Great!");
+					out.println("\tGuessed right one more time. I love playing with you!");
+					g.confirm();
+
+				} else {
+					// .. otherwise the game continues
+					resp = g.reject();
+				}
 			}
 		}
-		return guess;
+
+		// If Akinator runs out of questions and guesses (when response is null), the player
+		// wins
+		out.println("Bravo!");
+		out.println("\tYou have defeated me.");
 	}
 
-	private static boolean reviewGuess(@Nonnull Guess guess) {
-		out.println(guess.getName());
-		out.print("\t");
-		if (guess.getDescription() == null)
-			out.print("(no description)");
-		else
-			out.print(guess.getDescription());
-		out.println();
-		// Displays the guess' information
-
-		out.print("Is this what you're thinking of? [Y/n] ");
-		var input = IN.next().trim();
-		// Asks the player if the guess is correct
-
-		return input.isEmpty() || toLowerCase(input.charAt(0)) == 'y';
-	}
-
-	private static void answerQuestion(@Nonnull Akiwrapper aw) {
-		main: while (true) {
+	@Nullable
+	private static Response answer(Question q) {
+		while (true) {
+			out.print("> ");
 			// Prompts the player for an answer
 
 			var input = IN.next().toLowerCase();
@@ -120,72 +110,40 @@ public class AkinatorExample {
 			switch (input) {
 				case "y":
 				case "yes":
-					aw.answer(YES);
-					break main;
+					return q.answer(YES);
 
 				case "n":
 				case "no":
-					aw.answer(NO);
-					break main;
+					return q.answer(NO);
 
 				case "dk":
 				case "don'tknow":
 				case "dontknow":
 				case "dont know":
 				case "don't know":
-					aw.answer(DONT_KNOW);
-					break main;
+					return q.answer(DONT_KNOW);
 
 				case "p":
 				case "probably":
-					aw.answer(PROBABLY);
-					break main;
+					return q.answer(PROBABLY);
 
 				case "pn":
 				case "probablynot":
 				case "probably not":
-					aw.answer(PROBABLY_NOT);
-					break main;
+					return q.answer(PROBABLY_NOT);
 
 				case "b":
 				case "back":
-					if (aw.getStep() == 0)
+					if (q.getStep() == 0)
 						out.println("Can't undo on the first question.");
 					else
-						aw.undoAnswer();
-					break main;
-
-				case "debug":
-					displayDebug(aw);
+						return q.undoAnswer();
 					break;
-				// Displays some debug information.
 
 				default:
 					out.println("Please answer with either " + ANSWER_TIP);
 					break;
 			}
-		}
-	}
-
-	private static void displayDebug(Akiwrapper aw) {
-		var question = aw.getQuestion();
-		out.println("Debug information:");
-		out.printf("\tCurrent API server: %s%n", aw.getServer().getUrl());
-		out.printf("\tProgression: %f%%%n", question == null ? -1 : question.getProgression());
-		out.println("\tGuesses:");
-		aw.getGuesses().stream().forEach(g -> out.printf("\t\t%f - %s%n", g.getProbability(), g.getName()));
-		out.print("> ");
-	}
-
-	private static void finish(boolean win) {
-		if (win) {
-			// If Akinator has won.
-			out.println("Great!");
-			out.println("\tGuessed right one more time. I love playing with you!");
-		} else {
-			// If the player has won.
-			out.println("Bravo!");
-			out.println("\tYou have defeated me.");
 		}
 	}
 
@@ -222,8 +180,8 @@ public class AkinatorExample {
 
 	@Nonnull
 	@SuppressWarnings("null")
-	private static GuessType getGuessType() {
-		var guessTypes = EnumSet.allOf(GuessType.class);
+	private static Theme getGuessType() {
+		var guessTypes = EnumSet.allOf(Theme.class);
 
 		out.print("What will you be guessing? [character] ");
 		while (true) {

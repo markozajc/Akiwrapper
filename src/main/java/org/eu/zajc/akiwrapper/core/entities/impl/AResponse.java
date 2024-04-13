@@ -16,6 +16,8 @@
  */
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
+import static org.eu.zajc.akiwrapper.core.utils.route.ApiStatus.QUESTIONS_EXHAUSTED;
+
 import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
@@ -50,19 +52,20 @@ public abstract class AResponse implements Response {
 	}
 
 	public Response parseNext(@Nonnull ApiResponse<JSONObject> resp) {
-		// TODO skip rejected guesses
-		// TODO check if status exhausted and return null
-
-		var parsed = fromJson(this.akiwrapper, resp.getBody());
-		if (parsed instanceof Guess)
+		var parsed = resp.getStatus() == QUESTIONS_EXHAUSTED ? null : fromJson(this.akiwrapper, resp.getBody());
+		if (parsed instanceof Guess) {
 			this.akiwrapper.setLastGuessStep(this.step);
+
+			if (this.akiwrapper.isGuessRejected((Guess) resp))
+				return ((Guess) resp).reject(); // skip already rejected guesses recursively
+		}
 
 		this.akiwrapper.setCurrentResponse(parsed);
 		return parsed;
 	}
 
 	@Nonnull
-	private Response fromJson(@Nonnull AkiwrapperImpl akiwrapper, JSONObject json) {
+	private static Response fromJson(@Nonnull AkiwrapperImpl akiwrapper, JSONObject json) {
 		if (json.has("question"))
 			return QuestionImpl.fromJson(akiwrapper, json);
 		else if (json.has("name_proposition"))

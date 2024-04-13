@@ -26,7 +26,7 @@ import javax.annotation.*;
 import org.eclipse.collections.api.factory.primitive.LongSets;
 import org.eclipse.collections.api.set.primitive.MutableLongSet;
 import org.eu.zajc.akiwrapper.Akiwrapper;
-import org.eu.zajc.akiwrapper.core.entities.Response;
+import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.entities.impl.QuestionImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.jsoup.nodes.Element;
@@ -119,6 +119,14 @@ public class AkiwrapperImpl implements Akiwrapper {
 		this.lastGuessStep = lastGuessStep;
 	}
 
+	public void addRejectedGuess(@Nonnull Guess g) {
+		this.rejectedGuesses.add(g.getIdLong());
+	}
+
+	public boolean isGuessRejected(@Nonnull Guess g) {
+		return this.rejectedGuesses.contains(g.getIdLong());
+	}
+
 	@Override
 	public boolean isExhausted() {
 		// response is only null after we've exhausted them (that is post step 80)
@@ -137,6 +145,16 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Nonnull
 	public UnirestInstance getUnirest() {
 		return this.unirest;
+	}
+
+	@Override
+	public Language getLanguage() {
+		return this.language;
+	}
+
+	@Override
+	public Theme getTheme() {
+		return this.theme;
 	}
 
 }
