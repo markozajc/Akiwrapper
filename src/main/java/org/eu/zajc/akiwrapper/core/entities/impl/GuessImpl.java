@@ -82,8 +82,6 @@ public class GuessImpl extends AbstractQuery implements Guess {
 
 	@Override
 	public void confirm() {
-		// TODO check if exhausted before calling
-
 		try {
 			CHOICE.createRequest(getAkiwrapper())
 				.parameter(PARAMETER_STEP, getStep())
@@ -101,8 +99,6 @@ public class GuessImpl extends AbstractQuery implements Guess {
 
 	@Override
 	public Query reject() {
-		// TODO check if exhausted before calling
-
 		try {
 			var resp = EXCLUDE.createRequest(getAkiwrapper())
 				.parameter(PARAMETER_STEP, getStep())

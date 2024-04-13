@@ -72,9 +72,6 @@ public interface Question extends Query {
 	 * @throws UndoOutOfBoundsException
 	 *             if the session has exhausted all questions (when
 	 *             {@link #getQuestion()} returns {@code null}.
-	 * @throws QuestionsExhaustedException
-	 *             if the session has exhausted all questions (when
-	 *             {@link #isExhausted()} returns {@code true}).
 	 * @throws ServerStatusException
 	 *             if the API server returns an erroneous {@link Status}.
 	 *
