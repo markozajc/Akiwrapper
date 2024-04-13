@@ -45,7 +45,7 @@ something other than characters, you may use the following setup:
 ```java
 Akiwrapper aw = new AkiwrapperBuilder()
     .setLanguage(Language.GERMAN)
-    .setTheme(Theme.PLACE)
+    .setTheme(Theme.OBJECT)
     .build();
 ```
 (keep in mind that not all language-theme combinations are supported, though all languages support `CHARACTER`)
