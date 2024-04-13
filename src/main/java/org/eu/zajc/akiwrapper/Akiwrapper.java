@@ -210,7 +210,7 @@ public interface Akiwrapper {
 	boolean doesFilterProfanity();
 
 	@Nullable
-	Response getCurrentResponse();
+	Query getCurrentQuery();
 
 	/**
 	 * Returns if the session has been exhausted, which occurs after answering 80

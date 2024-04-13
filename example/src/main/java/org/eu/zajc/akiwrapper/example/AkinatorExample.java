@@ -49,14 +49,14 @@ public class AkinatorExample {
 		// Builds the Akiwrapper instance, this is what we'll be using to perform
 		// operations such as answering questions, fetching guesses, etc
 
-		var resp = aw.getCurrentResponse(); // Get the initial response
+		var query = aw.getCurrentQuery(); // Get the initial query
 
-		while (resp != null) {
+		while (query != null) {
 			// Akinator responds with either a question or a guess after each interaction. We
-			// first determine the response type
+			// first determine the query type
 
-			if (resp instanceof Question q) {
-				// The response is a question, display it
+			if (query instanceof Question q) {
+				// The query is a question, display it
 				out.printf("Question #%d%n", q.getStep() + 1);
 				out.printf("\t%s%n", q.getText());
 
@@ -65,10 +65,10 @@ public class AkinatorExample {
 					out.printf("%nAnswer with %s%n", ANSWER_TIP);
 
 				// .. and then answer it
-				resp = answer(q);
+				query = answer(q);
 
-			} else if (resp instanceof Guess g) {
-				// The response is a guess, display it
+			} else if (query instanceof Guess g) {
+				// The query is a guess, display it
 				out.println(g.getName());
 				out.printf("\t%s%n%n", g.getDescription());
 				// Displays the guess' information
@@ -85,19 +85,19 @@ public class AkinatorExample {
 
 				} else {
 					// .. otherwise the game continues
-					resp = g.reject();
+					query = g.reject();
 				}
 			}
 		}
 
-		// If Akinator runs out of questions and guesses (when response is null), the player
+		// If Akinator runs out of questions and guesses (when query is null), the player
 		// wins
 		out.println("Bravo!");
 		out.println("\tYou have defeated me.");
 	}
 
 	@Nullable
-	private static Response answer(Question q) {
+	private static Query answer(Question q) {
 		while (true) {
 			out.print("> ");
 			// Prompts the player for an answer

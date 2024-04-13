@@ -32,7 +32,7 @@ import org.eu.zajc.akiwrapper.AkiwrapperBuilder;
  *
  * @author Marko Zajc
  */
-public interface Guess extends Response {
+public interface Guess extends Query {
 
 	/**
 	 * Confirms the {@link Guess}. This ends the session and likely affects Akinator's
@@ -45,16 +45,16 @@ public interface Guess extends Response {
 	void confirm();
 
 	/**
-	 * Rejects the {@link Guess} and provides the next {@link Response}. If the response
+	 * Rejects the {@link Guess} and provides the next {@link Query}. If the response
 	 * is a question, it will have the same step as the previous one, but different text.
 	 *
-	 * @return Akinator's {@link Response}.
+	 * @return Akinator's {@link Query}.
 	 *
 	 * @apiNote Do not use this method in automated tests, as it introduces faulty data
 	 *          into Akinator's database, dulling the ranking algorithm.
 	 */
 	@Nullable
-	Response reject();
+	Query reject();
 
 	/**
 	 * Returns the name of the guessed subject. This is provided in the language that was

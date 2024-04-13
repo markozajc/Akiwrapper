@@ -17,14 +17,14 @@
 package org.eu.zajc.akiwrapper.core.impl;
 
 import static java.util.Optional.ofNullable;
-import static org.eu.zajc.akiwrapper.core.utils.route.ApiRoutes.NEW_SESSION;
+import static org.eu.zajc.akiwrapper.core.utils.route.Routes.NEW_SESSION;
 
 import java.util.*;
 
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.Akiwrapper;
-import org.eu.zajc.akiwrapper.core.entities.Response;
+import org.eu.zajc.akiwrapper.core.entities.Query;
 import org.eu.zajc.akiwrapper.core.entities.impl.QuestionImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.jsoup.nodes.Element;
@@ -81,7 +81,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private final boolean filterProfanity;
 
 	private Session session;
-	private Response currentResponse;
+	private Query currentQuery;
 	private int lastGuessStep;
 
 	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull Language language, @Nonnull Theme theme,
@@ -96,16 +96,16 @@ public class AkiwrapperImpl implements Akiwrapper {
 	public void createSession() {
 		var resp = NEW_SESSION.createRequest(this).retrieveDocument().getBody();
 		this.session = Session.fromHtml(resp);
-		this.currentResponse = QuestionImpl.fromHtml(this, resp);
+		this.currentQuery = QuestionImpl.fromHtml(this, resp);
 	}
 
 	@Override
-	public Response getCurrentResponse() {
-		return this.currentResponse;
+	public Query getCurrentQuery() {
+		return this.currentQuery;
 	}
 
-	public void setCurrentResponse(@Nullable Response response) {
-		this.currentResponse = response;
+	public void setCurrentResponse(@Nullable Query response) {
+		this.currentQuery = response;
 	}
 
 	public int getLastGuessStep() {
@@ -119,7 +119,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Override
 	public boolean isExhausted() {
 		// response is only null after we've exhausted them (that is post step 80)
-		return this.currentResponse == null;
+		return this.currentQuery == null;
 	}
 
 	@Override
