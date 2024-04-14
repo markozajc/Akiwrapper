@@ -16,6 +16,8 @@
  */
 package org.eu.zajc.akiwrapper.core.utils.route;
 
+import static java.lang.String.format;
+
 import java.util.*;
 
 import javax.annotation.Nonnull;
@@ -43,7 +45,7 @@ public final class Route {
 	@Nonnull
 	@SuppressWarnings({ "resource", "null" })
 	public Request createRequest(@Nonnull AkiwrapperImpl api) {
-		var url = URL_FORMAT.formatted(api.getLanguage().getLanguageCode(), this.path);
+		var url = format(URL_FORMAT, api.getLanguage().getLanguageCode(), this.path);
 
 		var parameters = new HashMap<String, Object>();
 		this.parameterNames.forEach(p -> parameters.put(p, null)); // can't use Collectors.toMap due to null values

@@ -139,7 +139,7 @@ public class Request {
 			}
 
 		} else if (!resp.isSuccess()) {
-			throw new AkinatorException("Got HTTP %d %s".formatted(resp.getStatus(), resp.getStatusText()));
+			throw new AkinatorException(format("Got HTTP %d %s", resp.getStatus(), resp.getStatusText()));
 		}
 
 		return resp;
