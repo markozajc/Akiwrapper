@@ -206,6 +206,20 @@ public interface Akiwrapper {
 	}
 
 	/**
+	 * Returns the current {@link Query}. This will contain the initial {@link Query}
+	 * after the {@link Akiwrapper} instance is constructed, and will get updated as
+	 * Queries are responded to - the {@link Query} returned by interaction methods
+	 * ({@link Question#answer(Answer)}, {@link Question#undoAnswer()}, etc.) will be the
+	 * same as the {@link Query} returned by this method.<br>
+	 * After the game ends, either by reaching question 80 or by confirming a
+	 * {@link Guess}, this will return {@code null}
+	 *
+	 * @return the current {@link Query} or {@code null} if the game has ended.
+	 */
+	@Nullable
+	Query getCurrentQuery();
+
+	/**
 	 * Returns the {@link Language} used. Akinator returns localized {@link Question}s
 	 * and {@link Guess}es depending by this. Please note that while all
 	 * {@link Language}s support {@link Theme#CHARACTER}, but other themes might not be
@@ -234,20 +248,6 @@ public interface Akiwrapper {
 	 * @return whether the profanity filter is enabled.
 	 */
 	boolean doesFilterProfanity();
-
-	/**
-	 * Returns the current {@link Query}. This will contain the initial {@link Query}
-	 * after the {@link Akiwrapper} instance is constructed, and will get updated as
-	 * Queries are responded to - the {@link Query} returned by interaction methods
-	 * ({@link Question#answer(Answer)}, {@link Question#undoAnswer()}, etc.) will be the
-	 * same as the {@link Query} returned by this method.<br>
-	 * After the game ends, either by reaching question 80 or by confirming a
-	 * {@link Guess}, this will return {@code null}
-	 *
-	 * @return the current {@link Query} or {@code null} if the game has ended.
-	 */
-	@Nullable
-	Query getCurrentQuery();
 
 	/**
 	 * Returns if the game has ended, which occurs after answering 80 {@link Question}s
