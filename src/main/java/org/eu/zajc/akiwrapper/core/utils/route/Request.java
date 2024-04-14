@@ -138,7 +138,7 @@ public class Request {
 												   resp.getStatusText(), MAX_RETRIES));
 			}
 
-		} else if (!resp.isSuccess()) {
+		} else if (resp.getStatus() >= 400) {
 			throw new AkinatorException(format("Got HTTP %d %s", resp.getStatus(), resp.getStatusText()));
 		}
 
