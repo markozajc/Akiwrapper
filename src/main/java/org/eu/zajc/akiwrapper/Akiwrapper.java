@@ -256,6 +256,8 @@ public interface Akiwrapper {
 	 * @deprecated Check if {@link #getCurrentQuery()} is {@code null} instead
 	 */
 	@Deprecated(since = "2.0", forRemoval = true)
-	boolean isExhausted();
+	default boolean isExhausted() {
+		return this.getCurrentQuery() == null;
+	}
 
 }

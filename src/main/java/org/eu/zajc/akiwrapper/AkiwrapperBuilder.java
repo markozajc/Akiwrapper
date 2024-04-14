@@ -23,8 +23,8 @@ import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.Query;
+import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
-import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.utils.UnirestUtils;
 
 import kong.unirest.UnirestInstance;

@@ -22,7 +22,6 @@ import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
-import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.utils.route.Response;
 import org.json.JSONObject;
 

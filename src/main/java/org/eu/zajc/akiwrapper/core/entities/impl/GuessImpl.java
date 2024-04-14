@@ -17,7 +17,7 @@
 
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
-import static org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl.*;
+import static org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl.*;
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.*;
 
 import java.net.*;
@@ -26,7 +26,6 @@ import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
-import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.json.*;
 
 /**
