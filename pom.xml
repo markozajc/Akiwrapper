@@ -39,18 +39,10 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<junit.version>5.10.2</junit.version>
 		<slf4j.version>2.0.13</slf4j.version>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.release>11</maven.compiler.release>
 	</properties>
 
 	<dependencies>
-
-		<!-- XML Parsing -->
-		<dependency>
-			<groupId>com.jcabi</groupId>
-			<artifactId>jcabi-xml</artifactId>
-			<version>0.29.0</version>
-		</dependency>
 
 		<!-- JSON Parsing -->
 		<dependency>
@@ -106,21 +98,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Collections -->
-		<dependency>
-			<groupId>org.eclipse.collections</groupId>
-			<artifactId>eclipse-collections</artifactId>
-			<version>11.1.0</version>
-		</dependency>
-
 		<!-- Annotations -->
-		<dependency>
-			<groupId>com.github.spotbugs</groupId>
-			<artifactId>spotbugs-annotations</artifactId>
-			<version>4.8.4</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
 		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
@@ -133,6 +111,13 @@
 
 	<build>
 		<plugins>
+
+			<!-- Compiler -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+			</plugin>
 
 			<!-- Version enforcer -->
 			<plugin>
@@ -205,6 +190,17 @@
 			<id>release</id>
 			<build>
 				<plugins>
+
+					<!-- Compiler -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/akiwrapper/core/utils/LanguageEnumBuilder.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
 
 					<!-- Source -->
 					<plugin>
