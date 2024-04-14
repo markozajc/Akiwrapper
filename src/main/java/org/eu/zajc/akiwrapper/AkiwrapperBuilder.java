@@ -22,7 +22,7 @@ import static org.eu.zajc.akiwrapper.Akiwrapper.Theme.CHARACTER;
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
-import org.eu.zajc.akiwrapper.core.entities.*;
+import org.eu.zajc.akiwrapper.core.entities.Query;
 import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
 import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.utils.UnirestUtils;
@@ -125,7 +125,7 @@ public class AkiwrapperBuilder {
 	/**
 	 * Sets the profanity filter preference. Profanity filtering is done by Akinator and
 	 * not by Akiwrapper. Keep in mind that Akinator's filters aren't perfect, so
-	 * explicit {@link Guess}es can still be returned.<br>
+	 * explicit {@link Query} objects can still be returned.<br>
 	 * This is set to {@code false} by default.
 	 *
 	 * @param filterProfanity
@@ -143,7 +143,7 @@ public class AkiwrapperBuilder {
 	/**
 	 * Returns the profanity filter preference. Profanity filtering is done by Akinator
 	 * and not by Akiwrapper. Keep in mind that Akinator's filters aren't perfect, so
-	 * explicit {@link Guess}es can still be returned.<br>
+	 * explicit {@link Query} objects can still be returned.<br>
 	 * This is set to {@code false} by default.
 	 *
 	 * @return profanity filter preference.
@@ -156,8 +156,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Sets the {@link Language}. Akinator will return localized {@link Query}s depending
-	 * on this preference.<br>
+	 * Sets the {@link Language}. Akinator will return localized {@link Query} objects
+	 * depending on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @param language
@@ -176,8 +176,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Gets the {@link Language}. Akinator will return localized {@link Query}s depending
-	 * on this preference.<br>
+	 * Sets the {@link Language}. Akinator will return localized {@link Query} objects
+	 * depending on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @return language preference.
@@ -193,8 +193,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Sets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Query}s will be about.<br>
+	 * Sets the {@link Theme}. This decides the theme of Akinator's {@link Query}
+	 * objects.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @param theme
@@ -213,8 +213,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Sets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Query}s will be about.<br>
+	 * Sets the {@link Theme}. This decides the theme of Akinator's {@link Query}
+	 * objects.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @param theme
@@ -236,8 +236,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Gets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Query}s will be about.<br>
+	 * Sets the {@link Theme}. This decides the theme of Akinator's {@link Query}
+	 * objects.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @return theme preference.
@@ -253,8 +253,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Gets the {@link Theme}. This decides what kind of subjects Akinator's
-	 * {@link Query}s will be about.<br>
+	 * Sets the {@link Theme}. This decides the theme of Akinator's {@link Query}
+	 * objects.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
 	 * @return theme preference.
