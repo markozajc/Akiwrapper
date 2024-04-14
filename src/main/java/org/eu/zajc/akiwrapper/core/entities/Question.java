@@ -40,6 +40,7 @@ import org.eu.zajc.akiwrapper.core.exceptions.*;
 public interface Question extends Query {
 
 	/**
+	 * This is an interaction method for {@link Question}.<br>
 	 * Submits an answer for the question and returns the next {@link Query},
 	 * incrementing the current step.<br>
 	 * If there are no more questions left, this will return {@code null}. <br>
@@ -70,6 +71,7 @@ public interface Question extends Query {
 	Query answer(Answer answer);
 
 	/**
+	 * This is an interaction method for {@link Question}.<br>
 	 * Goes one question backwards, undoing the previous {@link #answer(Answer)} call.
 	 * For example, if {@link #getQuestion()} returns a question on step {@code 5},
 	 * calling this command will return the question on step {@code 4}. You can call this

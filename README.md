@@ -52,7 +52,45 @@ Akiwrapper aw = new AkiwrapperBuilder()
 
 ### The game loop
 
-**TODO**
+Akinator sends two types of queries: questions ("Is your character a X?", "Does your character Y?") and guesses
+("Is this your character?"). You'll typically want to set up a query-answer loop. Fetch the first query with
+```java
+Query query = aw.getCurrentQuery();
+```
+Then split your logic based on the type using `instanceof`:
+```java
+if (query instanceof Question) {
+    // Show the question, get an answer
+} else if (query instanceof Guess) {
+    // Show the guess, get a rejection or confirmation
+} else if (query == null) {
+	// Akinator has run out of questions, the player wins
+}
+```
+
+#### Questions
+Questions can be responded to in two ways: by answering them
+```java
+query = question.answer(Answer.YES); // or any other Answer
+```
+... or by undoing them
+```java
+query = question.undoAnswer();
+```
+Doing either will return the next query or `null` if there are none left (after answering question #80). You can also
+ignore the return value and use Akiwrapper#getCurrentQuery() instead.
+
+#### Guesses
+Guesses can also be responded to in two ways: by rejecting them
+```java
+query = guess.reject();
+```
+... or by confirming them
+```java
+guess.confirm()
+```
+Confirming a guess ends the game, meaning no more queries are returned past that point. This is also why
+`Guess#confirm()` lacks a return value.
 
 ### Cleaning up
 
