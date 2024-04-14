@@ -52,8 +52,8 @@ Akiwrapper aw = new AkiwrapperBuilder()
 
 ### The game loop
 
-Akinator sends two types of queries: questions ("Is your character a X?", "Does your character Y?") and guesses
-("Is this your character?"). You'll typically want to set up a query-answer loop. Fetch the first query with
+Akinator sends two types of queries: questions (*"Is your character an X?"*, *"Does your character Y?"*) and guesses
+(*"Is this your character?"*). You'll typically want to set up a query-answer loop. Fetch the first query with
 ```java
 Query query = aw.getCurrentQuery();
 ```
@@ -64,7 +64,7 @@ if (query instanceof Question) {
 } else if (query instanceof Guess) {
     // Show the guess, get a rejection or confirmation
 } else if (query == null) {
-	// Akinator has run out of questions, the player wins
+    // Akinator has run out of questions, the player wins
 }
 ```
 
