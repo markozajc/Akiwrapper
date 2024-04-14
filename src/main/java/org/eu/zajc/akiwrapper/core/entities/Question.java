@@ -62,6 +62,9 @@ public interface Question extends Query {
 	 *             if something else goes wrong during the API call.
 	 *
 	 * @see #undoAnswer()
+	 *
+	 * @apiNote This method is thread safe - interaction methods are locked per
+	 *          {@link Akiwrapper} instance.
 	 */
 	@Nullable
 	Query answer(Answer answer);
@@ -91,6 +94,9 @@ public interface Question extends Query {
 	 *             if something else goes wrong during the API call.
 	 *
 	 * @see #answer(Answer)
+	 *
+	 * @apiNote This method is thread safe - interaction methods are locked per
+	 *          {@link Akiwrapper} instance.
 	 */
 	@Nonnull
 	Question undoAnswer();

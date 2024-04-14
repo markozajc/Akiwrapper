@@ -51,6 +51,8 @@ public interface Guess extends Query {
 	 *             {@link Akiwrapper#getCurrentQuery()}, which happens if you attempt to
 	 *             interact with it twice.
 	 *
+	 * @apiNote This method is thread safe - interaction methods are locked per
+	 *          {@link Akiwrapper} instance.
 	 * @apiNote Since this ends the session and is not really required to succeed, any
 	 *          API exceptions thrown are suppressed.
 	 * @apiNote Do not use this method in automated tests, as it introduces faulty data
@@ -79,6 +81,8 @@ public interface Guess extends Query {
 	 *
 	 * @return the next {@link Query} or {@code null} if there are none left.
 	 *
+	 * @apiNote This method is thread safe - interaction methods are locked per
+	 *          {@link Akiwrapper} instance.
 	 * @apiNote Do not use this method in automated tests, as it introduces faulty data
 	 *          into Akinator's database, dulling the ranking algorithm.
 	 */

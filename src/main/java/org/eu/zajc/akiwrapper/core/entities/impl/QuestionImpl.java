@@ -90,30 +90,46 @@ public class QuestionImpl extends AbstractQuery implements Question {
 
 	@Override
 	public Query answer(Answer answer) {
-		var resp = ANSWER.createRequest(this.getAkiwrapper())
-			.parameter(PARAMETER_STEP, getStep())
-			.parameter(PARAMETER_PROGRESSION, getProgression())
-			.parameter(PARAMETER_ANSWER, answer.getId())
-			.parameter(PARAMETER_STEP_LAST_PROPOSITION, this.getAkiwrapper().getLastGuessStep())
-			.retrieveJson();
-		return parseNext(resp);
+		try {
+			this.getAkiwrapper().getInteractionLock().lock();
+			this.ensureCurrent();
+
+			var resp = ANSWER.createRequest(this.getAkiwrapper())
+				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_PROGRESSION, getProgression())
+				.parameter(PARAMETER_ANSWER, answer.getId())
+				.parameter(PARAMETER_STEP_LAST_PROPOSITION, this.getAkiwrapper().getLastGuessStep())
+				.retrieveJson();
+			return parseNext(resp);
+
+		} finally {
+			this.getAkiwrapper().getInteractionLock().unlock();
+		}
 	}
 
 	@Override
 	public Question undoAnswer() {
-		if (getStep() == 0)
-			throw new UndoOutOfBoundsException();
+		try {
+			this.getAkiwrapper().getInteractionLock().lock();
+			this.ensureCurrent();
 
-		var resp = CANCEL_ANSWER.createRequest(this.getAkiwrapper())
-			.parameter(PARAMETER_STEP, getStep())
-			.parameter(PARAMETER_PROGRESSION, getProgression())
-			.retrieveJson();
+			if (getStep() == 0)
+				throw new UndoOutOfBoundsException();
 
-		var next = parseNext(resp);
-		if (next instanceof Question)
-			return (Question) next;
-		else
-			throw new MalformedResponseException();
+			var resp = CANCEL_ANSWER.createRequest(this.getAkiwrapper())
+				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_PROGRESSION, getProgression())
+				.retrieveJson();
+
+			var next = parseNext(resp);
+			if (next instanceof Question)
+				return (Question) next;
+			else
+				throw new MalformedResponseException();
+
+		} finally {
+			this.getAkiwrapper().getInteractionLock().unlock();
+		}
 	}
 
 	@Override

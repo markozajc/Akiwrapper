@@ -20,6 +20,7 @@ import static java.util.Optional.ofNullable;
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.NEW_SESSION;
 
 import java.util.*;
+import java.util.concurrent.locks.*;
 
 import javax.annotation.*;
 
@@ -83,6 +84,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private Session session;
 	private Query currentQuery;
 	private int lastGuessStep;
+	@Nonnull private Lock interactionLock = new ReentrantLock();
 
 	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull Language language, @Nonnull Theme theme,
 						  boolean filterProfanity) {
@@ -104,6 +106,35 @@ public class AkiwrapperImpl implements Akiwrapper {
 		return this.currentQuery;
 	}
 
+	@Override
+	public Language getLanguage() {
+		return this.language;
+	}
+
+	@Override
+	public Theme getTheme() {
+		return this.theme;
+	}
+
+	@Override
+	public boolean doesFilterProfanity() {
+		return this.filterProfanity;
+	}
+
+	@Override
+	public boolean isExhausted() {
+		return this.currentQuery == null;
+	}
+
+	@Nonnull
+	public UnirestInstance getUnirest() {
+		return this.unirest;
+	}
+
+	public Session getSession() {
+		return this.session;
+	}
+
 	public void setCurrentResponse(@Nullable Query response) {
 		this.currentQuery = response;
 	}
@@ -116,33 +147,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 		this.lastGuessStep = lastGuessStep;
 	}
 
-	@Override
-	public boolean isExhausted() {
-		return this.currentQuery == null;
-	}
-
-	@Override
-	public boolean doesFilterProfanity() {
-		return this.filterProfanity;
-	}
-
-	public Session getSession() {
-		return this.session;
-	}
-
 	@Nonnull
-	public UnirestInstance getUnirest() {
-		return this.unirest;
+	public Lock getInteractionLock() {
+		return this.interactionLock;
 	}
-
-	@Override
-	public Language getLanguage() {
-		return this.language;
-	}
-
-	@Override
-	public Theme getTheme() {
-		return this.theme;
-	}
-
 }

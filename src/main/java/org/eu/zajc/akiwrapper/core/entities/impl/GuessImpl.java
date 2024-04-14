@@ -84,6 +84,9 @@ public class GuessImpl extends AbstractQuery implements Guess {
 	@Override
 	public void confirm() {
 		try {
+			this.getAkiwrapper().getInteractionLock().lock();
+			this.ensureCurrent();
+
 			CHOICE.createRequest(getAkiwrapper())
 				.parameter(PARAMETER_STEP, getStep())
 				.parameter(PARAMETER_GUESS_ID, this.id)
@@ -95,27 +98,26 @@ public class GuessImpl extends AbstractQuery implements Guess {
 		} catch (AkinatorException e) {
 			// we don't care about out session anymore anyways, throwing would be silly
 			LOG.warn("Caught an exception when confirming a guess", e);
+
+		} finally {
+			this.getAkiwrapper().getInteractionLock().unlock();
 		}
 	}
 
 	@Override
 	public Query reject() {
 		try {
+			this.getAkiwrapper().getInteractionLock().lock();
+			this.ensureCurrent();
+
 			var resp = EXCLUDE.createRequest(getAkiwrapper())
 				.parameter(PARAMETER_STEP, getStep())
 				.parameter(PARAMETER_PROGRESSION, getProgression())
 				.retrieveJson();
 			return parseNext(resp);
 
-		} catch (AkinatorException e) {
-			if (getAkiwrapper().isExhausted()) {
-				// we don't care about out session anymore anyways, throwing would be silly
-				LOG.warn("Caught an exception when rejecting a guess", e);
-				return null;
-
-			} else {
-				throw e;
-			}
+		} finally {
+			this.getAkiwrapper().getInteractionLock().unlock();
 		}
 	}
 
