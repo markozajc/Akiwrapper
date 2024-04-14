@@ -78,7 +78,7 @@ public class UnirestUtils {
 	 * @return the {@link UnirestInstance} you passed, used for chaining
 	 */
 	@Nonnull
-	public static UnirestInstance configureInstance(@Nonnull UnirestInstance unirest) {
+	public static UnirestInstance configureInstance(UnirestInstance unirest) {
 		unirest.config()
 			.addDefaultHeader("User-Agent",
 							  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:86.0) Gecko/20100101 Firefox/86.0")

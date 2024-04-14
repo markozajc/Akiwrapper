@@ -27,12 +27,15 @@ import javax.annotation.*;
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.Question;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
+import org.eu.zajc.akiwrapper.core.utils.UnirestUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import kong.unirest.*;
 
 class IntegrationTest {
 
@@ -46,15 +49,21 @@ class IntegrationTest {
 	private static final String QUESTION_INITIAL_NO_MATCH =
 		"Initial question text does not match the one after an equal amount of answers and undoes";
 
+	private static final UnirestInstance UNIREST = UnirestUtils.configureInstance(Unirest.spawnInstance());
+	static {
+		UNIREST.config().connectTimeout(300000).socketTimeout(300000);
+	}
+
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")
 	void testAkiwrapper(@Nonnull Language language, @Nonnull Theme theme) {
+
 		Logger log = getLogger(format("%s-%s", language, theme));
 		try {
 			log.info("Establishing connection");
 			Akiwrapper api;
 			try {
-				api = new AkiwrapperBuilder().setLanguage(language).setTheme(theme).build();
+				api = new AkiwrapperBuilder().setUnirestInstance(UNIREST).setLanguage(language).setTheme(theme).build();
 			} catch (LanguageThemeCombinationException e) {
 				abort("Language-theme combination not supported.");
 				return;
