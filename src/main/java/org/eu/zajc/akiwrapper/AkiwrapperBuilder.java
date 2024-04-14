@@ -286,6 +286,8 @@ public class AkiwrapperBuilder {
 	@SuppressWarnings("resource")
 	public Akiwrapper build() throws LanguageThemeCombinationException {
 		var unirest = this.unirest != null ? this.unirest : UnirestUtils.getInstance();
+		if (!this.language.isThemeSupported(this.theme))
+			throw new LanguageThemeCombinationException(this.language, this.theme);
 
 		var api = new AkiwrapperImpl(unirest, this.language, this.theme, this.filterProfanity);
 		api.createSession();

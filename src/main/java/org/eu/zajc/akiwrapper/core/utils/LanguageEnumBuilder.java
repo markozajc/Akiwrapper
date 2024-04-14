@@ -96,7 +96,7 @@ public class LanguageEnumBuilder {
 		out.println(new Scanner(Unirest.get("https://en.akinator.com/").asString().getBody()).findAll(LANGUAGE_REGEX)
 			.map(m -> m.group(1))
 			.map(l -> format("%s(\"%s\", %s)", getLanguageName(l).toUpperCase(), l,
-							 getGuessTypes(l).map(s -> "GuessType." + s).collect(joining(", "))))
+							 getGuessTypes(l).map(s -> "Theme." + s).collect(joining(", "))))
 			.collect(joining(",\n", "", ";")));
 	}
 
