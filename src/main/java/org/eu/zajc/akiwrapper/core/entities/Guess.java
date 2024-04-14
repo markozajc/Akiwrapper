@@ -39,6 +39,7 @@ import org.eu.zajc.akiwrapper.core.utils.Utilities;
 public interface Guess extends Query {
 
 	/**
+	 * This is an interaction method for {@link Guess}.<br>
 	 * Confirms the {@link Guess}. This ends the session and likely affects Akinator's
 	 * algorithm to associate the taken answer route with the confirmed guess, improving
 	 * the guessing algorithm.<br>
@@ -51,6 +52,8 @@ public interface Guess extends Query {
 	 *             {@link Akiwrapper#getCurrentQuery()}, which happens if you attempt to
 	 *             interact with it twice.
 	 *
+	 * @see #reject()
+	 *
 	 * @apiNote This method is thread safe - interaction methods are locked per
 	 *          {@link Akiwrapper} instance.
 	 * @apiNote Since this ends the session and is not really required to succeed, any
@@ -61,6 +64,7 @@ public interface Guess extends Query {
 	void confirm();
 
 	/**
+	 * This is an interaction method for {@link Guess}.<br>
 	 * Rejects the {@link Guess} and provides the next {@link Query}. If the next query
 	 * is a question, it will have the same step as the previous one, but different
 	 * text.<br>
