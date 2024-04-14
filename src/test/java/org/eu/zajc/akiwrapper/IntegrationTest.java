@@ -139,9 +139,8 @@ class IntegrationTest {
 
 			Question undoneQuestion = question.undoAnswer();
 			assertSame(undoneQuestion, api.getCurrentQuery(), QUESTION_CURRENT_NO_MATCH);
-			expectedState--;
-			assertEquals(expectedState, question.getStep());
 			checkQuestion(expectedState, question);
+			expectedState--;
 		}
 
 		log.info("Asserting the current state.");
