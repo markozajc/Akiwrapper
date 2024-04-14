@@ -52,19 +52,63 @@ public class Utilities {
 		throw (X) ex;
 	}
 
+	/**
+	 * Attempts to parse a string using {@link Integer#parseInt(String)}, throwing a
+	 * {@link MalformedResponseException} on failure.
+	 *
+	 * @param s
+	 *            the string to parse.
+	 *
+	 * @return the parsed int.
+	 *
+	 * @throws MalformedResponseException
+	 *             if a {@link NumberFormatException} is thrown.
+	 */
 	public static int parseInt(String s) throws MalformedResponseException {
 		try {
 			return Integer.parseInt(s);
 		} catch (NumberFormatException e) {
-			throw new MalformedResponseException();
+			throw new MalformedResponseException(e);
 		}
 	}
 
+	/**
+	 * Attempts to parse a string using {@link Long#parseLong(String)}, throwing a
+	 * {@link MalformedResponseException} on failure.
+	 *
+	 * @param s
+	 *            the string to parse.
+	 *
+	 * @return the parsed long.
+	 *
+	 * @throws MalformedResponseException
+	 *             if a {@link NumberFormatException} is thrown.
+	 */
+	public static long parseLong(String s) throws MalformedResponseException {
+		try {
+			return Long.parseLong(s);
+		} catch (NumberFormatException e) {
+			throw new MalformedResponseException(e);
+		}
+	}
+
+	/**
+	 * Attempts to parse a string using {@link Double#parseDouble(String)}, throwing a
+	 * {@link MalformedResponseException} on failure.
+	 *
+	 * @param s
+	 *            the string to parse.
+	 *
+	 * @return the parsed double.
+	 *
+	 * @throws MalformedResponseException
+	 *             if a {@link NumberFormatException} is thrown.
+	 */
 	public static double parseDouble(String s) throws MalformedResponseException {
 		try {
 			return Double.parseDouble(s);
 		} catch (NumberFormatException e) {
-			throw new MalformedResponseException();
+			throw new MalformedResponseException(e);
 		}
 	}
 

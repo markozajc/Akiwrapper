@@ -38,11 +38,17 @@ public class LanguageThemeCombinationException extends AkinatorException {
 		this.theme = theme;
 	}
 
+	/**
+	 * @return the requested {@link Language}.
+	 */
 	@Nonnull
 	public Language getLanguage() {
 		return this.language;
 	}
 
+	/**
+	 * @return the requested {@link Theme}.
+	 */
 	@Nonnull
 	public Theme getTheme() {
 		return this.theme;

@@ -73,13 +73,13 @@ public enum Status {
 	}
 
 	@Nonnull
-	@SuppressWarnings({ "javadoc", "null" }) // internal impl
+	@SuppressWarnings({ "javadoc", "null" }) // internal
 	public static Status fromJson(@Nonnull JSONObject json) {
 		return json.has("completion") ? fromString(json.getString("completion")) : OK;
 	}
 
 	@Nonnull
-	@SuppressWarnings({ "javadoc", "null" }) // internal impl
+	@SuppressWarnings({ "javadoc", "null" }) // internal
 	public static Status fromHtml(@Nonnull Element gameRoot) {
 		// determines error status based on the akitude. this isn't the most stable, but it's
 		// more reliable than checking localized strings or document structure
@@ -93,7 +93,7 @@ public enum Status {
 	}
 
 	@Nonnull
-	@SuppressWarnings("javadoc") // internal impl
+	@SuppressWarnings("javadoc") // internal
 	public static Status fromString(@Nonnull String completion) {
 		for (Status iteratedLevel : Status.values())
 			if (completion.toUpperCase().startsWith(iteratedLevel.toString()))
