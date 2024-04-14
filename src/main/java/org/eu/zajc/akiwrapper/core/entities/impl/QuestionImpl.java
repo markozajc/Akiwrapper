@@ -100,8 +100,7 @@ public class QuestionImpl extends AbstractQuery implements Question {
 	}
 
 	@Override
-	@SuppressWarnings("null")
-	public Query undoAnswer() {
+	public Question undoAnswer() {
 		if (getStep() == 0)
 			throw new UndoOutOfBoundsException();
 
@@ -109,7 +108,12 @@ public class QuestionImpl extends AbstractQuery implements Question {
 			.parameter(PARAMETER_STEP, getStep())
 			.parameter(PARAMETER_PROGRESSION, getProgression())
 			.retrieveJson();
-		return parseNext(resp);
+
+		var next = parseNext(resp);
+		if (next instanceof Question)
+			return (Question) next;
+		else
+			throw new MalformedResponseException();
 	}
 
 	@Override

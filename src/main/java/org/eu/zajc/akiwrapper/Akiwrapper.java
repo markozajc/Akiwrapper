@@ -23,34 +23,36 @@ import java.util.*;
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
+import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
 
 /**
  * The "core" of interaction with the Akinator's API.<br>
  * Akinator is a 20 questions-type game, which means that the computer
  * algorithmically tries to figure out (using {@link Guess}es) what character,
  * object, or movie the player is thinking about by asking {@link Question}s and
- * getting {@link Answer}s. As mentioned before, this library interfaces with
- * Akinator's online API and does not run the ranking algorithm locally.<br>
+ * getting {@link Answer}s. This library interfaces with Akinator's online API and
+ * does not run the ranking algorithm locally.<br>
  * <br>
  * The library is typically used in the following loop:
  * <ol>
- * <li>The API sends a question, which is retrieved using {@link #getQuestion()} and
- * shown to the player</li>
- * <li>The player gives one of the five {@link Answer}s, which is submitted using
- * {@link #answer(Answer)} and returns the next question</li>
- * <li>Before displaying the next question, {@link #suggestGuess()} is called to
- * fetch the most relevant {@link Guess} (or {@code null} if none is available)</li>
- * </ol>
- * If a {@link Guess} is available, the following should happen:
+ * <li>An {@link Akiwrapper} object is constructed using
+ * {@link AkiwrapperBuilder}</li>
+ * <li>A {@link Query} from {@link #getCurrentQuery()} is displayed to the user.</li>
+ * <li>The program decides based on the type of the {@link Query}:</li>
  * <ol>
- * <li>The guess metadata is shown to the player
- * <ul>
- * <li>If the player confirms the guess, {@link #confirmGuess(Guess)} is called and
- * the game is finished
- * <li>If the player rejects the guess, {@link #rejectLastGuess()} is called and the
- * game continues
- * </ul>
+ * <li>If it's a {@link Guess}, it's shown to the user and responded to with either
+ * {@link Guess#confirm()} or {@link Guess#reject()}. Confirming a guess is the lose
+ * condition and ends the game.</li>
+ * <li>If it's a {@link Question}, it's shown to the user and responded to with
+ * either {@link Question#answer(Answer)} or {@link Question#undoAnswer()}.</li>
+ * <li>If it's {@code null}, Akinator has no more queries. This is the win
+ * condition.</li>
  * </ol>
+ * </ol>
+ * Queries can either be retrieved from return values of interaction methods
+ * ({@link Question#answer(Answer)}, {@link Question#undoAnswer()}, etc.) or from
+ * {@link #getCurrentQuery()}. Keep in mind that you can't respond to the same query
+ * more than once.<br>
  * An example of this library in action can be viewed in the {@code examples/}
  * directory of the repository.
  *
@@ -63,6 +65,7 @@ public interface Akiwrapper {
 	 *
 	 * @author Marko Zajc
 	 */
+	@SuppressWarnings("javadoc")
 	public enum Language {
 
 		ENGLISH("en", Theme.CHARACTER, Theme.OBJECT, Theme.ANIMAL),
@@ -91,16 +94,38 @@ public interface Akiwrapper {
 			this.supportedThemes = unmodifiableSet(EnumSet.of(supportedTheme, otherSupportedThemes));
 		}
 
+		/**
+		 * @return the two-character language code used in akinator.com subdomains.
+		 */
 		@Nonnull
 		public String getLanguageCode() {
 			return this.languageCode;
 		}
 
+		/**
+		 * Returns an unmodifiable {@link Set} of {@link Theme}s supported by this
+		 * {@link Language}. Attempting to construct an {@link Akiwrapper} instance with an
+		 * incompatible {@link Language}-{@link Theme} combination will throw a
+		 * {@link LanguageThemeCombinationException}.
+		 *
+		 * @return supported {@link Theme}s.
+		 */
 		@Nonnull
 		public Set<Theme> getSupportedThemes() {
 			return this.supportedThemes;
 		}
 
+		/**
+		 * Checks if this {@link Language} supports a given {@link Theme}. Attempting to
+		 * construct an {@link Akiwrapper} instance with an incompatible
+		 * {@link Language}-{@link Theme} combination will throw a
+		 * {@link LanguageThemeCombinationException}.
+		 *
+		 * @param theme
+		 *            the {@link Theme} to check support for.
+		 *
+		 * @return whether the theme is supported.
+		 */
 		public boolean isThemeSupported(@Nonnull Theme theme) {
 			return this.supportedThemes.contains(theme);
 		}
@@ -116,6 +141,7 @@ public interface Akiwrapper {
 	 *
 	 * @author Marko Zajc
 	 */
+	@SuppressWarnings("javadoc")
 	public enum Theme {
 
 		CHARACTER(1),
@@ -209,16 +235,30 @@ public interface Akiwrapper {
 	 */
 	boolean doesFilterProfanity();
 
+	/**
+	 * Returns the current {@link Query}. This will contain the initial {@link Query}
+	 * after the {@link Akiwrapper} instance is constructed, and will get updated as
+	 * Queries are responded to - the {@link Query} returned by interaction methods
+	 * ({@link Question#answer(Answer)}, {@link Question#undoAnswer()}, etc.) will be the
+	 * same as the {@link Query} returned by this method.<br>
+	 * After the game ends, either by reaching question 80 or by confirming a
+	 * {@link Guess}, this will return {@code null}
+	 *
+	 * @return the current {@link Query} or {@code null} if the game has ended.
+	 */
 	@Nullable
 	Query getCurrentQuery();
 
 	/**
-	 * Returns if the session has been exhausted, which occurs after answering 80
-	 * {@link Question}s.<br>
-	 * Sending or undoing answers can no longer be done after the session is exhausted.
+	 * Returns if the game has ended, which occurs after answering 80 {@link Question}s
+	 * or calling {@link Guess#confirm()}.<br>
+	 * Sending or undoing answers can no longer be done after the game has ended.
 	 *
-	 * @return whether the session is exhausted.
+	 * @return whether the game has ended.
+	 *
+	 * @deprecated Check if {@link #getCurrentQuery()} is {@code null} instead
 	 */
+	@Deprecated(since = "2.0", forRemoval = true)
 	boolean isExhausted();
 
 }

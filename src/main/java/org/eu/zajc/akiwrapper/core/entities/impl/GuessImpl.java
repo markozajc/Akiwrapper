@@ -66,7 +66,8 @@ public class GuessImpl extends AbstractQuery implements Guess {
 			return new GuessImpl(akiwrapper, last == null ? LAST_STEP : last.getStep(),
 								 last == null ? 100D : last.getProgression(), json.getString("id_proposition"),
 								 json.getString("name_proposition"), getPseudonym(json),
-								 json.getString("description_proposition"), new URI(json.getString("photo")).toURL(),
+								 json.getString("description_proposition"),
+								 json.has("photo") ? new URI(json.getString("photo")).toURL() : null,
 								 json.getString("flag_photo"));
 
 		} catch (JSONException | URISyntaxException | MalformedURLException e) {

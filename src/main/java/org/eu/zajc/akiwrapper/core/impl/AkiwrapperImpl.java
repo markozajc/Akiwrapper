@@ -118,7 +118,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	@Override
 	public boolean isExhausted() {
-		// response is only null after we've exhausted them (that is post step 80)
 		return this.currentQuery == null;
 	}
 

@@ -16,19 +16,23 @@
  */
 package org.eu.zajc.akiwrapper.core.entities;
 
-import static java.lang.Long.parseLong;
-
+import java.io.ObjectInputFilter.Status;
 import java.net.URL;
 
 import javax.annotation.*;
 
-import org.eu.zajc.akiwrapper.Akiwrapper.Theme;
-import org.eu.zajc.akiwrapper.AkiwrapperBuilder;
+import org.eu.zajc.akiwrapper.*;
+import org.eu.zajc.akiwrapper.core.exceptions.*;
+import org.eu.zajc.akiwrapper.core.utils.Utilities;
 
 /**
- * A representation of Akinator's guess. A guess may span different types of subject,
- * depending on what was set for the {@link Theme} in the {@link AkiwrapperBuilder}
- * (default is {@link Theme#CHARACTER}).
+ * A representation of Akinator's guess. Guesses are either confirmed with
+ * {@link #confirm()} or rejected with {@link #reject()}. Rejecting a guess returns
+ * the next question (which will have the same {@code step}), while confirming it
+ * ends the session.<br>
+ * <b>Note:</b> A single {@link Guess} object can only be interacted with once.
+ * Calling {@link #confirm()} or {@link #reject()} mutates the session state, so you
+ * can only call one of them once.
  *
  * @author Marko Zajc
  */
@@ -37,18 +41,43 @@ public interface Guess extends Query {
 	/**
 	 * Confirms the {@link Guess}. This ends the session and likely affects Akinator's
 	 * algorithm to associate the taken answer route with the confirmed guess, improving
-	 * the guessing algorithm.
+	 * the guessing algorithm.<br>
+	 * <b>Note:</b> A single {@link Guess} object can only be interacted with once.
+	 * Calling {@link #confirm()} or {@link #reject()} mutates the session state, so you
+	 * can only call one of them once.
 	 *
+	 * @throws IllegalStateException
+	 *             if this {@link Question} is not the same as
+	 *             {@link Akiwrapper#getCurrentQuery()}, which happens if you attempt to
+	 *             interact with it twice.
+	 *
+	 * @apiNote Since this ends the session and is not really required to succeed, any
+	 *          API exceptions thrown are suppressed.
 	 * @apiNote Do not use this method in automated tests, as it introduces faulty data
 	 *          into Akinator's database, dulling the ranking algorithm.
 	 */
 	void confirm();
 
 	/**
-	 * Rejects the {@link Guess} and provides the next {@link Query}. If the response
-	 * is a question, it will have the same step as the previous one, but different text.
+	 * Rejects the {@link Guess} and provides the next {@link Query}. If the next query
+	 * is a question, it will have the same step as the previous one, but different
+	 * text.<br>
+	 * <b>Note:</b> Rejecting a {@link Guess} does not mean the API won't propose it
+	 * again. That happens quite often, in fact.<br>
+	 * <b>Note:</b> A single {@link Guess} object can only be interacted with once.
+	 * Calling {@link #confirm()} or {@link #reject()} mutates the session state, so you
+	 * can only call one of them once.
 	 *
-	 * @return Akinator's {@link Query}.
+	 * @throws IllegalStateException
+	 *             if this {@link Question} is not the same as
+	 *             {@link Akiwrapper#getCurrentQuery()}, which happens if you attempt to
+	 *             interact with it twice.
+	 * @throws ServerStatusException
+	 *             if the API server returns an erroneous {@link Status}.
+	 * @throws AkinatorException
+	 *             if something else goes wrong during the API call.
+	 *
+	 * @return the next {@link Query} or {@code null} if there are none left.
 	 *
 	 * @apiNote Do not use this method in automated tests, as it introduces faulty data
 	 *          into Akinator's database, dulling the ranking algorithm.
@@ -82,16 +111,16 @@ public interface Guess extends Query {
 	 * It is provided in the language that was specified using the
 	 * {@link AkiwrapperBuilder}.
 	 *
-	 * @return description of the guessed subject.
+	 * @return the guess' description.
 	 */
 	@Nonnull
 	String getDescription();
 
 	/**
-	 * Returns the URL to an image of this subject. As an image of the subject is
-	 * optional and thus not always present, this may be {@code null}.
+	 * Returns the URL to an image of this subject, which can be a placeholder image
+	 * ({@code https://photos.clarinea.fr/BL_1_fr/none.jpg}).
 	 *
-	 * @return URL to picture or null if no picture is attached
+	 * @return the guess picture URL.
 	 */
 	@Nullable
 	URL getImage();
@@ -100,7 +129,7 @@ public interface Guess extends Query {
 	 * Returns this guess's ID. ID's are unique to each guess and can be used to track
 	 * rejected guesses, because Akinator won't do that for you.
 	 *
-	 * @return this guess's ID.
+	 * @return this guess' ID.
 	 *
 	 * @see #getIdLong()
 	 */
@@ -108,15 +137,15 @@ public interface Guess extends Query {
 	String getId();
 
 	/**
-	 * Returns this guess's ID as a @{code long}. ID's are unique to each guess and can
+	 * Returns this guess's ID as a {@code long}. ID's are unique to each guess and can
 	 * be used to track rejected guesses, because Akinator won't do that for you.
 	 *
-	 * @return this guess's ID as a {@code long}.
+	 * @return this guess' ID as a {@code long}.
 	 *
 	 * @see #getId()
 	 */
 	default long getIdLong() {
-		return parseLong(getId());
+		return Utilities.parseLong(getId());
 	}
 
 }

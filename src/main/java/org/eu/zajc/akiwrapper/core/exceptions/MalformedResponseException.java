@@ -23,10 +23,12 @@ package org.eu.zajc.akiwrapper.core.exceptions;
  */
 public class MalformedResponseException extends AkinatorException {
 
+	@SuppressWarnings("javadoc") // internal
 	public MalformedResponseException() {
 		this(null);
 	}
 
+	@SuppressWarnings("javadoc") // internal
 	public MalformedResponseException(Throwable cause) {
 		super("Akinator has returned a malformed response. Please try again after a while, or open an issue on" +
 			"https://github.com/markozajc/Akiwrapper/issues is the error persists.", cause);

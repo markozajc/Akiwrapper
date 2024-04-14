@@ -19,7 +19,7 @@ package org.eu.zajc.akiwrapper.core.exceptions;
 import org.eu.zajc.akiwrapper.core.utils.route.Status;
 
 /**
- * An exception indicating that the server returned an erroneous status.
+ * An exception indicating that the server returned an erroneous {@link Status}.
  *
  * @author Marko Zajc
  */
@@ -33,6 +33,9 @@ public class ServerStatusException extends AkinatorException {
 		this.status = status;
 	}
 
+	/**
+	 * @return the erroneous {@link Status} returned by the API.
+	 */
 	public Status getStatus() {
 		return this.status;
 	}

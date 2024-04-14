@@ -22,35 +22,44 @@ import java.net.URL;
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.*;
-import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
+import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
 
 /**
- * A representation of Akinator's question that is to be answered with an
- * {@link Answer}.
+ * A type of {@link Query} that represents Akinator's question. Questions are
+ * answered with {@link #answer(Answer)} (incrementing the {@code step} or undone
+ * with {@link #undoAnswer()} (decrementing the {@code step}). Besides the question
+ * text, questions also come with an "akitude" picture, a portmanteau of "Akinator"
+ * and "attitude", which can be shown to the user.<br>
+ * <b>Note:</b> A single {@link Question} object can only be interacted with once.
+ * Calling {@link #answer(Answer)} or {@link #undoAnswer()} mutates the session
+ * state, so you can only call one of them once.
  *
  * @author Marko Zajc
  */
 public interface Question extends Query {
 
 	/**
-	 * Sends an answer to the current {@link Question} and fetches the {@link Query},
+	 * Submits an answer for the question and returns the next {@link Query},
 	 * incrementing the current step.<br>
-	 * If there are no more questions left, this will return {@code null}. Any subsequent
-	 * calls to this method after the question list has been exhausted will throw a
-	 * {@link QuestionsExhaustedException}. A call to this method can be undone with
-	 * {@link #undoAnswer()}.
+	 * If there are no more questions left, this will return {@code null}. <br>
+	 * <b>Note:</b> A single {@link Question} object can only be interacted with once.
+	 * Calling {@link #answer(Answer)} or {@link #undoAnswer()} mutates the session
+	 * state, so you can only call one of them once.
 	 *
 	 * @param answer
-	 *            the {@link Answer} to send.
+	 *            the {@link Answer} to submit.
 	 *
-	 * @return the next {@link Question} or {@code null} if there are no questions left.
+	 * @return the next {@link Query} or {@code null} if there are none left.
 	 *
-	 * @throws QuestionsExhaustedException
-	 *             if the session has exhausted all questions (when
-	 *             {@link #isExhausted()} returns {@code true}).
+	 * @throws IllegalStateException
+	 *             if this {@link Question} is not the same as
+	 *             {@link Akiwrapper#getCurrentQuery()}, which happens if you attempt to
+	 *             interact with it twice.
 	 * @throws ServerStatusException
 	 *             if the API server returns an erroneous {@link Status}.
+	 * @throws AkinatorException
+	 *             if something else goes wrong during the API call.
 	 *
 	 * @see #undoAnswer()
 	 */
@@ -60,42 +69,48 @@ public interface Question extends Query {
 	/**
 	 * Goes one question backwards, undoing the previous {@link #answer(Answer)} call.
 	 * For example, if {@link #getQuestion()} returns a question on step {@code 5},
-	 * calling this command will make {@link #getQuestion()} return the question from
-	 * step {@code 4}. You can call this as many times as you want, until you reach step
-	 * {@code 0}<br>
-	 * If this method is called on step {@code 0}, {@link UndoOutOfBoundsException} is
-	 * thrown. If this method is called after questions have been exhausted,
-	 * {@link QuestionsExhaustedException} is thrown.
+	 * calling this command will return the question on step {@code 4}. You can call this
+	 * as many times as you want, until you reach step {@code 0}. Note that this will
+	 * always return a {@link Question}, and never a {@link Guess} or {@code null}.<br>
+	 * <b>Note:</b> A single {@link Question} object can only be interacted with once.
+	 * Calling {@link #answer(Answer)} or {@link #undoAnswer()} mutates the session
+	 * state, so you can only call one of them once.
 	 *
 	 * @return the previous {@link Question}.
 	 *
 	 * @throws UndoOutOfBoundsException
 	 *             if the session has exhausted all questions (when
 	 *             {@link #getQuestion()} returns {@code null}.
+	 * @throws IllegalStateException
+	 *             if this {@link Question} is not the same as
+	 *             {@link Akiwrapper#getCurrentQuery()}, which happens if you attempt to
+	 *             interact with it twice.
 	 * @throws ServerStatusException
 	 *             if the API server returns an erroneous {@link Status}.
+	 * @throws AkinatorException
+	 *             if something else goes wrong during the API call.
 	 *
 	 * @see #answer(Answer)
 	 */
 	@Nonnull
-	Query undoAnswer();
+	Question undoAnswer();
 
 	/**
-	 * Returns the question content that should be displayed to the user. This localized
-	 * to the language specified in
-	 * {@link AkiwrapperBuilder#setLanguage(Akiwrapper.Language)}.
+	 * Returns the question text that should be displayed to the user. This is localized
+	 * to the {@link Language} and in line with the {@link Theme} set in the
+	 * {@link AkiwrapperBuilder}.
 	 *
-	 * @return question.
+	 * @return question text.
 	 */
 	@Nonnull
 	String getText();
 
 	/**
-	 * Returns the question content that should be displayed to the user. This localized
-	 * to the language specified in
-	 * {@link AkiwrapperBuilder#setLanguage(Akiwrapper.Language)}.
+	 * Returns the question text that should be displayed to the user. This is localized
+	 * to the {@link Language} and in line with the {@link Theme} set in the
+	 * {@link AkiwrapperBuilder}.
 	 *
-	 * @return question.
+	 * @return question text.
 	 *
 	 * @deprecated use {@link #getText()} instead.
 	 */
@@ -105,6 +120,16 @@ public interface Question extends Query {
 		return getText();
 	}
 
+	/**
+	 * URL to the akitude image. "Akitude" is likely a portmanteau of "Akinator" and
+	 * "attitude", and they represent Akinator's current confidence - previously this was
+	 * calculated using a formula on the step and progression values, now it's returned
+	 * by the API. On the website, the akitude is shown on the left of the question box.
+	 * <h2>Example</h2>
+	 * {@code https://en.akinator.com/assets/img/akitudes_670x1096/defi.png}
+	 *
+	 * @return the akitude image URL.
+	 */
 	URL getAkitude();
 
 }
