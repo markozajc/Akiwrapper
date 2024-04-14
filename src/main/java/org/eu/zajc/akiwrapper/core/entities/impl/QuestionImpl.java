@@ -73,11 +73,11 @@ public class QuestionImpl extends AbstractQuery implements Question {
 				.orElseThrow(MalformedResponseException::new)).toURL();
 
 			var question = Optional.ofNullable(gameRoot.getElementById("question-label"))
-				.map(Element::text)
+				.map(Element::wholeOwnText)
 				.orElseThrow(MalformedResponseException::new);
 
 			var step = Utilities.parseInt(Optional.ofNullable(gameRoot.getElementById("step-info"))
-				.map(Element::text)
+				.map(Element::wholeOwnText)
 				.orElseThrow(MalformedResponseException::new)) - 1;
 
 			return new QuestionImpl(akiwrapper, step, 0, question, akitude);
