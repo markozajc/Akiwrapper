@@ -17,18 +17,15 @@
 package org.eu.zajc.akiwrapper;
 
 import static java.lang.String.format;
-import static org.eu.zajc.akiwrapper.Akiwrapper.Answer.YES;
 import static org.junit.jupiter.api.Assumptions.abort;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
-import org.eu.zajc.akiwrapper.core.entities.*;
-import org.eu.zajc.akiwrapper.core.entities.Server.*;
+import org.eu.zajc.akiwrapper.core.entities.Question;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
@@ -39,173 +36,143 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IntegrationTest {
 
-	private static final String FETCHING_GUESSES_THROWS = "Fetching guesses throws";
-	private static final String SERVER_GUESSTYPE_NO_MATCH =
-		"The wanted and actual guess type of the server don't match.";
-	private static final String SERVER_LANGUAGE_NO_MATCH = "The wanted and actual language of the server don't match.";
+	private static final String THEME_MISMATCH = "The requested and actual theme don't match";
+	private static final String LANGUAGE_MISMATCH = "The requested and actual language don't match";
 	private static final String QUESTION_CURRENT_NO_MATCH =
-		"Current question does not match the one just returned by the API.";
-	private static final String QUESTION_WRONG_STEP = "Question was on an unexpected step.";
-	private static final String QUESTION_EMPTY = "Question mustn't be empty.";
-	private static final String QUESTION_NULL = "Question was null";
+		"Current question does not match the one returned by the API";
+	private static final String QUESTION_WRONG_STEP = "Question is on an unexpected step";
+	private static final String QUESTION_EMPTY = "Question text is empty";
+	private static final String QUESTION_NULL = "Question is null";
 	private static final String QUESTION_INITIAL_NO_MATCH =
-		"Initial question does not match the one after an equal amount of answers and undoes.";
+		"Initial question text does not match the one after an equal amount of answers and undoes";
 
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")
-	void testAkiwrapper(@Nonnull Language language, @Nonnull GuessType guessType) {
-		Logger log = getLogger(format("%s-%s", language, guessType));
+	void testAkiwrapper(@Nonnull Language language, @Nonnull Theme theme) {
+		Logger log = getLogger(format("%s-%s", language, theme));
 		try {
 			log.info("Establishing connection");
 			Akiwrapper api;
 			try {
-				api = new AkiwrapperBuilder().setLanguage(language).setGuessType(guessType).build();
-			} catch (ServerNotFoundException e) {
-				abort("Current combination not supported, server wasn't found.");
+				api = new AkiwrapperBuilder().setLanguage(language).setTheme(theme).build();
+			} catch (LanguageThemeCombinationException e) {
+				abort("Language-theme combination not supported.");
 				return;
 			}
 
-			Question initialQuestion = api.getQuestion();
-			testInitialState(log, api, initialQuestion, language, guessType);
+			var initialQuestion = testInitialState(log, api, language, theme);
 			int expectedState = testAnswering(log, api);
-			testUndo(log, api, initialQuestion, expectedState);
-			testExhaustion(log, api);
+			testUndo(log, api, initialQuestion.getText(), expectedState);
+
 		} catch (TestAbortedException e) {
 			throw e;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			if (e instanceof AkinatorException)
-				log.info(((AkinatorException) e).getDebugInformation());
-
 			fail("Got an exception running the test");
-
 		}
 	}
 
-	private static void testInitialState(@Nonnull Logger log, @Nonnull Akiwrapper api,
-										 @Nullable Question initialQuestion, @Nonnull Language language,
-										 @Nonnull GuessType guessType) {
+	private static Question testInitialState(@Nonnull Logger log, @Nonnull Akiwrapper api, @Nonnull Language language,
+											 @Nonnull Theme theme) {
 		log.info("Asserting the current state.");
-		checkQuestion(0, initialQuestion);
-		assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
-		assertEquals(language, api.getServer().getLanguage(), SERVER_LANGUAGE_NO_MATCH);
-		assertEquals(guessType, api.getServer().getGuessType(), SERVER_GUESSTYPE_NO_MATCH);
-		log.trace("API server URL: {}", api.getServer().getUrl());
+
+		assertEquals(language, api.getLanguage(), LANGUAGE_MISMATCH);
+		assertEquals(theme, api.getTheme(), THEME_MISMATCH);
+
+		var query = api.getCurrentQuery();
+		if (query instanceof Question) {
+			checkQuestion(0, (Question) query);
+			return (Question) query;
+
+		} else {
+			fail("Initial query is not a question");
+			return null;
+		}
 	}
 
 	private static int testAnswering(@Nonnull Logger log, @Nonnull Akiwrapper api) {
 		log.info("Advancing {} steps (one time for each possible answer).", Answer.values().length);
 		int expectedState = 0;
+		var question = (Question) api.getCurrentQuery();
 		for (Answer answer : Answer.values()) {
-			log.info("Answering with {} and checking the state (step={}).", answer.name(), api.getStep());
-			Question newQuestion = api.answer(answer);
-			assertEquals(newQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
+			if (question == null) {
+				fail(QUESTION_NULL);
+				return -1; // unreachable
+			}
+
+			log.info("Answering with {} and checking the state (step={}, progression={}).", answer.name(),
+					 question.getStep(), question.getProgression());
+
+			var query = question.answer(answer);
+			if (query instanceof Question)
+				question = (Question) query;
+			else
+				fail("New query is not a question, is " + question);
+
+			assertSame(question, api.getCurrentQuery(), QUESTION_CURRENT_NO_MATCH);
 			expectedState++;
-			assertEquals(expectedState, api.getStep());
-			checkQuestion(expectedState, api.getQuestion());
-			checkGuessCount(log, api);
+			assertEquals(expectedState, question.getStep());
+			checkQuestion(expectedState, question);
 		}
 
 		log.info("Asserting the current state.");
-		fetchAndDebugGuesses(log, api);
 		return expectedState;
 	}
 
-	private static void testUndo(@Nonnull Logger log, @Nonnull Akiwrapper api, @Nullable Question initialQuestion,
+	private static void testUndo(@Nonnull Logger log, @Nonnull Akiwrapper api, @Nonnull String initialQuestionText,
 								 int initialExpectedState) {
 		log.info("Advancing -{} steps (using undo).", Answer.values().length);
 		int expectedState = initialExpectedState;
+
+		var question = (Question) api.getCurrentQuery();
+
 		for (int i = 0; i < Answer.values().length; i++) {
-			log.info("Undoing a step and checking the state (step={}).", api.getStep());
-			Question undoneQuestion = api.undoAnswer();
-			assertEquals(undoneQuestion, api.getQuestion(), QUESTION_CURRENT_NO_MATCH);
-			expectedState--;
-			assertEquals(expectedState, api.getStep());
-			checkQuestion(expectedState, api.getQuestion());
-			checkGuessCount(log, api);
-		}
-
-		log.info("Asserting the current state.");
-		assertThrows(UndoOutOfBoundsException.class, () -> api.undoAnswer());
-		checkQuestion(0, api.getQuestion());
-		assertDoesNotThrow(() -> api.getGuesses(), FETCHING_GUESSES_THROWS);
-		Question currentQuestion = api.getQuestion();
-		if (initialQuestion != null && currentQuestion != null)
-			assertEquals(initialQuestion.getQuestion(), currentQuestion.getQuestion(), QUESTION_INITIAL_NO_MATCH);
-		else
-			fail("initialQuestion or currentQuestion were somehow null");
-		// using this syntax instead of assertNotNull to please null analysis of @Nullable
-	}
-
-	private static void testExhaustion(@Nonnull Logger log, @Nonnull Akiwrapper api) {
-		log.info("Exhausting questions by answering YES to all.");
-		var lastQuestion = api.getQuestion();
-		assertNotNull(lastQuestion, "Current question is already null");
-
-		int i = api.getStep();
-		while (true) {
-			checkQuestion(i, api.getQuestion());
-			assertEquals(i, api.getStep());
-
-			var question = api.answer(YES);
 			if (question == null) {
-				log.info("Ran out at step {}.", api.getStep());
-				break;
-
-			} else {
-				log.info("Exhausting questions (step={})", api.getStep());
-				checkQuestion(++i, question);
+				fail(QUESTION_NULL);
+				return; // unreachable
 			}
 
-			if (i > 80)
-				fail("Got over step 80, API must have changed. Ensure there are no side effects and find the new limit.");
+			log.info("Undoing a step and checking the state (step={}, progression={}).", question.getStep(),
+					 question.getProgression());
+
+			Question undoneQuestion = question.undoAnswer();
+			assertSame(undoneQuestion, api.getCurrentQuery(), QUESTION_CURRENT_NO_MATCH);
+			expectedState--;
+			assertEquals(expectedState, question.getStep());
+			checkQuestion(expectedState, question);
 		}
 
 		log.info("Asserting the current state.");
-		assertThrows(QuestionsExhaustedException.class, () -> api.answer(YES));
-		assertThrows(QuestionsExhaustedException.class, () -> api.undoAnswer());
-		assertDoesNotThrow(() -> api.getGuesses());
-
-		fetchAndDebugGuesses(log, api);
-	}
-
-	private static void checkGuessCount(Logger log, Akiwrapper api) {
-		for (int i = 1; i < 5; i++) {
-			log.info("Fetching {} guesses.", i);
-			assertTrue(api.getGuesses(i).size() <= i, "Got more guesses than requested from the API");
+		if (question == null) {
+			fail(QUESTION_NULL);
+			return; // unreachable
 		}
-	}
 
-	private static void fetchAndDebugGuesses(Logger log, Akiwrapper api) {
-		log.info("Fetching all guesses.", Answer.values().length);
-		List<Guess> guesses = api.getGuesses();
-		debugGuesses(log, guesses);
-	}
+		assertThrows(UndoOutOfBoundsException.class, () -> question.undoAnswer());
+		checkQuestion(0, question);
 
-	private static void debugGuesses(Logger log, List<Guess> guesses) {
-		log.info("There are {} guesses.", guesses.size());
-		for (Guess guess : guesses) {
-			log.info("{} - {}", guess.getProbability(), guess.getName());
-		}
+		assertEquals(initialQuestionText, question.getText(), QUESTION_INITIAL_NO_MATCH);
 	}
 
 	private static void checkQuestion(int expectedState, @Nullable Question question) {
 		if (question == null) {
 			fail(QUESTION_NULL);
+
 		} else {
-			assertFalse(question.getQuestion().isEmpty(), QUESTION_EMPTY);
+			assertFalse(question.getText().isEmpty(), QUESTION_EMPTY);
 			assertEquals(expectedState, question.getStep(), QUESTION_WRONG_STEP);
 		}
 	}
 
 	private static Stream<Arguments> generateTestAkiwrapper() {
-		Arguments[] arguments = new Arguments[Language.values().length * GuessType.values().length];
+		// we're running tests on a cartesian product of Language and Theme values
+		Arguments[] arguments = new Arguments[Language.values().length * Theme.values().length];
 		int i = 0;
 		for (Language lang : Language.values())
-			for (GuessType guessType : GuessType.values()) {
-				arguments[i] = Arguments.of(lang, guessType);
+			for (Theme theme : Theme.values()) {
+				arguments[i] = Arguments.of(lang, theme);
 				i++;
 			}
 		return Stream.of(arguments);
