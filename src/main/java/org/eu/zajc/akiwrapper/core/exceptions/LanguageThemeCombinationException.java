@@ -16,6 +16,8 @@
  */
 package org.eu.zajc.akiwrapper.core.exceptions;
 
+import static java.lang.String.format;
+
 import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
@@ -33,7 +35,7 @@ public class LanguageThemeCombinationException extends AkinatorException {
 
 	@SuppressWarnings("javadoc") // internal
 	public LanguageThemeCombinationException(@Nonnull Language language, @Nonnull Theme theme) {
-		super("Language %s does not support theme %s".formatted(language, theme));
+		super(format("Language %s does not support theme %s", language, theme));
 		this.language = language;
 		this.theme = theme;
 	}
