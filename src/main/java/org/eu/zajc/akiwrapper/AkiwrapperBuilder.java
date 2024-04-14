@@ -156,8 +156,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Sets the {@link Language}. Akinator will return localized {@link Query}s
-	 * depending on this preference.<br>
+	 * Sets the {@link Language}. Akinator will return localized {@link Query}s depending
+	 * on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @param language
@@ -176,8 +176,8 @@ public class AkiwrapperBuilder {
 	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
 	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
 	 * for a list of supported themes. <br>
-	 * Gets the {@link Language}. Akinator will return localized {@link Query}s
-	 * depending on this preference.<br>
+	 * Gets the {@link Language}. Akinator will return localized {@link Query}s depending
+	 * on this preference.<br>
 	 * This is set to {@link Language#ENGLISH} by default.
 	 *
 	 * @return language preference.

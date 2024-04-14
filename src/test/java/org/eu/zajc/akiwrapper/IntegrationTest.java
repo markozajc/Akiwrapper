@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.*;
 
-import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
+import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.entities.Server.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
