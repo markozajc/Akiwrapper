@@ -39,7 +39,8 @@ import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
  * {@link AkiwrapperBuilder}</li>
  * <li>A {@link Query} from {@link #getCurrentQuery()} is displayed to the user.</li>
  * <li>The program decides based on the type of the {@link Query}:</li>
- * <ol>
+ * <li>
+ * <ul>
  * <li>If it's a {@link Guess}, it's shown to the user and responded to with either
  * {@link Guess#confirm()} or {@link Guess#reject()}. Confirming a guess is the lose
  * condition and ends the game.</li>
@@ -47,7 +48,8 @@ import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
  * either {@link Question#answer(Answer)} or {@link Question#undoAnswer()}.</li>
  * <li>If it's {@code null}, Akinator has no more queries. This is the win
  * condition.</li>
- * </ol>
+ * </ul>
+ * </li>
  * </ol>
  * Queries can either be retrieved from return values of interaction methods
  * ({@link Question#answer(Answer)}, {@link Question#undoAnswer()}, etc.) or from

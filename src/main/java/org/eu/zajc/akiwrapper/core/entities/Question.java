@@ -107,7 +107,7 @@ public interface Question extends Query {
 	 * Returns the question text that should be displayed to the user. This is localized
 	 * to the {@link Language} and in line with the {@link Theme} set in the
 	 * {@link AkiwrapperBuilder}.
-	 * <h2>Example</h2> {@code Is your character real?}
+	 * <h4>Example</h4> {@code Is your character real?}
 	 *
 	 * @return the question text.
 	 */
@@ -118,7 +118,7 @@ public interface Question extends Query {
 	 * Returns the question text that should be displayed to the user. This is localized
 	 * to the {@link Language} and in line with the {@link Theme} set in the
 	 * {@link AkiwrapperBuilder}.
-	 * <h2>Example</h2> {@code Is your character real?}
+	 * <h4>Example</h4> {@code Is your character real?}
 	 *
 	 * @return the question text.
 	 *
@@ -135,7 +135,7 @@ public interface Question extends Query {
 	 * "attitude", and they represent Akinator's current confidence - previously this was
 	 * calculated using a formula on the step and progression values, now it's returned
 	 * by the API. On the website, the akitude is shown on the left of the question box.
-	 * <h2>Example</h2>
+	 * <h4>Example</h4>
 	 * {@code https://en.akinator.com/assets/img/akitudes_670x1096/defi.png}
 	 *
 	 * @return the akitude image URL.
