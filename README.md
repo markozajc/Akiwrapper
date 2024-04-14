@@ -71,11 +71,11 @@ if (query instanceof Question) {
 #### Questions
 Questions can be responded to in two ways: by answering them
 ```java
-query = question.answer(Answer.YES); // or any other Answer
+query = ((Question) query).answer(Answer.YES); // or any other Answer
 ```
 ... or by undoing them
 ```java
-query = question.undoAnswer();
+query = ((Question) query).undoAnswer();
 ```
 Doing either will return the next query or `null` if there are none left (after answering question #80). You can also
 ignore the return value and use Akiwrapper#getCurrentQuery() instead.
@@ -83,11 +83,11 @@ ignore the return value and use Akiwrapper#getCurrentQuery() instead.
 #### Guesses
 Guesses can also be responded to in two ways: by rejecting them
 ```java
-query = guess.reject();
+query = ((Guess) query).reject();
 ```
 ... or by confirming them
 ```java
-guess.confirm()
+((Guess) query).confirm()
 ```
 Confirming a guess ends the game, meaning no more queries are returned past that point. This is also why
 `Guess#confirm()` lacks a return value.
