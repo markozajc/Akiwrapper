@@ -22,7 +22,7 @@ import java.util.*;
 
 import javax.annotation.Nonnull;
 
-import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
+import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl;
 
 @SuppressWarnings("javadoc") // internal util
 public final class Route {

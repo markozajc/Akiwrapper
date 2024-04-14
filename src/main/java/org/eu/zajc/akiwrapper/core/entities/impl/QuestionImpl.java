@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
-import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.utils.Utilities;
 import org.json.*;
 import org.jsoup.nodes.Element;

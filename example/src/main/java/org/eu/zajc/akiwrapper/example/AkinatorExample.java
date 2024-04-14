@@ -15,8 +15,8 @@ import javax.annotation.*;
 import org.eu.zajc.akiwrapper.*;
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.*;
+import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
-import org.eu.zajc.akiwrapper.core.impl.AkiwrapperImpl;
 
 public class AkinatorExample {
 

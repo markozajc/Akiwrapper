@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License along with this
  * program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.eu.zajc.akiwrapper.core.impl;
+package org.eu.zajc.akiwrapper.core.entities.impl;
 
 import static java.util.Optional.ofNullable;
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.NEW_SESSION;
@@ -26,7 +26,6 @@ import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.Akiwrapper;
 import org.eu.zajc.akiwrapper.core.entities.Query;
-import org.eu.zajc.akiwrapper.core.entities.impl.QuestionImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.jsoup.nodes.Element;
 import org.slf4j.*;
@@ -119,11 +118,6 @@ public class AkiwrapperImpl implements Akiwrapper {
 	@Override
 	public boolean doesFilterProfanity() {
 		return this.filterProfanity;
-	}
-
-	@Override
-	public boolean isExhausted() {
-		return this.currentQuery == null;
 	}
 
 	@Nonnull
