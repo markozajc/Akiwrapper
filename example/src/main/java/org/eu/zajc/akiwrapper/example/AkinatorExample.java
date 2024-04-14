@@ -82,6 +82,7 @@ public class AkinatorExample {
 					out.println("Great!");
 					out.println("\tGuessed right one more time. I love playing with you!");
 					g.confirm();
+					return;
 
 				} else {
 					// .. otherwise the game continues
