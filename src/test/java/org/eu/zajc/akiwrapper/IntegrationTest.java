@@ -137,10 +137,10 @@ class IntegrationTest {
 			log.info("Undoing a step and checking the state (step={}, progression={}).", question.getStep(),
 					 question.getProgression());
 
-			Question undoneQuestion = question.undoAnswer();
-			assertSame(undoneQuestion, api.getCurrentQuery(), QUESTION_CURRENT_NO_MATCH);
-			checkQuestion(expectedState, question);
+			question = question.undoAnswer();
 			expectedState--;
+			assertSame(question, api.getCurrentQuery(), QUESTION_CURRENT_NO_MATCH);
+			checkQuestion(expectedState, question);
 		}
 
 		log.info("Asserting the current state.");
@@ -149,7 +149,8 @@ class IntegrationTest {
 			return; // unreachable
 		}
 
-		assertThrows(UndoOutOfBoundsException.class, () -> question.undoAnswer());
+		var finalQuestion = question;
+		assertThrows(UndoOutOfBoundsException.class, () -> finalQuestion.undoAnswer());
 		checkQuestion(0, question);
 
 		assertEquals(initialQuestionText, question.getText(), QUESTION_INITIAL_NO_MATCH);
