@@ -220,11 +220,8 @@ public interface Akiwrapper {
 	Query getCurrentQuery();
 
 	/**
-	 * Returns the {@link Language} used. Akinator returns localized {@link Question}s
-	 * and {@link Guess}es depending by this. Please note that while all
-	 * {@link Language}s support {@link Theme#CHARACTER}, but other themes might not be
-	 * supported. Call {@link Language#getSupportedThemes()} for a list of supported
-	 * themes.
+	 * Returns the {@link Language} used. Akinator returns localized {@link Query}
+	 * objects.
 	 *
 	 * @return the language.
 	 */

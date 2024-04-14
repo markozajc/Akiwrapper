@@ -107,8 +107,9 @@ public interface Question extends Query {
 	 * Returns the question text that should be displayed to the user. This is localized
 	 * to the {@link Language} and in line with the {@link Theme} set in the
 	 * {@link AkiwrapperBuilder}.
+	 * <h2>Example</h2> {@code Is your character real?}
 	 *
-	 * @return question text.
+	 * @return the question text.
 	 */
 	@Nonnull
 	String getText();
@@ -117,8 +118,9 @@ public interface Question extends Query {
 	 * Returns the question text that should be displayed to the user. This is localized
 	 * to the {@link Language} and in line with the {@link Theme} set in the
 	 * {@link AkiwrapperBuilder}.
+	 * <h2>Example</h2> {@code Is your character real?}
 	 *
-	 * @return question text.
+	 * @return the question text.
 	 *
 	 * @deprecated use {@link #getText()} instead.
 	 */

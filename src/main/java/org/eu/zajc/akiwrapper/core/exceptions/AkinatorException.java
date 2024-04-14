@@ -41,7 +41,9 @@ public class AkinatorException extends RuntimeException {
 	/**
 	 * @return the request debug information (when available) or an empty string
 	 *
-	 * @deprecated will always return an empty string. There is no replacement for this.
+	 * @deprecated will always return an empty string. There is no direct replacement for
+	 *             this, but enabling trace logs will show contents of HTTP requests and
+	 *             responses.
 	 */
 	@Nonnull
 	@Deprecated(since = "2.0", forRemoval = true)

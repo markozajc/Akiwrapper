@@ -22,6 +22,7 @@ import java.net.URL;
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.*;
+import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
 import org.eu.zajc.akiwrapper.core.utils.Utilities;
 
@@ -29,7 +30,7 @@ import org.eu.zajc.akiwrapper.core.utils.Utilities;
  * A representation of Akinator's guess. Guesses are either confirmed with
  * {@link #confirm()} or rejected with {@link #reject()}. Rejecting a guess returns
  * the next question (which will have the same {@code step}), while confirming it
- * ends the session.<br>
+ * ends the game.<br>
  * <b>Note:</b> A single {@link Guess} object can only be interacted with once.
  * Calling {@link #confirm()} or {@link #reject()} mutates the session state, so you
  * can only call one of them once.
@@ -94,32 +95,33 @@ public interface Guess extends Query {
 	Query reject();
 
 	/**
-	 * Returns the name of the guessed subject. This is provided in the language that was
-	 * specified using the {@link AkiwrapperBuilder}.
+	 * Returns the name of the guessed subject. This is localized to the {@link Language}
+	 * and in line with the {@link Theme} set in the {@link AkiwrapperBuilder}.
 	 *
-	 * @return guessed characer's name.
+	 * @return the guessed subject's name.
 	 */
 	@Nonnull
 	String getName();
 
 	/**
-	 * Returns the pseudonym of the guessed subject. As a pseudonym is optional, this may
-	 * be {@code null}. Please note that the pseudonym is sometimes set to a placeholder
-	 * value such as "X" or "-" rather than @{code null}. This is provided in the
-	 * language that was specified using the {@link AkiwrapperBuilder}.
+	 * Returns the pseudonym or alternative name of the guessed subject. As a pseudonym
+	 * is optional, this may be {@code null}. Please note that the pseudonym is sometimes
+	 * set to a placeholder value such as "X" or "-" rather than {@code null}. This is
+	 * localized to the {@link Language} and in line with the {@link Theme} set in the
+	 * {@link AkiwrapperBuilder}.
 	 *
-	 * @return guessed characer's name.
+	 * @return the guessed subject's pseudonym.
 	 */
 	@Nullable
 	String getPseudonym();
 
 	/**
 	 * Returns the description of this subject. Please note that the description is
-	 * sometimes set to a placeholder value such as "X" or "-" rather than @{code null}.
-	 * It is provided in the language that was specified using the
+	 * sometimes set to a placeholder value such as "X" or "-". This is localized to the
+	 * {@link Language} and in line with the {@link Theme} set in the
 	 * {@link AkiwrapperBuilder}.
 	 *
-	 * @return the guess' description.
+	 * @return the guessed subject's description.
 	 */
 	@Nonnull
 	String getDescription();
@@ -134,7 +136,7 @@ public interface Guess extends Query {
 	URL getImage();
 
 	/**
-	 * Returns this guess's ID. ID's are unique to each guess and can be used to track
+	 * Returns this guess' ID. ID's are unique to each guess and can be used to track
 	 * rejected guesses, because Akinator won't do that for you.
 	 *
 	 * @return this guess' ID.
@@ -145,8 +147,8 @@ public interface Guess extends Query {
 	String getId();
 
 	/**
-	 * Returns this guess's ID as a {@code long}. ID's are unique to each guess and can
-	 * be used to track rejected guesses, because Akinator won't do that for you.
+	 * Returns this guess' ID as a {@code long}. ID's are unique to each guess and can be
+	 * used to track rejected guesses, because Akinator won't do that for you.
 	 *
 	 * @return this guess' ID as a {@code long}.
 	 *
