@@ -106,5 +106,5 @@ That's it! If you need more help, be sure to check out the bundled
 [example code](../master/example) to see how the library is used.
 
 ## Mirrors
-* https://git.zajc.eu.org/akiwrapper.git/
+* https://git.zajc.tel/akiwrapper.git/
 * https://github.com/markozajc/Akiwrapper

@@ -23,15 +23,15 @@
 	<developers>
 		<developer>
 			<name>Marko Zajc</name>
-			<email>marko@zajc.eu.org</email>
-			<url>https://zajc.eu.org/</url>
+			<email>marko@zajc.tel</email>
+			<url>https://zajc.tel/</url>
 		</developer>
 	</developers>
 
 	<scm>
-		<url>https://git.zajc.eu.org/akiwrapper.git/</url>
-		<connection>scm:git:https:https://git.zajc.eu.org/akiwrapper.git/</connection>
-		<developerConnection>scm:git:ssh://git@zajc.eu.org/srv/git/akiwrapper.git</developerConnection>
+		<url>https://git.zajc.tel/akiwrapper.git/</url>
+		<connection>scm:git:https:https://git.zajc.tel/akiwrapper.git/</connection>
+		<developerConnection>scm:git:ssh://git@zajc.tel/srv/git/akiwrapper.git</developerConnection>
 	</scm>
 
 	<properties>
