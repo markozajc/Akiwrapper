@@ -30,7 +30,7 @@ import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.jsoup.nodes.Element;
 import org.slf4j.*;
 
-import kong.unirest.UnirestInstance;
+import kong.unirest.core.UnirestInstance;
 
 /**
  * <b>Note:</b> This is an internal class and its internals are subject to change

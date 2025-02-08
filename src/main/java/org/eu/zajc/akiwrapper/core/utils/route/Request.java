@@ -18,7 +18,7 @@ package org.eu.zajc.akiwrapper.core.utils.route;
 
 import static java.lang.String.format;
 import static java.time.Duration.ofSeconds;
-import static kong.unirest.ContentType.APPLICATION_FORM_URLENCODED;
+import static kong.unirest.core.ContentType.APPLICATION_FORM_URLENCODED;
 import static org.eu.zajc.akiwrapper.core.utils.Utilities.sleepUnchecked;
 import static org.eu.zajc.akiwrapper.core.utils.route.Status.OK;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -33,7 +33,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 
-import kong.unirest.*;
+import kong.unirest.core.*;
 
 @SuppressWarnings("javadoc") // internal util
 public class Request {

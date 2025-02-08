@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import kong.unirest.*;
+import kong.unirest.core.*;
 
 class IntegrationTest {
 
@@ -51,7 +51,7 @@ class IntegrationTest {
 
 	private static final UnirestInstance UNIREST = UnirestUtils.configureInstance(Unirest.spawnInstance());
 	static {
-		UNIREST.config().connectTimeout(300000).socketTimeout(300000);
+		UNIREST.config().connectTimeout(300000).requestTimeout(300000);
 	}
 
 	@ParameterizedTest
@@ -159,7 +159,7 @@ class IntegrationTest {
 		}
 
 		var finalQuestion = question;
-		assertThrows(UndoOutOfBoundsException.class, () -> finalQuestion.undoAnswer());
+		assertThrows(UndoOutOfBoundsException.class, finalQuestion::undoAnswer);
 		checkQuestion(0, question);
 
 		assertEquals(initialQuestionText, question.getText(), QUESTION_INITIAL_NO_MATCH);

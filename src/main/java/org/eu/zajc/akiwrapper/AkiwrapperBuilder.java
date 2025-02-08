@@ -27,7 +27,7 @@ import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
 import org.eu.zajc.akiwrapper.core.utils.UnirestUtils;
 
-import kong.unirest.UnirestInstance;
+import kong.unirest.core.UnirestInstance;
 
 /**
  * A class used to build an {@link Akiwrapper} object.
@@ -89,10 +89,7 @@ public class AkiwrapperBuilder {
 	 * that Akinator's services are quite picky about the HTTP client configuration, so
 	 * you will very likely need to put your instance through
 	 * {@link UnirestUtils#configureInstance(UnirestInstance)} before using it with
-	 * Akiwrapper. You will also need to shut it down yourself, or, if you decide to set
-	 * or leave this on {$code null}, call {@link UnirestUtils#shutdownInstance()} to
-	 * shut down Akiwrapper's default singleton instance, otherwise its threads will stay
-	 * alive.
+	 * Akiwrapper.
 	 *
 	 * @param unirest
 	 *            the {@link UnirestInstance} to be used by Akiwrapper or {$code null} to
@@ -110,9 +107,6 @@ public class AkiwrapperBuilder {
 
 	/**
 	 * Returns the {@link UnirestInstance} to be used by the built Akiwrapper instance.
-	 * If this is {$code null}, {@link UnirestUtils#getInstance()} will be used (which
-	 * means you will need to shut it down through
-	 * {@link UnirestUtils#shutdownInstance()}, otherwise its threads will stay alive).
 	 *
 	 * @return {@link UnirestInstance} to be used or {$code null} for
 	 *         {@link UnirestUtils#getInstance()}.
@@ -273,9 +267,7 @@ public class AkiwrapperBuilder {
 	 * Creates a new {@link Akiwrapper} instance from your preferences. If no
 	 * {@link UnirestInstance} was set (with
 	 * {@link #setUnirestInstance(UnirestInstance)}), a singleton instance will be
-	 * acquired from {@link UnirestUtils#getInstance()}. This instance must be shut down
-	 * after you're done using Akiwrapper with {@link UnirestUtils#shutdownInstance()},
-	 * otherwise its threads will stay alive.
+	 * acquired from {@link UnirestUtils#getInstance()}.
 	 *
 	 * @return a new {@link Akiwrapper} instance.
 	 *

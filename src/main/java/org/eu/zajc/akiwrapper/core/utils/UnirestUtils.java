@@ -16,13 +16,13 @@
  */
 package org.eu.zajc.akiwrapper.core.utils;
 
-import static kong.unirest.Unirest.spawnInstance;
+import static kong.unirest.core.Unirest.spawnInstance;
 
 import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.AkiwrapperBuilder;
 
-import kong.unirest.UnirestInstance;
+import kong.unirest.core.UnirestInstance;
 
 /**
  * Various utilities regarding Unirest for use with and within Akiwrapper.
@@ -34,12 +34,6 @@ public class UnirestUtils {
 	private static UnirestInstance singletonUnirest;
 
 	/**
-	 * Returns the singleton {@link UnirestInstance} or creates one if it's null. Note
-	 * that {@link UnirestInstance}s need to be shut down after they're not needed
-	 * anymore, so make sure to call {@link #shutdownInstance()} after you're done with
-	 * it. Attempting to shut it down manually through {@link UnirestInstance#shutDown()}
-	 * may cause issues, so don't do that!
-	 *
 	 * @return the singleton {@link UnirestInstance}
 	 */
 	@Nonnull
@@ -52,15 +46,15 @@ public class UnirestUtils {
 	}
 
 	/**
-	 * Shuts down the singleton {@link UnirestInstance}, if it's present, and does
-	 * nothing otherwise. Subsequent calls to {@link #getInstance()} will recreate it.
+	 * Used to shut down the singleton {@link UnirestInstance}, if it was present. Does
+	 * nothing since 2.0.1.
+	 *
+	 * @deprecated Unirest 4.0 (used in Akiwrapper 2.0.1 and onwards) changes how
+	 *             instances are handled - they no longer need to be shut down, so calls
+	 *             to this method can be safely removed without replacement.
 	 */
-	public static synchronized void shutdownInstance() {
-		if (singletonUnirest != null) {
-			singletonUnirest.shutDown(false);
-			singletonUnirest = null;
-		}
-	}
+	@Deprecated(since = "2.0.1", forRemoval = true)
+	public static synchronized void shutdownInstance() { /* no op */}
 
 	/**
 	 * <b>Note:</b> even though this method returns a {@link UnirestInstance}, the

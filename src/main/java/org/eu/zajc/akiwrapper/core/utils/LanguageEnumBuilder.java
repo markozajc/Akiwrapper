@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.*;
 
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 
 @SuppressWarnings("javadoc") // internal
 public class LanguageEnumBuilder {

@@ -92,14 +92,6 @@ query = ((Guess) query).reject();
 Confirming a guess ends the game, meaning no more queries are returned past that point. This is also why
 `Guess#confirm()` lacks a return value.
 
-### Cleaning up
-
-Unless you provide your own UnirestInstance to AkiwrapperBuilder, you should make sure to shut down the singleton 
-instance that Akiwrapper uses by default after you're done with Akiwrapper (calling `System.exit()` also works):
-```java
-UnirestUtils.shutdownInstance();
-```
-
 ---
 
 That's it! If you need more help, be sure to check out the bundled
