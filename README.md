@@ -22,13 +22,13 @@ Add the following dependency to your pom.xml:
 <dependency>
     <groupId>org.eu.zajc</groupId>
     <artifactId>akiwrapper</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
-implementation group: 'org.eu.zajc', name: 'akiwrapper', version: '2.0.0'
+implementation group: 'org.eu.zajc', name: 'akiwrapper', version: '2.0.1'
 ```
 
 ## Usage
