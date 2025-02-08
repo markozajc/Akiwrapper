@@ -106,10 +106,9 @@ public interface Question extends Query {
 	/**
 	 * Returns the question text that should be displayed to the user. This is localized
 	 * to the {@link Language} and in line with the {@link Theme} set in the
-	 * {@link AkiwrapperBuilder}.
-	 * <h4>Example</h4> {@code Is your character real?}
+	 * {@link AkiwrapperBuilder}.<br>
 	 *
-	 * @return the question text.
+	 * @return the question text, for example {@code "Is your character real?"}.
 	 */
 	@Nonnull
 	String getText();
@@ -117,10 +116,9 @@ public interface Question extends Query {
 	/**
 	 * Returns the question text that should be displayed to the user. This is localized
 	 * to the {@link Language} and in line with the {@link Theme} set in the
-	 * {@link AkiwrapperBuilder}.
-	 * <h4>Example</h4> {@code Is your character real?}
+	 * {@link AkiwrapperBuilder}.<br>
 	 *
-	 * @return the question text.
+	 * @return the question text, for example {@code "Is your character real?"}.
 	 *
 	 * @deprecated use {@link #getText()} instead.
 	 */
@@ -134,11 +132,11 @@ public interface Question extends Query {
 	 * URL to the akitude image. "Akitude" is likely a portmanteau of "Akinator" and
 	 * "attitude", and they represent Akinator's current confidence - previously this was
 	 * calculated using a formula on the step and progression values, now it's returned
-	 * by the API. On the website, the akitude is shown on the left of the question box.
-	 * <h4>Example</h4>
-	 * {@code https://en.akinator.com/assets/img/akitudes_670x1096/defi.png}
+	 * by the API. On the website, the akitude is shown on the left of the question
+	 * box.<br>
 	 *
-	 * @return the akitude image URL.
+	 * @return the akitude image URL, for example
+	 *         {@code "https://en.akinator.com/assets/img/akitudes_670x1096/defi.png"}.
 	 */
 	URL getAkitude();
 
