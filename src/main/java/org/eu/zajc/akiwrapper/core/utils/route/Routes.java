@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: GPL-3.0
 /*
  * Akiwrapper, the Java API wrapper for Akinator
- * Copyright (C) 2017-2023 Marko Zajc
+ * Copyright (C) 2017-2025 Marko Zajc
  *
  * This program is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
