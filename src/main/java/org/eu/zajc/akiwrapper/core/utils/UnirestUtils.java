@@ -84,7 +84,6 @@ public class UnirestUtils {
 			.addDefaultHeader("Origin", "https://en.akinator.com")
 			.addDefaultHeader("DNT", "1")
 			.addDefaultHeader("Sec-GPC", "1")
-			.addDefaultHeader("Connection", "keep-alive")
 			.addDefaultHeader("Sec-Fetch-Dest", "empty")
 			.addDefaultHeader("Sec-Fetch-Mode", "cors")
 			.addDefaultHeader("Sec-Fetch-Site", "same-origin")
