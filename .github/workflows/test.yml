@@ -15,19 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Pull the repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.7.0
 
     - name: Set up JDK 11
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@3a4f6e1af504cf6a31855fa899c6aa5355ba6c12 # v4.2.2
       with:
         distribution: 'temurin'
         java-version: '11'
         cache: maven
 
-    - name: Run tests
-      uses: nick-fields/retry@v2
-      with:
-        timeout_minutes: 60
-        max_attempts: 1
-        command: mvn --batch-mode verify -Dmaven.javadoc.skip=true
-        on_retry_command: mvn --batch-mode clean
+    - name: Verify with Maven
+      run: mvn --batch-mode verify -Dmaven.javadoc.skip=true
