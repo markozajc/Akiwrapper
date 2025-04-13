@@ -81,6 +81,10 @@ public class GuessImpl extends AbstractQuery implements Guess {
 
 	@Override
 	public void confirm() {
+		var identifier = this.getAkiwrapper().getSession().getIdentifier();
+		if (identifier == null)
+			return;
+
 		try {
 			this.getAkiwrapper().getInteractionLock().lock();
 			this.ensureCurrent();
@@ -91,6 +95,7 @@ public class GuessImpl extends AbstractQuery implements Guess {
 				.parameter(PARAMETER_GUESS_NAME, this.name)
 				.parameter(PARAMETER_GUESS_DESCRIPTION, this.description)
 				.parameter(PARAMETER_GUESS_FLAG_PHOTO, this.flagPhoto)
+				.parameter(PARAMETER_IDENTIFIER, identifier)
 				.retrieveEmpty();
 
 		} catch (AkinatorException e) {

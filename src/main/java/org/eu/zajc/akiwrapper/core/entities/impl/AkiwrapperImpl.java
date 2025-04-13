@@ -17,11 +17,13 @@
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
 import static java.util.Optional.ofNullable;
+import static java.util.regex.Pattern.compile;
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.NEW_SESSION;
 
 import java.net.http.HttpClient;
 import java.util.*;
 import java.util.concurrent.locks.*;
+import java.util.regex.Pattern;
 
 import javax.annotation.*;
 
@@ -42,12 +44,17 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	public static class Session {
 
-		private final String session;
-		private final String signature;
+		private static final Pattern IDENTIFIER_PATTERN =
+			compile("localStorage\\.setItem\\('identifiant', '([^']*)'\\);");
 
-		private Session(String session, String signature) {
+		@Nonnull private final String session;
+		@Nonnull private final String signature;
+		@Nullable private final String identifier;
+
+		private Session(@Nonnull String session, @Nonnull String signature, @Nullable String identifier) {
 			this.session = session;
 			this.signature = signature;
+			this.identifier = identifier;
 		}
 
 		@Nonnull
@@ -59,7 +66,14 @@ public class AkiwrapperImpl implements Akiwrapper {
 				if (session == null || signature == null)
 					return null;
 
-				return new Session(session, signature);
+				String identifier = null;
+				var identifierMatcher = IDENTIFIER_PATTERN.matcher(gameRoot.getElementsByTag("script").html());
+				if (identifierMatcher.find())
+					identifier = identifierMatcher.group(1);
+				else
+					LOG.trace("Couldn't find the session identifier");
+
+				return new Session(session, signature, identifier);
 			}).orElseThrow(MalformedResponseException::new);
 		}
 
@@ -67,6 +81,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 			parameters.put("session", this.session);
 			parameters.put("signature", this.signature);
 		}
+
+		@Nullable
+		public String getIdentifier() {
+			return this.identifier;
+		}
+
 	}
 
 	public static final Logger LOG = LoggerFactory.getLogger(AkiwrapperImpl.class);

@@ -77,7 +77,7 @@ public class Request {
 
 	@Nonnull
 	public Response<Element> retrieveDocument() {
-		var gameRoot = Jsoup.parse(executeRequest().body()).getElementById("game_content");
+		var gameRoot = Jsoup.parse(executeRequest().body());
 		if (gameRoot == null)
 			throw new MalformedResponseException();
 

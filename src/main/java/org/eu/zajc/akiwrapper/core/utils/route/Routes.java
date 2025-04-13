@@ -18,6 +18,7 @@ package org.eu.zajc.akiwrapper.core.utils.route;
 
 import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
 import org.eu.zajc.akiwrapper.core.entities.Guess;
+import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl.Session;
 import org.eu.zajc.akiwrapper.core.entities.impl.GuessImpl;
 
 /**
@@ -31,37 +32,42 @@ import org.eu.zajc.akiwrapper.core.entities.impl.GuessImpl;
 public final class Routes {
 
 	/**
-	 * The current zero-indexed question number
+	 * The current zero-indexed question number.
 	 */
 	public static final String PARAMETER_STEP = "step";
 	/**
-	 * The current progression
+	 * The current progression.
 	 */
 	public static final String PARAMETER_PROGRESSION = "progression";
 	/**
-	 * The {@link Answer} index
+	 * The {@link Answer} index.
 	 */
 	public static final String PARAMETER_ANSWER = "answer";
 	/**
-	 * The last step that a {@link Guess} was proposed on
+	 * The last step that a {@link Guess} was proposed on.
 	 */
 	public static final String PARAMETER_STEP_LAST_PROPOSITION = "step_last_proposition";
 	/**
-	 * The value of {@link Guess#getId()}
+	 * The value of {@link Guess#getId()}.
 	 */
 	public static final String PARAMETER_GUESS_ID = "pid";
 	/**
-	 * The value of {@link Guess#getName()}
+	 * The value of {@link Guess#getName()}.
 	 */
 	public static final String PARAMETER_GUESS_NAME = "charac_name";
 	/**
-	 * The value of {@link Guess#getDescription()}
+	 * The value of {@link Guess#getDescription()}.
 	 */
 	public static final String PARAMETER_GUESS_DESCRIPTION = "charac_desc";
 	/**
-	 * The value of {@link GuessImpl#getFlagPhoto()}. The purpose of this is unknown
+	 * The value of {@link GuessImpl#getFlagPhoto()}. The purpose of this is unknown.
 	 */
 	public static final String PARAMETER_GUESS_FLAG_PHOTO = "pflag_photo";
+	/**
+	 * The value of {@link Session#getIdentifier()}. This might identify the session, but
+	 * it's only used when confirming guesses.
+	 */
+	public static final String PARAMETER_IDENTIFIER = "identifiant";
 
 	/**
 	 * Creates a new game session that all further state is associated with.<br>
@@ -128,12 +134,13 @@ public final class Routes {
 	 * <li>{@link Routes#PARAMETER_GUESS_NAME}</li>
 	 * <li>{@link Routes#PARAMETER_GUESS_DESCRIPTION}</li>
 	 * <li>{@link Routes#PARAMETER_GUESS_FLAG_PHOTO}</li>
+	 * <li>{@link Routes#PARAMETER_IDENTIFIER}</li>
 	 * </ul>
 	 * <b>This route requires a session</b>
 	 */
 	public static final Route CHOICE = new RouteBuilder("/choice").requiresSession()
 		.parameters(PARAMETER_STEP, PARAMETER_GUESS_ID, PARAMETER_GUESS_FLAG_PHOTO, PARAMETER_GUESS_NAME,
-					PARAMETER_GUESS_DESCRIPTION)
+					PARAMETER_GUESS_DESCRIPTION, PARAMETER_IDENTIFIER)
 		.build();
 
 	private Routes() {}
