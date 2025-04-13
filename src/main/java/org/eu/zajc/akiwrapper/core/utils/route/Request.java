@@ -138,17 +138,17 @@ public class Request {
 			.build();
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("--> {} {}", req.method(), req.uri());
-			req.headers().toString().lines().forEach(l -> LOG.trace("--> {}", l));
-			LOG.trace("<-- ========================");
-			urlEncodeForm(parameters).lines().forEach(l -> LOG.trace("<-- {}", l));
+			LOG.trace("--> POST {} HTTP/2", req.uri());
+			req.headers().map().forEach((key, values) -> values.forEach(v -> LOG.trace("--> {}: {}", key, v)));
+			LOG.trace("-->");
+			urlEncodeForm(parameters).lines().forEach(l -> LOG.trace("--> {}", l));
 		}
 
 		var resp = http.send(req, BodyHandlers.ofString());
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("<-- {}", getStatusLine(resp.statusCode()));
-			resp.headers().toString().lines().forEach(l -> LOG.trace("<-- {}", l));
-			LOG.trace("<-- ========================");
+			LOG.trace("<-- HTTP/2 {}", getStatusLine(resp.statusCode()));
+			resp.headers().map().forEach((key, values) -> values.forEach(v -> LOG.trace("<-- {}: {}", key, v)));
+			LOG.trace("<--");
 			resp.body().lines().forEach(l -> LOG.trace("<-- {}", l));
 		}
 
