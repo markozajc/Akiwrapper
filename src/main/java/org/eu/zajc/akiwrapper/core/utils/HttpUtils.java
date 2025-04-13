@@ -49,8 +49,8 @@ public class HttpUtils {
 	}
 
 	@Nonnull
-	public static String getStatusLine(int code) { // NOSONAR
-		return code + " " + getStatusLine(code);
+	public static String getStatusLine(int code) {
+		return code + " " + getStatusReason(code);
 	}
 
 	@Nonnull
