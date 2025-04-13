@@ -32,17 +32,22 @@ import java.util.stream.Stream;
 
 import javax.annotation.*;
 
+import org.eu.zajc.akiwrapper.Akiwrapper.Language;
+
 /**
  * <b>Note:</b> This is an internal class and its internals are subject to change
  * without prior deprecation. Use with caution.<br>
+ * <br>
+ * A manual utility for language enum generation. The result is to be placed into
+ * {@link Language}.
  *
  * @author Marko Zajc
  */
 @SuppressWarnings("javadoc") // internal
 public class LanguageEnumBuilder {
 
-	private static final Pattern LANGUAGE_REGEX = compile(".*changeLocale\\(\\&\\#39\\;([^\\)]+)\\&\\#39\\;\\)");
-	private static final Pattern THEME_REGEX = compile(".*chooseTheme\\(\\&\\#39\\;(\\d+)\\&\\#39\\;\\)");
+	private static final Pattern LANGUAGE_REGEX = compile(".*changeLocale\\('([^\\)]+)'\\)");
+	private static final Pattern THEME_REGEX = compile(".*chooseTheme\\('(\\d+)'\\)");
 
 	@Nullable
 	private static String getGuessType(int code) {
@@ -97,6 +102,8 @@ public class LanguageEnumBuilder {
 				return "Turkish";
 			case "id":
 				return "Indonesian";
+			case "vi":
+				return "Vietnamese";
 			default:
 				return "Unknown";
 		}
@@ -107,7 +114,9 @@ public class LanguageEnumBuilder {
 	private static String get(@Nonnull String format, @Nonnull Object... args) {
 		try {
 			return HttpClient.newHttpClient()
-				.send(HttpRequest.newBuilder(new URI(format(format, args))).build(), BodyHandlers.ofString())
+				.send(HttpRequest.newBuilder(new URI(format(format, args)))
+					.header("user-agent", "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0")
+					.build(), BodyHandlers.ofString())
 				.body();
 		} catch (IOException | URISyntaxException e) {
 			throw new RuntimeException(e);
@@ -121,7 +130,7 @@ public class LanguageEnumBuilder {
 	@SuppressWarnings({ "resource", "null" })
 	private static Stream<String> getGuessTypes(String language) {
 		return concat(Stream.of("CHARACTER"),
-					  new Scanner(get("https://%s.akinator.com/theme_selection", language)).findAll(THEME_REGEX)
+					  new Scanner(get("https://%s.akinator.com/theme-selection", language)).findAll(THEME_REGEX)
 						  .map(m -> m.group(1))
 						  .mapToInt(Integer::parseInt)
 						  .mapToObj(LanguageEnumBuilder::getGuessType)

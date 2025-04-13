@@ -85,7 +85,8 @@ public interface Akiwrapper {
 		PORTUGESE("pt", Theme.CHARACTER),
 		RUSSIAN("ru", Theme.CHARACTER),
 		TURKISH("tr", Theme.CHARACTER),
-		INDONESIAN("id", Theme.CHARACTER);
+		INDONESIAN("id", Theme.CHARACTER),
+		VIETNAMESE("vi", Theme.CHARACTER);
 
 		@Nonnull private final String languageCode;
 		@Nonnull private final Set<Theme> supportedThemes;
