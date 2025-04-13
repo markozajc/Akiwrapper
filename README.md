@@ -22,19 +22,23 @@ Add the following dependency to your pom.xml:
 <dependency>
     <groupId>org.eu.zajc</groupId>
     <artifactId>akiwrapper</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
 </dependency>
 ```
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
-implementation group: 'org.eu.zajc', name: 'akiwrapper', version: '3.0.0'
+implementation 'org.eu.zajc:akiwrapper:3.0.1'
+```
+
+#### Gradle Kotlin DSL
+Add the following dependency to your build.gradle.kts:
+```gradle
+implementation("org.eu.zajc:akiwrapper:3.0.1")
 ```
 
 ## Usage
-
 ### Starting the game
-
 To access the Akinator API, you'll need an Akiwrapper object. One can be created like so:
 ```java
 Akiwrapper aw = new AkiwrapperBuilder().build();
@@ -51,7 +55,6 @@ Akiwrapper aw = new AkiwrapperBuilder()
 (keep in mind that not all language-theme combinations are supported, though all languages support `CHARACTER`)
 
 ### The game loop
-
 Akinator sends two types of queries: questions (*"Is your character an X?"*, *"Does your character Y?"*) and guesses
 (*"Is this your character?"*). You'll typically want to set up a query-answer loop. Fetch the first query with
 ```java

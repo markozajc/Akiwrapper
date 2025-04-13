@@ -5,7 +5,7 @@
 
 	<groupId>org.eu.zajc</groupId>
 	<artifactId>akiwrapper-example</artifactId>
-	<version>3.0.0</version>
+	<version>3.0.1</version>
 
 	<name>Akiwrapper Example</name>
 	<description>An example for Akiwrapper, the Java API wrapper for Akinator</description>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>org.eu.zajc</groupId>
 			<artifactId>akiwrapper</artifactId>
-			<version>3.0.0</version>
+			<version>3.0.1</version>
 		</dependency>
 
 		<!-- Logging Backend -->
