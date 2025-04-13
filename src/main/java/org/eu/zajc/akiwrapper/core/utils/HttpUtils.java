@@ -55,142 +55,144 @@ public class HttpUtils {
 
 	@Nonnull
 	public static String getStatusReason(int code) { // NOSONAR
-		// TODO [java>=14] use switch expression
-		// informational
-		if (code == 100)
-			return "Continue";
-		else if (code == 101)
-			return "Switching Protocol";
-		else if (code == 102)
-			return "Processing";
-		else if (code == 103)
-			return "Early Hints";
+		switch (code) { // NOSONAR
+			// informational
+			case 100:
+				return "Continue";
+			case 101:
+				return "Switching Protocol";
+			case 102:
+				return "Processing";
+			case 103:
+				return "Early Hints";
 
-		// successful
-		else if (code == 200)
-			return "OK";
-		else if (code == 201)
-			return "Created";
-		else if (code == 202)
-			return "Accepted";
-		else if (code == 203)
-			return "Non-Authoritative Information";
-		else if (code == 204)
-			return "No Content";
-		else if (code == 205)
-			return "Reset Content";
-		else if (code == 206)
-			return "Partial Content";
-		else if (code == 207)
-			return "Multi Status";
-		else if (code == 208)
-			return "Already Reported";
-		else if (code == 226)
-			return "IM Used";
+			// successful
+			case 200:
+				return "OK";
+			case 201:
+				return "Created";
+			case 202:
+				return "Accepted";
+			case 203:
+				return "Non-Authoritative Information";
+			case 204:
+				return "No Content";
+			case 205:
+				return "Reset Content";
+			case 206:
+				return "Partial Content";
+			case 207:
+				return "Multi Status";
+			case 208:
+				return "Already Reported";
+			case 226:
+				return "IM Used";
 
-		// redirection
-		else if (code == 300)
-			return "Multiple Choice";
-		else if (code == 301)
-			return "Moved Permanently";
-		else if (code == 302)
-			return "Found";
-		else if (code == 303)
-			return "See Other";
-		else if (code == 304)
-			return "Not Modified";
-		else if (code == 305)
-			return "Use Proxy"; // deprecated
-		else if (code == 307)
-			return "Temporary Redirect";
-		else if (code == 308)
-			return "Permanent Redirect";
+			// redirection
+			case 300:
+				return "Multiple Choice";
+			case 301:
+				return "Moved Permanently";
+			case 302:
+				return "Found";
+			case 303:
+				return "See Other";
+			case 304:
+				return "Not Modified";
+			case 305:
+				return "Use Proxy"; // deprecated
+			case 307:
+				return "Temporary Redirect";
+			case 308:
+				return "Permanent Redirect";
 
-		// client error
-		else if (code == 400)
-			return "Bad Request";
-		else if (code == 401)
-			return "Unauthorized";
-		else if (code == 402)
-			return "Payment Required";
-		else if (code == 403)
-			return "Forbidden";
-		else if (code == 404)
-			return "Not Found";
-		else if (code == 405)
-			return "Method Not Allowed";
-		else if (code == 406)
-			return "Not Acceptable";
-		else if (code == 407)
-			return "Proxy Authentication Required";
-		else if (code == 408)
-			return "Request Timeout";
-		else if (code == 409)
-			return "Conflict";
-		else if (code == 410)
-			return "Gone";
-		else if (code == 411)
-			return "Length Required";
-		else if (code == 412)
-			return "Precondition Failed";
-		else if (code == 413)
-			return "Payload Too Long";
-		else if (code == 414)
-			return "URI Too Long";
-		else if (code == 415)
-			return "Unsupported Media Type";
-		else if (code == 416)
-			return "Range Not Satisfiable";
-		else if (code == 417)
-			return "Expectation Failed";
-		else if (code == 418)
-			return "I'm a Teapot";
-		else if (code == 421)
-			return "Misdirected Request";
-		else if (code == 422)
-			return "Unprocessable Entity";
-		else if (code == 423)
-			return "Locked";
-		else if (code == 424)
-			return "Failed Dependency";
-		else if (code == 425)
-			return "Too Early";
-		else if (code == 426)
-			return "Upgrade Required";
-		else if (code == 428)
-			return "Precondition Required";
-		else if (code == 429)
-			return "Too Many Requests";
-		else if (code == 431)
-			return "Request Header Fields Too Large";
-		else if (code == 451)
-			return "Unavailable for Legal Reasons";
+			// client error
+			case 400:
+				return "Bad Request";
+			case 401:
+				return "Unauthorized";
+			case 402:
+				return "Payment Required";
+			case 403:
+				return "Forbidden";
+			case 404:
+				return "Not Found";
+			case 405:
+				return "Method Not Allowed";
+			case 406:
+				return "Not Acceptable";
+			case 407:
+				return "Proxy Authentication Required";
+			case 408:
+				return "Request Timeout";
+			case 409:
+				return "Conflict";
+			case 410:
+				return "Gone";
+			case 411:
+				return "Length Required";
+			case 412:
+				return "Precondition Failed";
+			case 413:
+				return "Payload Too Long";
+			case 414:
+				return "URI Too Long";
+			case 415:
+				return "Unsupported Media Type";
+			case 416:
+				return "Range Not Satisfiable";
+			case 417:
+				return "Expectation Failed";
+			case 418:
+				return "I'm a Teapot";
+			case 421:
+				return "Misdirected Request";
+			case 422:
+				return "Unprocessable Entity";
+			case 423:
+				return "Locked";
+			case 424:
+				return "Failed Dependency";
+			case 425:
+				return "Too Early";
+			case 426:
+				return "Upgrade Required";
+			case 428:
+				return "Precondition Required";
+			case 429:
+				return "Too Many Requests";
+			case 431:
+				return "Request Header Fields Too Large";
+			case 451:
+				return "Unavailable for Legal Reasons";
 
-		// server error
-		else if (code == 500)
-			return "Internal Server Error";
-		else if (code == 501)
-			return "Not Implemented";
-		else if (code == 502)
-			return "Bad Gateway";
-		else if (code == 503)
-			return "Service Unavailable";
-		else if (code == 504)
-			return "Gateway Timeout";
-		else if (code == 505)
-			return "HTTP Version Not Supported";
-		else if (code == 506)
-			return "Variant Also Negotiates";
-		else if (code == 507)
-			return "Insufficient Storage";
-		else if (code == 508)
-			return "Loop Detected";
-		else if (code == 510)
-			return "Not Extended";
-		else if (code == 511)
-			return "Network Authentication Required";
-		else
-			return "";
+			// server error
+			case 500:
+				return "Internal Server Error";
+			case 501:
+				return "Not Implemented";
+			case 502:
+				return "Bad Gateway";
+			case 503:
+				return "Service Unavailable";
+			case 504:
+				return "Gateway Timeout";
+			case 505:
+				return "HTTP Version Not Supported";
+			case 506:
+				return "Variant Also Negotiates";
+			case 507:
+				return "Insufficient Storage";
+			case 508:
+				return "Loop Detected";
+			case 510:
+				return "Not Extended";
+			case 511:
+				return "Network Authentication Required";
+
+			default:
+				return "";
+		}
 	}
 
 	private HttpUtils() {}
