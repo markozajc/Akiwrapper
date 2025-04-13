@@ -80,7 +80,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	private Session session;
 	private Query currentQuery;
-	private int lastGuessStep;
+	private volatile int lastGuessStep;
 	@Nonnull private Lock interactionLock = new ReentrantLock();
 
 	public AkiwrapperImpl(@Nonnull HttpClient httpClient, @Nonnull Language language, @Nonnull Theme theme,
