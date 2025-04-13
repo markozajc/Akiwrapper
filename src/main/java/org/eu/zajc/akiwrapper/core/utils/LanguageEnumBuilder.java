@@ -32,6 +32,12 @@ import java.util.stream.Stream;
 
 import javax.annotation.*;
 
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ *
+ * @author Marko Zajc
+ */
 @SuppressWarnings("javadoc") // internal
 public class LanguageEnumBuilder {
 

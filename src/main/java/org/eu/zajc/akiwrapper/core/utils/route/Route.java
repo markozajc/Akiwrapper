@@ -28,14 +28,25 @@ import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl;
 
-@SuppressWarnings("javadoc") // internal util
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ * A representation of an Akinator API route, used to create {@link Request}s.
+ *
+ * @author Marko Zajc
+ *
+ * @see RouteBuilder
+ * @see Routes
+ */
+@SuppressWarnings("javadoc") // internal
 public final class Route {
 
 	private static final String URL_FORMAT = "https://%s.akinator.com%s";
 
-	/*
-	 * Assigning this in your code removes warranty (and should only be done as a
-	 * workaround when things break)
+	/**
+	 * Default HTTP headers passed to Akinator. Assigning this in your code removes
+	 * warranty, and should only be done as a workaround when things break.
 	 */
 	public static String[] defaultHeaders; // NOSONAR
 	static {

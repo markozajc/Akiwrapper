@@ -39,7 +39,15 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 
-@SuppressWarnings("javadoc") // internal util
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ * An executable HTTP request for a {@link Route}.
+ *
+ * @author Marko Zajc
+ */
+@SuppressWarnings("javadoc") // internal
 public class Request {
 
 	private static final Logger LOG = getLogger(Request.class);

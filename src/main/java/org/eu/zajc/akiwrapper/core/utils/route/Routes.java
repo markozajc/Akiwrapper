@@ -20,7 +20,14 @@ import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
 import org.eu.zajc.akiwrapper.core.entities.Guess;
 import org.eu.zajc.akiwrapper.core.entities.impl.GuessImpl;
 
-@SuppressWarnings("javadoc") // internal util
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ * A list of API {@link Route}s used by Akiwrapper.
+ *
+ * @author Marko Zajc
+ */
 public final class Routes {
 
 	/**

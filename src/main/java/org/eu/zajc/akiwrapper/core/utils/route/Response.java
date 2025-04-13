@@ -18,7 +18,13 @@ package org.eu.zajc.akiwrapper.core.utils.route;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("javadoc") // internal util
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ *
+ * @author Marko Zajc
+ */
+@SuppressWarnings("javadoc") // internal
 public class Response<T> {
 
 	private final T body;

@@ -105,7 +105,7 @@ public class AkiwrapperBuilder {
 	 *         {@link HttpClient#newHttpClient()}.
 	 */
 	@Nullable
-	public HttpClient getUnirestInstance() {
+	public HttpClient getHttpClient() {
 		return this.httpClient;
 	}
 

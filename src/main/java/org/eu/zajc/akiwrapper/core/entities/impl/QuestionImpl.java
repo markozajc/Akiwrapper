@@ -33,11 +33,10 @@ import org.jsoup.nodes.Element;
 /**
  * <b>Note:</b> This is an internal class and its internals are subject to change
  * without prior deprecation. Use with caution.<br>
- * <br>
  *
  * @author Marko Zajc
  */
-@SuppressWarnings("javadoc") // internal impl
+@SuppressWarnings("javadoc") // internal
 public class QuestionImpl extends AbstractQuery implements Question {
 
 	@Nonnull private final String question;

@@ -25,6 +25,15 @@ import java.util.concurrent.Flow.Subscriber;
 
 import javax.annotation.Nonnull;
 
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ *
+ * A {@link BodyPublisher} for a {@code application/x-www-form-urlencoded} form.
+ *
+ * @author Marko Zajc
+ */
+@SuppressWarnings("javadoc") // internal
 public class FormBody implements BodyPublisher {
 
 	private final BodyPublisher backend;

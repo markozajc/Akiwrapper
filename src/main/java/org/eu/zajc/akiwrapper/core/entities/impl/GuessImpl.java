@@ -31,11 +31,10 @@ import org.json.*;
 /**
  * <b>Note:</b> This is an internal class and its internals are subject to change
  * without prior deprecation. Use with caution.<br>
- * <br>
  *
  * @author Marko Zajc
  */
-@SuppressWarnings("javadoc") // internal impl
+@SuppressWarnings("javadoc") // internal
 public class GuessImpl extends AbstractQuery implements Guess {
 
 	@Nonnull private final String id;

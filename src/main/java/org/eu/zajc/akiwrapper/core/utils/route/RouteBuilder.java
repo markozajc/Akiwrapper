@@ -22,7 +22,15 @@ import java.util.*;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("javadoc") // internal util
+/**
+ * <b>Note:</b> This is an internal class and its internals are subject to change
+ * without prior deprecation. Use with caution.<br>
+ * <br>
+ * A builder for {@link Route}.
+ *
+ * @author Marko Zajc
+ */
+@SuppressWarnings("javadoc") // internal
 public class RouteBuilder {
 
 	@Nonnull private final String path;
