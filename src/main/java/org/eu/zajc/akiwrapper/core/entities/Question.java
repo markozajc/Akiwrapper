@@ -73,10 +73,10 @@ public interface Question extends Query {
 	/**
 	 * This is an interaction method for {@link Question}.<br>
 	 * Goes one question backwards, undoing the previous {@link #answer(Answer)} call.
-	 * For example, if {@link #getQuestion()} returns a question on step {@code 5},
-	 * calling this command will return the question on step {@code 4}. You can call this
-	 * as many times as you want, until you reach step {@code 0}. Note that this will
-	 * always return a {@link Question}, and never a {@link Guess} or {@code null}.<br>
+	 * For example, if {@link #getText()} returns a question on step {@code 5}, calling
+	 * this command will return the question on step {@code 4}. You can call this as many
+	 * times as you want, until you reach step {@code 0}. Note that this will always
+	 * return a {@link Question}, and never a {@link Guess} or {@code null}.<br>
 	 * <b>Note:</b> A single {@link Question} object can only be interacted with once.
 	 * Calling {@link #answer(Answer)} or {@link #undoAnswer()} mutates the session
 	 * state, so you can only call one of them once.
@@ -84,8 +84,8 @@ public interface Question extends Query {
 	 * @return the previous {@link Question}.
 	 *
 	 * @throws UndoOutOfBoundsException
-	 *             if the session has exhausted all questions (when
-	 *             {@link #getQuestion()} returns {@code null}.
+	 *             if the session has exhausted all questions (when {@link #getText()}
+	 *             returns {@code null}.
 	 * @throws IllegalStateException
 	 *             if this {@link Question} is not the same as
 	 *             {@link Akiwrapper#getCurrentQuery()}, which happens if you attempt to
@@ -112,21 +112,6 @@ public interface Question extends Query {
 	 */
 	@Nonnull
 	String getText();
-
-	/**
-	 * Returns the question text that should be displayed to the user. This is localized
-	 * to the {@link Language} and in line with the {@link Theme} set in the
-	 * {@link AkiwrapperBuilder}.<br>
-	 *
-	 * @return the question text, for example {@code "Is your character real?"}.
-	 *
-	 * @deprecated use {@link #getText()} instead.
-	 */
-	@Nonnull
-	@Deprecated(since = "2.0", forRemoval = true)
-	default String getQuestion() {
-		return getText();
-	}
 
 	/**
 	 * URL to the akitude image. "Akitude" is likely a portmanteau of "Akinator" and

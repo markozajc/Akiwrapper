@@ -55,13 +55,6 @@ public class AkiwrapperBuilder {
 	 */
 	@Nonnull public static final Theme DEFAULT_THEME = CHARACTER;
 
-	/**
-	 * The default {@link Theme} for new {@link Akiwrapper} instances.
-	 *
-	 * @deprecated Use {@link #DEFAULT_THEME} instead
-	 */
-	@Deprecated(since = "2.0", forRemoval = true) @Nonnull public static final Theme DEFAULT_GUESS_TYPE = CHARACTER;
-
 	private AkiwrapperBuilder(@Nullable HttpClient httpClient, boolean filterProfanity, @Nonnull Language language,
 							  @Nonnull Theme theme) {
 		this.httpClient = httpClient;
@@ -76,7 +69,7 @@ public class AkiwrapperBuilder {
 	 * <li>profanity filtering is set to {@code false}
 	 * ({@link #DEFAULT_FILTER_PROFANITY}),
 	 * <li>language is set to {@link Language#ENGLISH} ({@link #DEFAULT_LANGUAGE}),
-	 * <li>theme is set to {@link Theme#CHARACTER} ({@link #DEFAULT_GUESS_TYPE}),
+	 * <li>theme is set to {@link Theme#CHARACTER} ({@link #DEFAULT_THEME}),
 	 * </ul>
 	 */
 	public AkiwrapperBuilder() {
@@ -204,55 +197,12 @@ public class AkiwrapperBuilder {
 	 * objects.<br>
 	 * This is set to {@link Theme#CHARACTER} by default.
 	 *
-	 * @param theme
-	 *
-	 * @return current instance, used for chaining.
-	 *
-	 * @see #getGuessType()
-	 *
-	 * @deprecated Use {@link #setTheme(Theme)} instead
-	 */
-	@Nonnull
-	@Deprecated(since = "2.0", forRemoval = true)
-	public AkiwrapperBuilder setGuessType(@Nonnull Theme theme) {
-		this.theme = theme;
-		return this;
-	}
-
-	/**
-	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
-	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
-	 * for a list of supported themes. <br>
-	 * Sets the {@link Theme}. This decides the theme of Akinator's {@link Query}
-	 * objects.<br>
-	 * This is set to {@link Theme#CHARACTER} by default.
-	 *
 	 * @return theme preference.
 	 *
 	 * @see #setTheme(Theme)
 	 */
 	@Nonnull
 	public Theme getTheme() {
-		return this.theme;
-	}
-
-	/**
-	 * <b>Note:</b> while all {@link Language}s support {@link Theme#CHARACTER}, but
-	 * other themes might not be supported. Call {@link Language#getSupportedThemes()}
-	 * for a list of supported themes. <br>
-	 * Sets the {@link Theme}. This decides the theme of Akinator's {@link Query}
-	 * objects.<br>
-	 * This is set to {@link Theme#CHARACTER} by default.
-	 *
-	 * @return theme preference.
-	 *
-	 * @see #setGuessType(Theme)
-	 *
-	 * @deprecated Use {@link #getTheme()} instead.
-	 */
-	@Nonnull
-	@Deprecated(since = "2.0", forRemoval = true)
-	public Theme getGuessType() {
 		return this.theme;
 	}
 

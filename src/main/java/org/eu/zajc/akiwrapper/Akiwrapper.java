@@ -248,18 +248,4 @@ public interface Akiwrapper {
 	 */
 	boolean doesFilterProfanity();
 
-	/**
-	 * Returns if the game has ended, which occurs after answering 80 {@link Question}s
-	 * or calling {@link Guess#confirm()}.<br>
-	 * Sending or undoing answers can no longer be done after the game has ended.
-	 *
-	 * @return whether the game has ended.
-	 *
-	 * @deprecated Check if {@link #getCurrentQuery()} is {@code null} instead
-	 */
-	@Deprecated(since = "2.0", forRemoval = true)
-	default boolean isExhausted() {
-		return this.getCurrentQuery() == null;
-	}
-
 }

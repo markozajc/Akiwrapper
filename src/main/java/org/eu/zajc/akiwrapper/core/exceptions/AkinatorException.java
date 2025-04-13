@@ -16,8 +16,6 @@
  */
 package org.eu.zajc.akiwrapper.core.exceptions;
 
-import javax.annotation.Nonnull;
-
 /**
  * The root exception class for exceptions in Akiwrapper.
  *
@@ -36,19 +34,6 @@ public class AkinatorException extends RuntimeException {
 	@SuppressWarnings("javadoc") // internal
 	public AkinatorException(String message, Throwable cause) {
 		super(message, cause);
-	}
-
-	/**
-	 * @return the request debug information (when available) or an empty string
-	 *
-	 * @deprecated will always return an empty string. There is no direct replacement for
-	 *             this, but enabling trace logs will show contents of HTTP requests and
-	 *             responses.
-	 */
-	@Nonnull
-	@Deprecated(since = "2.0", forRemoval = true)
-	public String getDebugInformation() {
-		return "";
 	}
 
 }
