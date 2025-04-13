@@ -49,7 +49,7 @@ public class AkinatorExample {
 		// Gets player's language. Akinator will give the user localized questions and
 		// guesses depending on user's language.
 
-		var guessType = getGuessType();
+		var guessType = getTheme();
 		// Gets the guess type.
 
 		Akiwrapper aw;
@@ -147,7 +147,7 @@ public class AkinatorExample {
 				case "debug":
 					out.println("Debug information:");
 					out.printf("\tlastGuessStep: %d%n", ((AkiwrapperImpl) q.getAkiwrapper()).getLastGuessStep());
-					out.printf("\tisExhausted: %b%n", q.getAkiwrapper().isExhausted());
+					out.printf("\tis exhausted? %b%n", q.getAkiwrapper().getCurrentQuery() == null);
 					break;
 
 				default:
@@ -190,7 +190,7 @@ public class AkinatorExample {
 
 	@Nonnull
 	@SuppressWarnings("null")
-	private static Theme getGuessType() {
+	private static Theme getTheme() {
 		var guessTypes = EnumSet.allOf(Theme.class);
 
 		out.print("What will you be guessing? [character] ");
