@@ -58,13 +58,6 @@
 			<version>1.18.3</version>
 		</dependency>
 
-		<!-- HTTP Requests -->
-		<dependency>
-			<groupId>com.konghq</groupId>
-			<artifactId>unirest-java-core</artifactId>
-			<version>4.4.5</version>
-		</dependency>
-
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

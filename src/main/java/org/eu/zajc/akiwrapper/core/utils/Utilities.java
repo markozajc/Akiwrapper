@@ -16,8 +16,6 @@
  */
 package org.eu.zajc.akiwrapper.core.utils;
 
-import static java.lang.Thread.*;
-
 import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
@@ -109,22 +107,6 @@ public class Utilities {
 			return Double.parseDouble(s);
 		} catch (NumberFormatException e) {
 			throw new MalformedResponseException(e);
-		}
-	}
-
-	/**
-	 * A {@link Thread#sleep(long)}-like method that throws {@link InterruptedException}.
-	 * The exception is not suppressed or wrapped in a {@link RuntimeException}, but
-	 * rather thrown with {@link #asUnchecked(Throwable)}.
-	 *
-	 * @param millis
-	 */
-	public static void sleepUnchecked(long millis) {
-		try {
-			sleep(millis);
-		} catch (InterruptedException e) {
-			currentThread().interrupt();
-			throw asUnchecked(e);
 		}
 	}
 

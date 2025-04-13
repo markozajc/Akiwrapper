@@ -17,8 +17,12 @@
 package org.eu.zajc.akiwrapper.core.utils.route;
 
 import static java.lang.String.format;
+import static java.util.Map.entry;
 
+import java.net.*;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
@@ -28,6 +32,31 @@ import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl;
 public final class Route {
 
 	private static final String URL_FORMAT = "https://%s.akinator.com%s";
+
+	/*
+	 * Assigning this in your code removes warranty (and should only be done as a
+	 * workaround when things break)
+	 */
+	public static String[] defaultHeaders; // NOSONAR
+	static {
+		var headers = Stream.<Entry<String, String>>builder();
+		headers.add(entry("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0"));
+		headers.add(entry("Accept", "*/*"));
+		headers.add(entry("Accept-Language", "en-US,en;q=0.5"));
+		headers.add(entry("Referer", "https://en.akinator.com/game"));
+		headers.add(entry("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"));
+		headers.add(entry("X-Requested-With", "XMLHttpRequest"));
+		headers.add(entry("Origin", "https://en.akinator.com"));
+		headers.add(entry("DNT", "1"));
+		headers.add(entry("Sec-GPC", "1"));
+		headers.add(entry("Sec-Fetch-Dest", "empty"));
+		headers.add(entry("Sec-Fetch-Mode", "cors"));
+		headers.add(entry("Sec-Fetch-Site", "same-origin"));
+		headers.add(entry("Pragma", "no-cache"));
+		headers.add(entry("Cache-Control", "no-cache"));
+		headers.add(entry("TE", "trailers"));
+		defaultHeaders = headers.build().flatMap(e -> Stream.of(e.getKey(), e.getValue())).toArray(String[]::new); // NOSONAR
+	}
 
 	private static final String PARAM_PROFANITY_FILTER = "cm";
 	private static final String PARAM_THEME = "sid";
@@ -43,9 +72,13 @@ public final class Route {
 	}
 
 	@Nonnull
-	@SuppressWarnings({ "resource", "null" })
 	public Request createRequest(@Nonnull AkiwrapperImpl api) {
-		var url = format(URL_FORMAT, api.getLanguage().getLanguageCode(), this.path);
+		URI uri;
+		try {
+			uri = new URI(format(URL_FORMAT, api.getLanguage().getLanguageCode(), this.path));
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
 
 		var parameters = new HashMap<String, Object>();
 		this.parameterNames.forEach(p -> parameters.put(p, null)); // can't use Collectors.toMap due to null values
@@ -62,7 +95,7 @@ public final class Route {
 			api.getSession().apply(parameters);
 		}
 
-		return new Request(url, api.getUnirest(), parameters);
+		return new Request(uri, api.getHttpClient(), parameters);
 	}
 
 }

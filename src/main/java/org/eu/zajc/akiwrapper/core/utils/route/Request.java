@@ -16,24 +16,28 @@
  */
 package org.eu.zajc.akiwrapper.core.utils.route;
 
-import static java.lang.String.format;
+import static java.lang.Thread.sleep;
+import static java.net.http.HttpClient.Version.HTTP_2;
 import static java.time.Duration.ofSeconds;
-import static kong.unirest.core.ContentType.APPLICATION_FORM_URLENCODED;
-import static org.eu.zajc.akiwrapper.core.utils.Utilities.sleepUnchecked;
+import static org.eu.zajc.akiwrapper.core.utils.HttpUtils.*;
+import static org.eu.zajc.akiwrapper.core.utils.route.Route.defaultHeaders;
 import static org.eu.zajc.akiwrapper.core.utils.route.Status.OK;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.*;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 import org.eu.zajc.akiwrapper.core.exceptions.*;
+import org.eu.zajc.akiwrapper.core.utils.*;
 import org.json.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
-
-import kong.unirest.core.*;
 
 @SuppressWarnings("javadoc") // internal util
 public class Request {
@@ -43,13 +47,13 @@ public class Request {
 	private static final int MAX_RETRIES = 5;
 	private static final long RETRY_SLEEP = ofSeconds(2).toMillis();
 
-	@Nonnull private final String url;
-	@Nonnull private final UnirestInstance unirest;
+	@Nonnull private final URI uri;
+	@Nonnull private final HttpClient http;
 	@Nonnull private Map<String, Object> parameters;
 
-	Request(@Nonnull String url, @Nonnull UnirestInstance unirest, @Nonnull Map<String, Object> parameters) {
-		this.url = url;
-		this.unirest = unirest;
+	Request(@Nonnull URI uri, @Nonnull HttpClient http, @Nonnull Map<String, Object> parameters) {
+		this.uri = uri;
+		this.http = http;
 		this.parameters = parameters;
 	}
 
@@ -65,11 +69,7 @@ public class Request {
 
 	@Nonnull
 	public Response<Element> retrieveDocument() {
-		var resp = executeRequest();
-		var body = resp.getBody();
-
-		var doc = Jsoup.parse(body);
-		var gameRoot = doc.getElementById("game_content");
+		var gameRoot = Jsoup.parse(executeRequest().body()).getElementById("game_content");
 		if (gameRoot == null)
 			throw new MalformedResponseException();
 
@@ -82,8 +82,7 @@ public class Request {
 
 	@Nonnull
 	public Response<JSONObject> retrieveJson() {
-		var resp = executeRequest();
-		var body = resp.getBody();
+		var body = executeRequest().body();
 
 		try {
 			var json = new JSONObject(body);
@@ -109,37 +108,58 @@ public class Request {
 		if (this.parameters.containsValue(null))
 			throw new IllegalStateException("One or more mandatory parameters aren't set");
 
-		return executeRequest(this.url, this.parameters, this.unirest, 0);
+		try {
+			return executeRequest(this.uri, this.parameters, this.http, 0);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw Utilities.asUnchecked(e);
+		}
 	}
 
 	@Nonnull
-	private static HttpResponse<String> executeRequest(@Nonnull String url, @Nonnull Map<String, Object> parameters,
-													   @Nonnull UnirestInstance unirest, int attempt) {
-		var req = unirest.post(url).contentType(APPLICATION_FORM_URLENCODED.getMimeType()).fields(parameters);
-		if (LOG.isTraceEnabled())
-			req.toSummary().asString().lines().forEach(l -> LOG.trace("--> {}", l));
+	private static HttpResponse<String> executeRequest(@Nonnull URI uri, @Nonnull Map<String, Object> parameters,
+													   @Nonnull HttpClient http,
+													   int attempt) throws IOException, InterruptedException {
+		var req = HttpRequest.newBuilder()
+			.version(HTTP_2)
+			.POST(new FormBody(parameters))
+			.uri(uri)
+			.headers(defaultHeaders)
+			.build();
 
-		var resp = req.asString();
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("<-- {} {}", resp.getStatus(), resp.getStatusText());
-			resp.getHeaders().toString().lines().forEach(l -> LOG.trace("<-- {}", l));
+			LOG.trace("--> {} {}", req.method(), req.uri());
+			req.headers().toString().lines().forEach(l -> LOG.trace("--> {}", l));
 			LOG.trace("<-- ========================");
-			resp.getBody().lines().forEach(l -> LOG.trace("<-- {}", l));
+			urlEncodeForm(parameters).lines().forEach(l -> LOG.trace("<-- {}", l));
 		}
 
-		if (resp.getStatus() >= 500) {
+		var resp = http.send(req, BodyHandlers.ofString());
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("<-- {}", getStatusLine(resp.statusCode()));
+			resp.headers().toString().lines().forEach(l -> LOG.trace("<-- {}", l));
+			LOG.trace("<-- ========================");
+			resp.body().lines().forEach(l -> LOG.trace("<-- {}", l));
+		}
+
+		if (resp.statusCode() >= 500) {
 			if (attempt < MAX_RETRIES) {
-				LOG.trace("Got HTTP {} {}, retrying after {} ms", resp.getStatus(), resp.getStatusText(), RETRY_SLEEP);
-				sleepUnchecked(RETRY_SLEEP);
-				return executeRequest(url, parameters, unirest, attempt + 1);
+				if (LOG.isTraceEnabled())
+					LOG.trace("Got HTTP {}, retrying after {} ms", getStatusLine(resp.statusCode()), RETRY_SLEEP);
+				sleep(RETRY_SLEEP);
+				return executeRequest(uri, parameters, http, attempt + 1);
 
 			} else {
-				throw new AkinatorException(format("Got HTTP %d %s and exceeded re-attempts (%d)", resp.getStatus(),
-												   resp.getStatusText(), MAX_RETRIES));
+				throw new AkinatorException("Got HTTP " + getStatusLine(resp.statusCode()) +
+					" and exceeded re-attempts (" +
+					MAX_RETRIES +
+					")");
 			}
 
-		} else if (resp.getStatus() >= 400) {
-			throw new AkinatorException(format("Got HTTP %d %s", resp.getStatus(), resp.getStatusText()));
+		} else if (resp.statusCode() >= 400) {
+			throw new AkinatorException("Got HTTP " + getStatusLine(resp.statusCode()));
 		}
 
 		return resp;

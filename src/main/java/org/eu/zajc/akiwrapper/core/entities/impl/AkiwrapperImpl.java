@@ -19,6 +19,7 @@ package org.eu.zajc.akiwrapper.core.entities.impl;
 import static java.util.Optional.ofNullable;
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.NEW_SESSION;
 
+import java.net.http.HttpClient;
 import java.util.*;
 import java.util.concurrent.locks.*;
 
@@ -29,8 +30,6 @@ import org.eu.zajc.akiwrapper.core.entities.Query;
 import org.eu.zajc.akiwrapper.core.exceptions.MalformedResponseException;
 import org.jsoup.nodes.Element;
 import org.slf4j.*;
-
-import kong.unirest.core.UnirestInstance;
 
 /**
  * <b>Note:</b> This is an internal class and its internals are subject to change
@@ -75,7 +74,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	public static final int LAST_STEP = 80;
 
-	@Nonnull private final UnirestInstance unirest;
+	@Nonnull private final HttpClient httpClient;
 	@Nonnull private final Language language;
 	@Nonnull private final Theme theme;
 	private final boolean filterProfanity;
@@ -85,9 +84,9 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private int lastGuessStep;
 	@Nonnull private Lock interactionLock = new ReentrantLock();
 
-	public AkiwrapperImpl(@Nonnull UnirestInstance unirest, @Nonnull Language language, @Nonnull Theme theme,
+	public AkiwrapperImpl(@Nonnull HttpClient httpClient, @Nonnull Language language, @Nonnull Theme theme,
 						  boolean filterProfanity) {
-		this.unirest = unirest;
+		this.httpClient = httpClient;
 		this.language = language;
 		this.theme = theme;
 		this.filterProfanity = filterProfanity;
@@ -121,8 +120,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 	}
 
 	@Nonnull
-	public UnirestInstance getUnirest() {
-		return this.unirest;
+	public HttpClient getHttpClient() {
+		return this.httpClient;
 	}
 
 	public Session getSession() {

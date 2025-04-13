@@ -22,13 +22,15 @@ import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Stream.concat;
 
+import java.io.IOException;
+import java.net.*;
+import java.net.http.*;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import javax.annotation.*;
-
-import kong.unirest.core.Unirest;
 
 @SuppressWarnings("javadoc") // internal
 public class LanguageEnumBuilder {
@@ -95,21 +97,34 @@ public class LanguageEnumBuilder {
 	}
 
 	@Nonnull
+	@SuppressWarnings("null")
+	private static String get(@Nonnull String format, @Nonnull Object... args) {
+		try {
+			return HttpClient.newHttpClient()
+				.send(HttpRequest.newBuilder(new URI(format(format, args))).build(), BodyHandlers.ofString())
+				.body();
+		} catch (IOException | URISyntaxException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Nonnull
 	@SuppressWarnings({ "resource", "null" })
 	private static Stream<String> getGuessTypes(String language) {
 		return concat(Stream.of("CHARACTER"),
-					  new Scanner(Unirest.get(String.format("https://%s.akinator.com/theme_selection", language))
-						  .asString()
-						  .getBody()).findAll(THEME_REGEX)
-							  .map(m -> m.group(1))
-							  .mapToInt(Integer::parseInt)
-							  .mapToObj(LanguageEnumBuilder::getGuessType)
-							  .filter(Objects::nonNull));
+					  new Scanner(get("https://%s.akinator.com/theme_selection", language)).findAll(THEME_REGEX)
+						  .map(m -> m.group(1))
+						  .mapToInt(Integer::parseInt)
+						  .mapToObj(LanguageEnumBuilder::getGuessType)
+						  .filter(Objects::nonNull));
 	}
 
 	@SuppressWarnings("resource")
 	public static void main(String[] args) {
-		out.println(new Scanner(Unirest.get("https://en.akinator.com/").asString().getBody()).findAll(LANGUAGE_REGEX)
+		out.println(new Scanner(get("https://en.akinator.com/")).findAll(LANGUAGE_REGEX)
 			.map(m -> m.group(1))
 			.map(l -> format("%s(\"%s\", %s)", getLanguageName(l).toUpperCase(), l,
 							 getGuessTypes(l).map(s -> "Theme." + s).collect(joining(", "))))

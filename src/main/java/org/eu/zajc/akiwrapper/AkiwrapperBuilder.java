@@ -19,15 +19,14 @@ package org.eu.zajc.akiwrapper;
 import static org.eu.zajc.akiwrapper.Akiwrapper.Language.ENGLISH;
 import static org.eu.zajc.akiwrapper.Akiwrapper.Theme.CHARACTER;
 
+import java.net.http.HttpClient;
+
 import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.Akiwrapper.*;
 import org.eu.zajc.akiwrapper.core.entities.Query;
 import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl;
 import org.eu.zajc.akiwrapper.core.exceptions.LanguageThemeCombinationException;
-import org.eu.zajc.akiwrapper.core.utils.UnirestUtils;
-
-import kong.unirest.core.UnirestInstance;
 
 /**
  * A class used to build an {@link Akiwrapper} object.
@@ -36,7 +35,7 @@ import kong.unirest.core.UnirestInstance;
  */
 public class AkiwrapperBuilder {
 
-	@Nullable private UnirestInstance unirest;
+	@Nullable private HttpClient httpClient;
 	private boolean filterProfanity;
 	@Nonnull private Language language;
 	@Nonnull private Theme theme;
@@ -63,9 +62,9 @@ public class AkiwrapperBuilder {
 	 */
 	@Deprecated(since = "2.0", forRemoval = true) @Nonnull public static final Theme DEFAULT_GUESS_TYPE = CHARACTER;
 
-	private AkiwrapperBuilder(@Nullable UnirestInstance unirest, boolean filterProfanity, @Nonnull Language language,
+	private AkiwrapperBuilder(@Nullable HttpClient httpClient, boolean filterProfanity, @Nonnull Language language,
 							  @Nonnull Theme theme) {
-		this.unirest = unirest;
+		this.httpClient = httpClient;
 		this.filterProfanity = filterProfanity;
 		this.language = language;
 		this.theme = theme;
@@ -85,35 +84,29 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Sets the {@link UnirestInstance} to be used by the built Akiwrapper instance. Note
-	 * that Akinator's services are quite picky about the HTTP client configuration, so
-	 * you will very likely need to put your instance through
-	 * {@link UnirestUtils#configureInstance(UnirestInstance)} before using it with
-	 * Akiwrapper.
+	 * Sets the {@link HttpClient} to be used by the built Akiwrapper instance.
 	 *
-	 * @param unirest
-	 *            the {@link UnirestInstance} to be used by Akiwrapper or {$code null} to
-	 *            use {@link UnirestUtils#getInstance()}.
+	 * @param httpClient
+	 *            the {@link HttpClient} to be used or {$code null} to use
+	 *            {@link HttpClient#newHttpClient()}.
 	 *
 	 * @return current instance, used for chaining.
-	 *
-	 * @see UnirestUtils#getInstance()
 	 */
 	@Nonnull
-	public AkiwrapperBuilder setUnirestInstance(@Nullable UnirestInstance unirest) {
-		this.unirest = unirest;
+	public AkiwrapperBuilder setHttpClient(@Nullable HttpClient httpClient) {
+		this.httpClient = httpClient;
 		return this;
 	}
 
 	/**
-	 * Returns the {@link UnirestInstance} to be used by the built Akiwrapper instance.
+	 * Returns the {@link HttpClient} to be used by the built Akiwrapper instance.
 	 *
-	 * @return {@link UnirestInstance} to be used or {$code null} for
-	 *         {@link UnirestUtils#getInstance()}.
+	 * @return {@link HttpClient} to be used or {$code null} to use
+	 *         {@link HttpClient#newHttpClient()}.
 	 */
 	@Nullable
-	public UnirestInstance getUnirestInstance() {
-		return this.unirest;
+	public HttpClient getUnirestInstance() {
+		return this.httpClient;
 	}
 
 	/**
@@ -264,24 +257,19 @@ public class AkiwrapperBuilder {
 	}
 
 	/**
-	 * Creates a new {@link Akiwrapper} instance from your preferences. If no
-	 * {@link UnirestInstance} was set (with
-	 * {@link #setUnirestInstance(UnirestInstance)}), a singleton instance will be
-	 * acquired from {@link UnirestUtils#getInstance()}.
-	 *
 	 * @return a new {@link Akiwrapper} instance.
 	 *
 	 * @throws LanguageThemeCombinationException
 	 *             if the {@link Language} and {@link Theme} combination is incompatible.
 	 */
 	@Nonnull
-	@SuppressWarnings("resource")
+	@SuppressWarnings("null")
 	public Akiwrapper build() throws LanguageThemeCombinationException {
-		var unirest = this.unirest != null ? this.unirest : UnirestUtils.getInstance();
+		var httpClient = this.httpClient != null ? this.httpClient : HttpClient.newHttpClient();
 		if (!this.language.isThemeSupported(this.theme))
 			throw new LanguageThemeCombinationException(this.language, this.theme);
 
-		var api = new AkiwrapperImpl(unirest, this.language, this.theme, this.filterProfanity);
+		var api = new AkiwrapperImpl(httpClient, this.language, this.theme, this.filterProfanity);
 		api.createSession();
 		return api;
 	}
