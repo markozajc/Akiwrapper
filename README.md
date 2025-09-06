@@ -22,19 +22,19 @@ Add the following dependency to your pom.xml:
 <dependency>
     <groupId>org.eu.zajc</groupId>
     <artifactId>akiwrapper</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
 </dependency>
 ```
 #### Gradle
 Add the following dependency to your build.gradle:
 ```gradle
-implementation 'org.eu.zajc:akiwrapper:3.0.1'
+implementation 'org.eu.zajc:akiwrapper:3.0.2'
 ```
 
 #### Gradle Kotlin DSL
 Add the following dependency to your build.gradle.kts:
 ```gradle
-implementation("org.eu.zajc:akiwrapper:3.0.1")
+implementation("org.eu.zajc:akiwrapper:3.0.2")
 ```
 
 ## Usage
