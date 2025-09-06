@@ -216,6 +216,7 @@ public class AkiwrapperBuilder {
 	@SuppressWarnings("null")
 	public Akiwrapper build() throws LanguageThemeCombinationException {
 		var httpClient = this.httpClient != null ? this.httpClient : HttpClient.newHttpClient();
+
 		if (!this.language.isThemeSupported(this.theme))
 			throw new LanguageThemeCombinationException(this.language, this.theme);
 

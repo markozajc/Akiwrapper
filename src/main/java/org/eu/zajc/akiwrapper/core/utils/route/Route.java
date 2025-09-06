@@ -51,20 +51,18 @@ public final class Route {
 	public static String[] defaultHeaders; // NOSONAR
 	static {
 		var headers = Stream.<Entry<String, String>>builder();
-		headers.add(entry("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0"));
+		headers.add(entry("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"));
 		headers.add(entry("Accept", "*/*"));
 		headers.add(entry("Accept-Language", "en-US,en;q=0.5"));
 		headers.add(entry("Referer", "https://en.akinator.com/game"));
 		headers.add(entry("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"));
 		headers.add(entry("X-Requested-With", "XMLHttpRequest"));
 		headers.add(entry("Origin", "https://en.akinator.com"));
-		headers.add(entry("DNT", "1"));
 		headers.add(entry("Sec-GPC", "1"));
 		headers.add(entry("Sec-Fetch-Dest", "empty"));
 		headers.add(entry("Sec-Fetch-Mode", "cors"));
 		headers.add(entry("Sec-Fetch-Site", "same-origin"));
-		headers.add(entry("Pragma", "no-cache"));
-		headers.add(entry("Cache-Control", "no-cache"));
+		headers.add(entry("Priority", "u=0"));
 		headers.add(entry("TE", "trailers"));
 		defaultHeaders = headers.build().flatMap(e -> Stream.of(e.getKey(), e.getValue())).toArray(String[]::new); // NOSONAR
 	}
@@ -74,12 +72,15 @@ public final class Route {
 
 	@Nonnull private final String path;
 	private final boolean requiresSession;
-	@Nonnull private List<String> parameterNames;
+	@Nonnull private Map<String, Object> staticParameters;
+	@Nonnull private List<String> variableParameterNames;
 
-	Route(@Nonnull String path, boolean requiresSession, @Nonnull List<String> parameters) {
+	Route(@Nonnull String path, boolean requiresSession, @Nonnull Map<String, Object> staticParameters,
+		  @Nonnull List<String> variableParameterNames) {
 		this.path = path;
 		this.requiresSession = requiresSession;
-		this.parameterNames = parameters;
+		this.staticParameters = staticParameters;
+		this.variableParameterNames = variableParameterNames;
 	}
 
 	@Nonnull
@@ -91,8 +92,10 @@ public final class Route {
 			throw new RuntimeException(e);
 		}
 
-		var parameters = new HashMap<String, Object>();
-		this.parameterNames.forEach(p -> parameters.put(p, null)); // can't use Collectors.toMap due to null values
+		var parameters = new HashMap<>(this.staticParameters);
+
+		// append variable parameters
+		this.variableParameterNames.forEach(p -> parameters.put(p, null)); // Collectors.toMap doesn't allow nulls
 
 		// append common parameters
 		parameters.put(PARAM_PROFANITY_FILTER, api.doesFilterProfanity());

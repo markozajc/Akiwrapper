@@ -16,7 +16,7 @@
  */
 package org.eu.zajc.akiwrapper.core.utils.route;
 
-import static java.util.Collections.emptyList;
+import static java.util.Collections.*;
 
 import java.util.*;
 
@@ -35,7 +35,8 @@ public class RouteBuilder {
 
 	@Nonnull private final String path;
 	private boolean requiresSession = false;
-	private Set<String> parameterNames;
+	@SuppressWarnings("null") @Nonnull private Map<String, Object> staticParameters = emptyMap();
+	@SuppressWarnings("null") @Nonnull private Set<String> variableParameterNames = emptySet();
 
 	public RouteBuilder(@Nonnull String path) {
 		this.path = path;
@@ -48,15 +49,23 @@ public class RouteBuilder {
 	}
 
 	@Nonnull
-	public RouteBuilder parameters(@Nonnull String... names) {
-		this.parameterNames = Set.of(names);
+	public RouteBuilder staticParameter(@Nonnull Map<String, Object> staticParameters) {
+		this.staticParameters = staticParameters;
 		return this;
 	}
 
+	@Nonnull
+	@SuppressWarnings("null")
+	public RouteBuilder variableParameters(@Nonnull String... names) {
+		this.variableParameterNames = Set.of(names);
+		return this;
+	}
+
+	@Nonnull
 	@SuppressWarnings("null")
 	public Route build() {
-		return new Route(this.path, this.requiresSession,
-						 this.parameterNames == null ? emptyList() : new ArrayList<>(this.parameterNames));
+		return new Route(this.path, this.requiresSession, this.staticParameters,
+						 List.copyOf(this.variableParameterNames));
 	}
 
 }

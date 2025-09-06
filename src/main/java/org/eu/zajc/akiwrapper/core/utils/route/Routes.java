@@ -16,6 +16,8 @@
  */
 package org.eu.zajc.akiwrapper.core.utils.route;
 
+import java.util.Map;
+
 import org.eu.zajc.akiwrapper.Akiwrapper.Answer;
 import org.eu.zajc.akiwrapper.core.entities.Guess;
 import org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl.Session;
@@ -87,7 +89,7 @@ public final class Routes {
 	 * </ul>
 	 */
 	public static final Route ANSWER = new RouteBuilder("/answer").requiresSession()
-		.parameters(PARAMETER_STEP, PARAMETER_PROGRESSION, PARAMETER_ANSWER, PARAMETER_STEP_LAST_PROPOSITION)
+		.variableParameters(PARAMETER_STEP, PARAMETER_PROGRESSION, PARAMETER_ANSWER, PARAMETER_STEP_LAST_PROPOSITION)
 		.build();
 
 	/**
@@ -99,8 +101,9 @@ public final class Routes {
 	 * <li>{@link Routes#PARAMETER_PROGRESSION}</li>
 	 * </ul>
 	 */
-	public static final Route CANCEL_ANSWER =
-		new RouteBuilder("/cancel_answer").requiresSession().parameters(PARAMETER_STEP, PARAMETER_PROGRESSION).build();
+	public static final Route CANCEL_ANSWER = new RouteBuilder("/cancel_answer").requiresSession()
+		.variableParameters(PARAMETER_STEP, PARAMETER_PROGRESSION)
+		.build();
 
 	/**
 	 * <b>IMPORTANT: This route is EXCLUDED from tests!</b> Because automated tests don't
@@ -115,8 +118,10 @@ public final class Routes {
 	 * </ul>
 	 * <b>This route requires a session</b>
 	 */
-	public static final Route EXCLUDE =
-		new RouteBuilder("/exclude").requiresSession().parameters(PARAMETER_STEP, PARAMETER_PROGRESSION).build();
+	@SuppressWarnings("null") public static final Route EXCLUDE = new RouteBuilder("/exclude").requiresSession()
+		.staticParameter(Map.of("forward_answer", "1"))
+		.variableParameters(PARAMETER_STEP, PARAMETER_PROGRESSION)
+		.build();
 
 	/**
 	 * <b>IMPORTANT: This route is EXCLUDED from tests!</b> Because automated tests don't
@@ -139,8 +144,8 @@ public final class Routes {
 	 * <b>This route requires a session</b>
 	 */
 	public static final Route CHOICE = new RouteBuilder("/choice").requiresSession()
-		.parameters(PARAMETER_STEP, PARAMETER_GUESS_ID, PARAMETER_GUESS_FLAG_PHOTO, PARAMETER_GUESS_NAME,
-					PARAMETER_GUESS_DESCRIPTION, PARAMETER_IDENTIFIER)
+		.variableParameters(PARAMETER_STEP, PARAMETER_GUESS_ID, PARAMETER_GUESS_FLAG_PHOTO, PARAMETER_GUESS_NAME,
+							PARAMETER_GUESS_DESCRIPTION, PARAMETER_IDENTIFIER)
 		.build();
 
 	private Routes() {}

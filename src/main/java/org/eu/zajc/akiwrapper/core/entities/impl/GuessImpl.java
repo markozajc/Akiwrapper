@@ -17,7 +17,7 @@
 
 package org.eu.zajc.akiwrapper.core.entities.impl;
 
-import static org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl.*;
+import static org.eu.zajc.akiwrapper.core.entities.impl.AkiwrapperImpl.LOG;
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.*;
 
 import java.net.*;
@@ -26,6 +26,7 @@ import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
+import org.eu.zajc.akiwrapper.core.utils.Utilities;
 import org.json.*;
 
 /**
@@ -60,9 +61,9 @@ public class GuessImpl extends AbstractQuery implements Guess {
 	@SuppressWarnings("null")
 	public static GuessImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json) {
 		try {
-			var last = akiwrapper.getCurrentQuery();
-			return new GuessImpl(akiwrapper, last == null ? LAST_STEP : last.getStep(),
-								 last == null ? 100D : last.getProgression(), json.getString("id_proposition"),
+			var previous = akiwrapper.getCurrentQuery();
+			return new GuessImpl(akiwrapper, Utilities.parseInt(json.getString("step")),
+								 previous == null ? 100D : previous.getProgression(), json.getString("id_proposition"),
 								 json.getString("name_proposition"), getPseudonym(json),
 								 json.getString("description_proposition"),
 								 json.has("photo") ? new URI(json.getString("photo")).toURL() : null,
