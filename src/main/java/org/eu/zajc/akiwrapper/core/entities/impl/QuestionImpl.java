@@ -18,7 +18,6 @@ package org.eu.zajc.akiwrapper.core.entities.impl;
 
 import static org.eu.zajc.akiwrapper.core.utils.route.Routes.*;
 
-import java.net.*;
 import java.util.Optional;
 
 import javax.annotation.Nonnull;
@@ -40,13 +39,10 @@ import org.jsoup.nodes.Element;
 public class QuestionImpl extends AbstractQuery implements Question {
 
 	@Nonnull private final String question;
-	@Nonnull private final URL akitude;
 
-	private QuestionImpl(@Nonnull AkiwrapperImpl akiwrapper, int step, double progression, @Nonnull String question,
-						 @Nonnull URL akitude) {
+	private QuestionImpl(@Nonnull AkiwrapperImpl akiwrapper, int step, double progression, @Nonnull String question) {
 		super(akiwrapper, step, progression);
 		this.question = question;
-		this.akitude = akitude;
 	}
 
 	@Nonnull
@@ -54,36 +50,24 @@ public class QuestionImpl extends AbstractQuery implements Question {
 	public static QuestionImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json) {
 		try {
 			return new QuestionImpl(akiwrapper, Utilities.parseInt(json.getString("step")),
-									Utilities.parseDouble(json.getString("progression")), json.getString("question"),
-									new URI("https://en.akinator.com/assets/img/akitudes_670x1096/" +
-										json.getString("akitude")).toURL());
+									Utilities.parseDouble(json.getString("progression")), json.getString("question"));
 
-		} catch (JSONException | MalformedURLException | URISyntaxException e) {
+		} catch (JSONException e) {
 			throw new MalformedResponseException(e);
 		}
 	}
 
 	@SuppressWarnings("null")
 	public static QuestionImpl fromHtml(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull Element gameRoot) {
-		URL akitude;
-		try {
-			akitude = new URI("https://en.akinator.com" + Optional.ofNullable(gameRoot.getElementById("akitude"))
-				.map(e -> e.attr("src"))
-				.orElseThrow(MalformedResponseException::new)).toURL();
+		var question = Optional.ofNullable(gameRoot.getElementById("question-label"))
+			.map(Element::wholeOwnText)
+			.orElseThrow(MalformedResponseException::new);
 
-			var question = Optional.ofNullable(gameRoot.getElementById("question-label"))
-				.map(Element::wholeOwnText)
-				.orElseThrow(MalformedResponseException::new);
+		var step = Utilities.parseInt(Optional.ofNullable(gameRoot.getElementById("step-info"))
+			.map(Element::wholeOwnText)
+			.orElseThrow(MalformedResponseException::new)) - 1;
 
-			var step = Utilities.parseInt(Optional.ofNullable(gameRoot.getElementById("step-info"))
-				.map(Element::wholeOwnText)
-				.orElseThrow(MalformedResponseException::new)) - 1;
-
-			return new QuestionImpl(akiwrapper, step, 0, question, akitude);
-
-		} catch (MalformedURLException | URISyntaxException e) {
-			throw new MalformedResponseException(e);
-		}
+		return new QuestionImpl(akiwrapper, step, 0, question);
 	}
 
 	@Override
@@ -133,11 +117,6 @@ public class QuestionImpl extends AbstractQuery implements Question {
 	@Override
 	public String getText() {
 		return this.question;
-	}
-
-	@Override
-	public URL getAkitude() {
-		return this.akitude;
 	}
 
 }

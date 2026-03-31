@@ -17,7 +17,7 @@
 package org.eu.zajc.akiwrapper.core.entities;
 
 import java.io.ObjectInputFilter.Status;
-import java.net.URL;
+import java.net.*;
 
 import javax.annotation.*;
 
@@ -120,9 +120,22 @@ public interface Question extends Query {
 	 * by the API. On the website, the akitude is shown on the left of the question
 	 * box.<br>
 	 *
-	 * @return the akitude image URL, for example
-	 *         {@code "https://en.akinator.com/assets/img/akitudes_670x1096/defi.png"}.
+	 * @return always returns
+	 *         {@code "https://en.akinator.com/assets/img/akitudes_670x1096/serein_2.png"}.
+	 *
+	 * @deprecated Akinator has moved Akitude logic to the client-side, meaning it is no
+	 *             longer present in API responses. This method was changed to always
+	 *             return the default Akitude and will be removed in a future release,
+	 *             notwithstanding the unlikely scenario that they reintroduce it to the
+	 *             API.
 	 */
-	URL getAkitude();
+	@Deprecated(since = "3.0.3", forRemoval = true)
+	default URL getAkitude() {
+		try {
+			return new URI("https://en.akinator.com/assets/img/akitudes_670x1096/serein_2.png").toURL(); // NOSONAR
+		} catch (MalformedURLException | URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }
