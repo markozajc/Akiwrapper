@@ -49,21 +49,24 @@ public abstract class AbstractQuery implements Query {
 			throw new IllegalStateException("Can only reply to the current query");
 	}
 
-	public Query parseNext(@Nonnull Response<JSONObject> resp) {
-		var parsed = resp.getStatus() == QUESTIONS_EXHAUSTED ? null : fromJson(this.akiwrapper, resp.getBody());
+	public Query parseNext(@Nonnull Response<JSONObject> resp, int nextStep) {
+		var json = resp.getBody();
+		this.akiwrapper.setServerStep(json.optInt("step", this.akiwrapper.getServerStep()));
+
+		var parsed = resp.getStatus() == QUESTIONS_EXHAUSTED ? null : fromJson(this.akiwrapper, json, nextStep);
 		if (parsed instanceof Guess)
-			this.akiwrapper.setLastGuessStep(this.step);
+			this.akiwrapper.setLastGuessStep(this.akiwrapper.getServerStep());
 
 		this.akiwrapper.setCurrentResponse(parsed);
 		return parsed;
 	}
 
 	@Nonnull
-	private static Query fromJson(@Nonnull AkiwrapperImpl akiwrapper, JSONObject json) {
+	private static Query fromJson(@Nonnull AkiwrapperImpl akiwrapper, JSONObject json, int step) {
 		if (json.has("question"))
-			return QuestionImpl.fromJson(akiwrapper, json);
+			return QuestionImpl.fromJson(akiwrapper, json, step);
 		else if (json.has("name_proposition"))
-			return GuessImpl.fromJson(akiwrapper, json);
+			return GuessImpl.fromJson(akiwrapper, json, step);
 		else
 			throw new MalformedResponseException();
 	}

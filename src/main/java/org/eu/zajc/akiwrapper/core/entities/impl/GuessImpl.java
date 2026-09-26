@@ -26,7 +26,6 @@ import javax.annotation.*;
 
 import org.eu.zajc.akiwrapper.core.entities.*;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
-import org.eu.zajc.akiwrapper.core.utils.Utilities;
 import org.json.*;
 
 /**
@@ -59,15 +58,15 @@ public class GuessImpl extends AbstractQuery implements Guess {
 
 	@Nonnull
 	@SuppressWarnings("null")
-	public static GuessImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json) {
+	public static GuessImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json, int step) {
 		try {
 			var previous = akiwrapper.getCurrentQuery();
-			return new GuessImpl(akiwrapper, Utilities.parseInt(json.getString("step")),
-								 previous == null ? 100D : previous.getProgression(), json.getString("id_proposition"),
+			return new GuessImpl(akiwrapper, step, previous == null ? 100D : previous.getProgression(),
+								 json.get("id_proposition").toString(),
 								 json.getString("name_proposition"), getPseudonym(json),
 								 json.getString("description_proposition"),
 								 json.has("photo") ? new URI(json.getString("photo")).toURL() : null,
-								 json.getString("flag_photo"));
+								 json.optString("flag_photo"));
 
 		} catch (JSONException | URISyntaxException | MalformedURLException e) {
 			throw new MalformedResponseException(e);
@@ -91,7 +90,7 @@ public class GuessImpl extends AbstractQuery implements Guess {
 			this.ensureCurrent();
 
 			CHOICE.createRequest(getAkiwrapper())
-				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_STEP, this.getAkiwrapper().getServerStep())
 				.parameter(PARAMETER_GUESS_ID, this.id)
 				.parameter(PARAMETER_GUESS_NAME, this.name)
 				.parameter(PARAMETER_GUESS_DESCRIPTION, this.description)
@@ -115,10 +114,10 @@ public class GuessImpl extends AbstractQuery implements Guess {
 			this.ensureCurrent();
 
 			var resp = EXCLUDE.createRequest(getAkiwrapper())
-				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_STEP, this.getAkiwrapper().getServerStep())
 				.parameter(PARAMETER_PROGRESSION, getProgression())
 				.retrieveJson();
-			return parseNext(resp);
+			return parseNext(resp, getStep());
 
 		} finally {
 			this.getAkiwrapper().getInteractionLock().unlock();

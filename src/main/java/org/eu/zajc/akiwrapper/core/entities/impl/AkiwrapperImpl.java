@@ -48,12 +48,10 @@ public class AkiwrapperImpl implements Akiwrapper {
 			compile("localStorage\\.setItem\\('identifiant', '([^']*)'\\);");
 
 		@Nonnull private final String session;
-		@Nonnull private final String signature;
 		@Nullable private final String identifier;
 
-		private Session(@Nonnull String session, @Nonnull String signature, @Nullable String identifier) {
+		private Session(@Nonnull String session, @Nullable String identifier) {
 			this.session = session;
-			this.signature = signature;
 			this.identifier = identifier;
 		}
 
@@ -62,8 +60,7 @@ public class AkiwrapperImpl implements Akiwrapper {
 		public static Session fromHtml(@Nonnull Element gameRoot) {
 			return Optional.ofNullable(gameRoot.getElementById("askSoundlike")).map(o -> {
 				var session = ofNullable(o.getElementById("session")).map(e -> e.attr("value")).orElse(null);
-				var signature = ofNullable(o.getElementById("signature")).map(e -> e.attr("value")).orElse(null);
-				if (session == null || signature == null)
+				if (session == null)
 					return null;
 
 				String identifier = null;
@@ -73,13 +70,12 @@ public class AkiwrapperImpl implements Akiwrapper {
 				else
 					LOG.trace("Couldn't find the session identifier");
 
-				return new Session(session, signature, identifier);
+				return new Session(session, identifier);
 			}).orElseThrow(MalformedResponseException::new);
 		}
 
 		public void apply(@Nonnull Map<String, Object> parameters) {
 			parameters.put("session", this.session);
-			parameters.put("signature", this.signature);
 		}
 
 		@Nullable
@@ -101,6 +97,8 @@ public class AkiwrapperImpl implements Akiwrapper {
 	private Session session;
 	private Query currentQuery;
 	private volatile int lastGuessStep;
+	// Akinator's own step counter, which increments on every interaction (including undo) and starts at 1
+	private volatile int serverStep = 1;
 	@Nonnull private Lock interactionLock = new ReentrantLock();
 
 	public AkiwrapperImpl(@Nonnull HttpClient httpClient, @Nonnull Language language, @Nonnull Theme theme,
@@ -157,6 +155,14 @@ public class AkiwrapperImpl implements Akiwrapper {
 
 	public void setLastGuessStep(int lastGuessStep) {
 		this.lastGuessStep = lastGuessStep;
+	}
+
+	public int getServerStep() {
+		return this.serverStep;
+	}
+
+	public void setServerStep(int serverStep) {
+		this.serverStep = serverStep;
 	}
 
 	@Nonnull

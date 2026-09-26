@@ -47,10 +47,9 @@ public class QuestionImpl extends AbstractQuery implements Question {
 
 	@Nonnull
 	@SuppressWarnings("null")
-	public static QuestionImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json) {
+	public static QuestionImpl fromJson(@Nonnull AkiwrapperImpl akiwrapper, @Nonnull JSONObject json, int step) {
 		try {
-			return new QuestionImpl(akiwrapper, Utilities.parseInt(json.getString("step")),
-									Utilities.parseDouble(json.getString("progression")), json.getString("question"));
+			return new QuestionImpl(akiwrapper, step, json.getDouble("progression"), json.getString("question"));
 
 		} catch (JSONException e) {
 			throw new MalformedResponseException(e);
@@ -77,12 +76,12 @@ public class QuestionImpl extends AbstractQuery implements Question {
 			this.ensureCurrent();
 
 			var resp = ANSWER.createRequest(this.getAkiwrapper())
-				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_STEP, this.getAkiwrapper().getServerStep())
 				.parameter(PARAMETER_PROGRESSION, getProgression())
 				.parameter(PARAMETER_ANSWER, answer.getId())
 				.parameter(PARAMETER_STEP_LAST_PROPOSITION, this.getAkiwrapper().getLastGuessStep())
 				.retrieveJson();
-			return parseNext(resp);
+			return parseNext(resp, getStep() + 1);
 
 		} finally {
 			this.getAkiwrapper().getInteractionLock().unlock();
@@ -99,11 +98,11 @@ public class QuestionImpl extends AbstractQuery implements Question {
 				throw new UndoOutOfBoundsException();
 
 			var resp = CANCEL_ANSWER.createRequest(this.getAkiwrapper())
-				.parameter(PARAMETER_STEP, getStep())
+				.parameter(PARAMETER_STEP, this.getAkiwrapper().getServerStep())
 				.parameter(PARAMETER_PROGRESSION, getProgression())
 				.retrieveJson();
 
-			var next = parseNext(resp);
+			var next = parseNext(resp, getStep() - 1);
 			if (next instanceof Question)
 				return (Question) next;
 			else
