@@ -31,7 +31,6 @@ import org.eu.zajc.akiwrapper.core.entities.Question;
 import org.eu.zajc.akiwrapper.core.exceptions.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import org.opentest4j.TestAbortedException;
 import org.slf4j.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,30 +52,19 @@ class IntegrationTest {
 	@ParameterizedTest
 	@MethodSource("generateTestAkiwrapper")
 	void testAkiwrapper(@Nonnull Language language, @Nonnull Theme theme) {
-
 		Logger log = getLogger(format("%s-%s", language, theme));
+		log.info("Establishing connection");
+		Akiwrapper api;
 		try {
-			log.info("Establishing connection");
-			Akiwrapper api;
-			try {
-				api = new AkiwrapperBuilder().setHttpClient(HTTP_CLIENT).setLanguage(language).setTheme(theme).build();
-			} catch (LanguageThemeCombinationException e) {
-				abort("Language-theme combination not supported.");
-				return;
-			}
-
-			var initialQuestion = testInitialState(log, api, language, theme);
-			int expectedState = testAnswering(log, api);
-			testUndo(log, api, initialQuestion.getText(), expectedState);
-
-		} catch (TestAbortedException e) {
-			throw e;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			fail("Got an exception running the test");
+			api = new AkiwrapperBuilder().setHttpClient(HTTP_CLIENT).setLanguage(language).setTheme(theme).build();
+		} catch (LanguageThemeCombinationException e) {
+			abort("Language-theme combination not supported.");
+			return;
 		}
+
+		var initialQuestion = testInitialState(log, api, language, theme);
+		int expectedState = testAnswering(log, api);
+		testUndo(log, api, initialQuestion.getText(), expectedState);
 	}
 
 	private static Question testInitialState(@Nonnull Logger log, @Nonnull Akiwrapper api, @Nonnull Language language,
